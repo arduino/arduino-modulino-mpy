@@ -2,8 +2,7 @@ from modulino import ModulinoKnob
 from machine import SoftI2C, I2C, Pin
 from time import sleep
 
-bus = I2C(0, sda=Pin(43), scl=Pin(44))
-knob = ModulinoKnob(bus)
+knob = ModulinoKnob()
 knob.begin()
 
 while True:

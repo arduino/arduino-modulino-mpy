@@ -2,10 +2,11 @@ from .modulino import Modulino
 
 class ModulinoKnob(Modulino):
   
-  def __init__(self, i2c_bus, address=0xFF):
-    self.i2c_bus = i2c_bus
-    self.address = 0x3A #address or 3E
-    self.name = "ENCODER"
+  def __init__(self, i2c_bus=None, address=0xFF):
+    super().__init__(i2c_bus, 0x3A, "ENCODER")
+    # self.i2c_bus = i2c_bus
+    # self.address = 0x3A #address or 3E
+    # self.name = "ENCODER"
     self.data = bytearray(3)
     self.match = [0x3A]
     self.pressed = False

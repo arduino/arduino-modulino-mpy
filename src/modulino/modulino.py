@@ -1,10 +1,52 @@
-from machine import Pin
+from machine import Pin, I2C
+import os
+
+DEVICE_I2C_INTERFACES = {
+    "Arduino Portenta H7" : { "type" : "hw", "interface" : 3 },
+    "Arduino Portenta C33" : { "type" : "hw", "interface" : 0 },
+    "Generic ESP32S3 module" : { "type" : "hw", "interface" : 0 },
+    # "Other board" : { "type" : "sw", "scl" : "P408", "sda" : "P407" }
+}
+
+class I2CHelper:
+    """
+    A helper class for interacting with I2C devices on supported boards.
+    """
+
+    @staticmethod
+    def get_interface() -> I2C:
+        """
+        Returns an instance of the I2C interface for the current board.
+
+        Raises:
+            RuntimeError: If the current board is not supported.
+
+        Returns:
+            I2C: An instance of the I2C interface.
+        """
+        board_name = os.uname().machine.split(' with ')[0]
+        interface_info = DEVICE_I2C_INTERFACES.get(board_name, None)
+
+        if interface_info is None:
+            raise RuntimeError(f"I2C interface couldn't be determined automatically for '{board_name}'.")
+
+        if interface_info["type"] == "hw":
+            return I2C(interface_info["interface"])
+
+        if interface_info["type"] == "sw":
+            from machine import SoftI2C, Pin
+            return SoftI2C(scl=Pin(interface_info["scl"]) , sda=Pin(interface_info["sda"]))            
+
 
 class Modulino:
   i2c_bus = None
   
-  def __init__(self, i2c_bus, address=0xFF, name=""):
-    self.i2c_bus = i2c_bus
+  def __init__(self, i2c_bus=None, address=0xFF, name=""):
+    if i2c_bus is None:
+        self.i2c_bus = I2CHelper.get_interface()
+    else:
+        self.i2c_bus = i2c_bus
+
     self.address = address
     self.name = name
     self.pinstrap_address = None
