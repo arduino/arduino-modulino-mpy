@@ -1,0 +1,11 @@
+__version__ = '1.0.0'
+__author__ = "Sebastian Romero"
+__license__ = "MPL 2.0"
+__maintainer__ = "Arduino"
+
+# Import core classes and/or functions to expose them at the package level
+from .pixels import ModulinoPixels, ModulinoColor
+from .thermo import ModulinoThermo
+from .buzzer import ModulinoBuzzer
+from .buttons import ModulinoButtons
+from .knob import ModulinoKnob
