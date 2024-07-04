@@ -11,6 +11,13 @@ class ModulinoColor:
     """Return the 32-bit integer representation of the color."""
     return (self.b << 8 | self.g << 16 | self.r << 24)
 
+# TODO make them accessible
+# RED = ModulinoColor(255, 0, 0)
+# BLUE = ModulinoColor(0, 0, 255)
+# GREEN = ModulinoColor(0, 255, 0)
+# VIOLET = ModulinoColor(255, 0, 255)
+# WHITE = ModulinoColor(255, 255, 255)
+
 class ModulinoPixels(Modulino):
   NUM_LEDS = const(8)
 
