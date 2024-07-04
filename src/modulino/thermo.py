@@ -1,4 +1,4 @@
-from time import sleep
+from .modulino import Modulino
 from micropython import const
 from collections import namedtuple
 
@@ -7,13 +7,12 @@ from micropython_hs3003 import hs3003
 
 Measurement = namedtuple('Measurement', ['temperature', 'relative_humidity'])
 
-class ModulinoThermo():
+class ModulinoThermo(Modulino):
     DEFAULT_ADDRESS = const(0x44)
 
-    def __init__(self, i2c_bus, address: int = DEFAULT_ADDRESS) -> None:
-        self._i2c_bus = i2c_bus
-        self._address = address
-        self._sensor = hs3003.HS3003(i2c_bus)
+    def __init__(self, i2c_bus = None, address: int = DEFAULT_ADDRESS) -> None:
+        super().__init__(i2c_bus, address, "THERMO")
+        self._sensor = hs3003.HS3003(self.i2c_bus)
 
     @property
     def measurements(self) -> Measurement:

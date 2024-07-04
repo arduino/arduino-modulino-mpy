@@ -3,9 +3,7 @@ from machine import SoftI2C, I2C, Pin
 from time import sleep
 #Module.reset_bus()
 
-#bus = SoftI2C(sda = Pin(43), scl = Pin(44))
-bus = I2C(0, sda=Pin(43), scl=Pin(44))
-pixels = ModulinoPixels(bus)
+pixels = ModulinoPixels()
 pixels.begin()
 
 for index in range(0, 8):

@@ -21,10 +21,8 @@ class ModulinoColor:
 class ModulinoPixels(Modulino):
   NUM_LEDS = const(8)
 
-  def __init__(self, i2c_bus, address=0xFF):
-    self.i2c_bus = i2c_bus
-    self.address = address
-    self.name = "LEDS"
+  def __init__(self, i2c_bus = None, address=0xFF):
+    super().__init__(i2c_bus, address, "LEDS")
     self.clear_all()
     self.match = [0x6C]
 
