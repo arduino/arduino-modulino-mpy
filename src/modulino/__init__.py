@@ -9,3 +9,5 @@ from .thermo import ModulinoThermo
 from .buzzer import ModulinoBuzzer
 from .buttons import ModulinoButtons
 from .knob import ModulinoKnob
+from .movement import ModulinoMovement
+from .distance import ModulinoDistance
