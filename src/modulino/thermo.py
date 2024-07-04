@@ -2,7 +2,8 @@ from time import sleep
 from micropython import const
 from collections import namedtuple
 
-# Driver adapted from github.com/jposada202020/MicroPython_HS3003
+# Driver from github.com/jposada202020/MicroPython_HS3003
+from micropython_hs3003 import hs3003
 
 Measurement = namedtuple('Measurement', ['temperature', 'relative_humidity'])
 
@@ -12,33 +13,17 @@ class ModulinoThermo():
     def __init__(self, i2c_bus, address: int = DEFAULT_ADDRESS) -> None:
         self._i2c_bus = i2c_bus
         self._address = address
-        self._status_bit = None
+        self._sensor = hs3003.HS3003(i2c_bus)
 
     @property
     def measurements(self) -> Measurement:
         """
         Return Temperature and Relative Humidity or None if the data is stalled
         """
-        self._i2c_bus.writeto(self._address, bytes([0x00]))
-        sleep(0.1)  # Time to wake up the sensor
-        data = bytearray(4)
-        self._i2c_bus.readfrom_into(self._address, data)
-
-        # The Status bit will have a value of 1 when the data is stalled
-        self._status_bit = data[0] & 0x40
-
-        if self._status_bit == 1:
-            return (None, None)
-
-        msb_humidity = data[0] & 0x3F
-        lsb_humidity = data[1]
-        raw_humidity = msb_humidity << 8 | lsb_humidity
-        humidity = (raw_humidity / (2**14.0 - 1)) * 100
-
-        msb_temperature = data[2]
-        lsb_temperature = (data[3] & 0xFC) >> 2
-        raw_temperature = msb_temperature << 6 | lsb_temperature
-        temperature = (raw_temperature / (2**14.0 - 1)) * 165 - 40
+        (temperature, humidity) = self._sensor.measurements
+        
+        if self._sensor._status_bit == 1:
+            return Measurement(None, None)
 
         return Measurement(temperature, humidity)
 
