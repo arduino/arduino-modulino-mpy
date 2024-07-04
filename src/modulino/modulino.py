@@ -2,6 +2,7 @@ from machine import Pin, I2C
 import os
 
 DEVICE_I2C_INTERFACES = {
+    "Arduino Nano ESP32" : { "type" : "hw", "interface" : 0 },
     "Arduino Portenta H7" : { "type" : "hw", "interface" : 3 },
     "Arduino Portenta C33" : { "type" : "hw", "interface" : 0 },
     "Generic ESP32S3 module" : { "type" : "hw", "interface" : 0 },
