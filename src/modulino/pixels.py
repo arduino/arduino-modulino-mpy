@@ -20,14 +20,12 @@ class ModulinoColor:
 
 class ModulinoPixels(Modulino):
   NUM_LEDS = const(8)
+  default_addresses = [0x6C]
 
-  def __init__(self, i2c_bus = None, address=0xFF):
+  def __init__(self, i2c_bus = None, address=None):
     super().__init__(i2c_bus, address, "LEDS")
     self.clear_all()
-    self.match = [0x6C]
 
-  # def begin(self):
-  #   self.address = self.discover() >> 1
   def map(self, x, in_min, in_max, out_min, out_max) -> int | float:
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
   
@@ -41,10 +39,9 @@ class ModulinoPixels(Modulino):
   def set(self, idx, rgb, brightness=25):
     
     if idx < 0 or idx >= self.NUM_LEDS:
-      raise ValueError('Index out of range')
+      raise ValueError(f"LED index out of range (0..{self.NUM_LEDS - 1})")
 
     byte_index = idx * 4
-    global color_data_bytes
     _brightness = self.mapi(brightness, 0, 100, 0, 0x1f)
     color_data_bytes =  int(rgb) | _brightness | 0xE0
     self.data[byte_index: byte_index+4] = color_data_bytes.to_bytes(4, 'little')
@@ -53,7 +50,6 @@ class ModulinoPixels(Modulino):
     global clr
     
     clr = ModulinoColor(r, g, b)
-    # print(f'setting pixel {idx} to {r}:{g}:{b}:{brightness}')
     self.set(idx, ModulinoColor(r, g, b), brightness)
 
   def clear(self, idx):
@@ -64,9 +60,3 @@ class ModulinoPixels(Modulino):
 
   def show(self):
     self.i2c_bus.writeto(self.address, bytes(self.data))
-
-  def discover(self):
-    # print(">>> discover pxl")
-    for addr in self.match:
-      if self.scan(addr):
-        return addr

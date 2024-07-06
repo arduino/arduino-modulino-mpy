@@ -93,12 +93,11 @@ class I2CHelper:
             return SoftI2C(scl=Pin(interface_info.scl) , sda=Pin(interface_info.sda), freq=I2CHelper.frequency)            
 
 class Modulino:
-  invalid_address = const(0xFF)
   i2c_bus = None
   pinstrap_address = None # TODO what do we use this for?
   default_addresses = []
   
-  def __init__(self, i2c_bus=None, address=invalid_address, name=None):
+  def __init__(self, i2c_bus=None, address=None, name=None):
     if i2c_bus is None:
         self.i2c_bus = I2CHelper.get_interface()
     else:
@@ -107,27 +106,26 @@ class Modulino:
     self.address = address
     self.name = name
 
-  def begin(self):
-    if self.address == self.invalid_address:
-      self.address = self.discover()
+    if self.address == None:
+      # Need to convert the 8-bit address to 7-bit
+      actual_addresses = list(map(lambda addr: addr >> 1, self.default_addresses))
+      self.address = self.discover(actual_addresses)
 
-  def discover(self):
+  def discover(self, default_addresses):
     """
     Tries to find the given modulino device in the device chain
     based on the pre-defined default addresses.
     If the address has been changed to a custom one it won't be found with this function.
     """
-    if(len(self.default_addresses) == 0):
-      return self.invalid_address
+    if(len(default_addresses) == 0):
+      return None
     
-    print("Scanning bus...")
     devices_on_bus = self.i2c_bus.scan()
-    print("Done scanning bus.")
-    for addr in self.default_addresses:
-      # Need to convert the 8-bit address to 7-bit
-      actual_address = addr >> 1
-      if actual_address in devices_on_bus:
-        return actual_address
+    for addr in default_addresses:
+      if addr in devices_on_bus:
+        return addr
+      
+    return None
 
   def __bool__(self):
     """
@@ -138,31 +136,29 @@ class Modulino:
     return self.address <= 127 and self.address >= 0 
 
   def read(self, buf, howmany):
-    if self.address == 0xFF:
+    if self.address == None:
       return False
     self.i2c_bus.writeto(self.address, bytes(1), False)
     self.i2c_bus.readfrom_into(self.address, buf, False)
     return True
 
-  def write(self, buf):
-    # print(buf)
-    if self.address == 0xFF:
+  def write(self, data_buffer):
+    """
+    Writes the given buffer to the i2c device.
+    """
+    if self.address == None:
       return False
-    self.i2c_bus.writeto(self.address, buf)
+    self.i2c_bus.writeto(self.address, data_buffer)
     return True
 
-  def non_default_address(self):
-    return self.pinstrap_address != self.address
+  @property
+  def has_default_address(self):
+    """
+    Determines if the given modulino has a default address
+    or if a custom one was set.
+    """
+    return self.address in self.default_addresses
 
-  # TODO Can we get rid of this?
-  # def scan(self, addr):
-  #   try:
-  #     addr = addr >> 1
-  #     self.i2c_bus.writeto(addr, bytes(0))
-  #     return True
-  #   except OSError:
-  #     return False
-    
   @staticmethod
   def reset_bus(i2c_bus):
     """
