@@ -133,14 +133,22 @@ class Modulino:
     In case of auto discovery this also means that the device was found on the bus.    
     """
     # Check if a valid i2c address is set
-    return self.address <= 127 and self.address >= 0 
+    return self.address != None and self.address <= 127 and self.address >= 0 
 
-  def read(self, buf, howmany):
+  def read(self, amount_of_bytes):
+    """
+    Reads the given amount of bytes from the i2c device and returns the data
+    """
+
     if self.address == None:
-      return False
-    self.i2c_bus.writeto(self.address, bytes(1), False)
-    self.i2c_bus.readfrom_into(self.address, buf, False)
-    return True
+      return None
+    
+    data = self.i2c_bus.readfrom(self.address, amount_of_bytes + 1, True)
+    if(len(data) < amount_of_bytes + 1 ):
+       return None # Something went wrong in the data transmission
+    
+    self.pinstrap_address = data[0]
+    return data[1:]
 
   def write(self, data_buffer):
     """
