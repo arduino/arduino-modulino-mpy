@@ -1,9 +1,7 @@
-from modulino import ModulinoPixels
-from machine import SoftI2C, I2C, Pin
+from modulino import ModulinoPixels, ModulinoColor
 from time import sleep
 
 pixels = ModulinoPixels()
-# pixels.begin()
 
 for index in range(0, 8):
     color_wheel_colors = [
@@ -20,15 +18,15 @@ for index in range(0, 8):
 pixels.show()
 sleep(2)
 
-pixels.set_all(255, 0, 0, 100)
+pixels.set_all_rgb(255, 0, 0, 100)
 pixels.show()
 sleep(2)
 
-pixels.set_all(0, 255, 0, 100)
+pixels.set_all_color(ModulinoColor.GREEN, 100)
 pixels.show()
 sleep(2)
 
-pixels.set_all(0, 0, 255, 100)
+pixels.set_all_color(ModulinoColor.BLUE, 100)
 pixels.show()
 sleep(2)
 
