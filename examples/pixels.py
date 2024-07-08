@@ -3,6 +3,10 @@ from time import sleep
 
 pixels = ModulinoPixels()
 
+if not pixels:
+    print("🤷 No pixel modulino found")    
+    exit()
+
 for index in range(0, 8):
     color_wheel_colors = [
         (255, 0, 0),
