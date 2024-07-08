@@ -1,27 +1,164 @@
 from .modulino import Modulino
+from time import ticks_ms
+from micropython import const
 
 class ModulinoButtons(Modulino):
-  def __init__(self, i2c_bus, address=0xFF):
-    self.i2c_bus = i2c_bus
-    self.address = 0x3E #address
-    self.name = "BUTTONS"
-    self.data = bytearray(3)
-    self.data_butt = bytearray(3)
-    self.last_status = bytearray(3)
-    self.match = [0x3E]
-    
-  def set_leds(self, a, b, c):
-    self.data[0] = a
-    self.data[1] = b
-    self.data[2] = c
-    self.write(self.data)
+
+  default_addresses = [0x7C]
+  default_long_press_threshold = const(1000)
+
+  def __init__(self, i2c_bus=None, address=None):
+    super().__init__(i2c_bus, address, "BUTTONS")
+    self.long_press_threshold = self.default_long_press_threshold
+
+    self.previous_status = bytearray(3)
+    self.last_press_timestamps = [None, None, None]
+
+    # Button callbacks
+    self._on_button_a_press = None
+    self._on_button_a_release = None
+    self._on_button_b_press = None
+    self._on_button_b_release = None
+    self._on_button_c_press = None
+    self._on_button_c_release = None
+    self._on_button_a_long_press = None
+    self._on_button_b_long_press = None
+    self._on_button_c_long_press = None
+  
+  def set_led_status(self, a, b, c):
+    data = bytearray(3)
+    data[0] = 1 if a else 0
+    data[1] = 1 if b else 0
+    data[2] = 1 if c else 0
+    self.write(data)
+
+  @property
+  def long_press_threshold(self):
+    return self._long_press_threshold
+  
+  @long_press_threshold.setter
+  def long_press_threshold(self, value):
+    self._long_press_threshold = value
+
+  @property
+  def on_button_a_press(self):
+    return self._on_button_a_press
+  
+  @on_button_a_press.setter
+  def on_button_a_press(self, value):
+    self._on_button_a_press = value
+
+  @property
+  def on_button_a_release(self):
+    return self._on_button_a_release
+  
+  @on_button_a_release.setter
+  def on_button_a_release(self, value):
+    self._on_button_a_release = value
+
+  @property
+  def on_button_a_long_press(self):
+    return self._on_button_a_long_press
+  
+  @on_button_a_long_press.setter
+  def on_button_a_long_press(self, value):
+    self._on_button_a_long_press = value
+
+  @property
+  def on_button_b_press(self):
+    return self._on_button_b_press
+  
+  @on_button_b_press.setter
+  def on_button_b_press(self, value):
+    self._on_button_b_press = value
+
+  @property
+  def on_button_b_release(self):
+    return self._on_button_b_release
+  
+  @on_button_b_release.setter
+  def on_button_b_release(self, value):
+    self._on_button_b_release = value
+
+  @property
+  def on_button_b_long_press(self):
+    return self._on_button_b_long_press
+  
+  @on_button_b_long_press.setter
+  def on_button_b_long_press(self, value):
+    self._on_button_b_long_press = value
+
+  @property
+  def on_button_c_press(self):
+    return self._on_button_c_press
+  
+  @on_button_c_press.setter
+  def on_button_c_press(self, value):
+    self._on_button_c_press = value
+
+  @property
+  def on_button_c_release(self):
+    return self._on_button_c_release
+  
+  @on_button_c_release.setter
+  def on_button_c_release(self, value):
+    self._on_button_c_release = value
+
+  @property
+  def on_button_c_long_press(self):
+    return self._on_button_c_long_press
+  
+  @on_button_c_long_press.setter
+  def on_button_c_long_press(self, value):
+    self._on_button_c_long_press = value
 
   def update(self):
-    self.read(self.data_butt, 3)
-    #print(self.data_butt[0], self.data_butt[1], self.data_butt[2])
-    res = self.data_butt and (self.data_butt[0] != self.last_status[0] or self.data_butt[1] != self.last_status[1] or self.data_butt[2] != self.last_status[2])
-    self.last_status = self.data_butt
-    return res
+    new_status = self.read(3)
+    button_states_changed = new_status != self.previous_status
+    previous_status_cached = self.previous_status
+    current_timestamp = ticks_ms()
+    
+    # Update status already in case it's accessed in one of the button callbacks
+    self.previous_status = new_status    
+
+    # Check for long press
+    if(new_status[0] == 1 and previous_status_cached[0] == 1 and self.last_press_timestamps[0] and current_timestamp - self.last_press_timestamps[0] > self.long_press_threshold):
+      self.last_press_timestamps[0] = None
+      if self._on_button_a_long_press:
+        self._on_button_a_long_press()
+
+    if(new_status[1] == 1 and previous_status_cached[1] == 1 and self.last_press_timestamps[1] and current_timestamp - self.last_press_timestamps[1] > self.long_press_threshold):
+      self.last_press_timestamps[1] = None
+      if self._on_button_b_long_press:
+        self._on_button_b_long_press()
+
+    if(new_status[2] == 1 and previous_status_cached[2] == 1 and self.last_press_timestamps[2] and current_timestamp - self.last_press_timestamps[2] > self.long_press_threshold):
+      self.last_press_timestamps[2] = None
+      if self._on_button_c_long_press:
+        self._on_button_c_long_press()
+      
+    # Check for press and release
+    if(button_states_changed):
+
+      if(new_status[0] == 1 and previous_status_cached[0] == 0 and self._on_button_a_press):
+        self.last_press_timestamps[0] = ticks_ms()
+        self._on_button_a_press()
+      elif(new_status[0] == 0 and previous_status_cached[0] == 1 and self._on_button_a_release):
+        self._on_button_a_release()
+      
+      if(new_status[1] == 1 and previous_status_cached[1] == 0 and self._on_button_b_press):
+        self.last_press_timestamps[1] = ticks_ms()        
+        self._on_button_b_press()
+      elif(new_status[1] == 0 and previous_status_cached[1] == 1 and self._on_button_b_release):
+        self._on_button_b_release()
+      
+      if(new_status[2] == 1 and previous_status_cached[2] == 0 and self._on_button_c_press):
+        self.last_press_timestamps[2] = ticks_ms()
+        self._on_button_c_press()
+      elif(new_status[2] == 0 and previous_status_cached[2] == 1 and self._on_button_c_release):
+        self._on_button_c_release()
+
+    return button_states_changed
 
   def is_pressed(self, index):
-    return self.last_status[index]
+    return self.previous_status[index]

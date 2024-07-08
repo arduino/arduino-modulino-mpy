@@ -1,19 +1,30 @@
 from modulino import ModulinoButtons
-from machine import SoftI2C, I2C, Pin
-from time import sleep
+from sys import exit
 
-bus = I2C(0, sda=Pin(43), scl=Pin(44))
-buttons = ModulinoButtons(bus)
-buttons.begin()
+buttons = ModulinoButtons()
+
+if not buttons:
+    print("🤷 No button modulino found")    
+    exit()
+
+buttons.on_button_a_press = lambda : print("Button A pressed")
+buttons.on_button_a_long_press = lambda : print("Button A long press")
+buttons.on_button_a_release = lambda : print("Button A released")
+
+buttons.on_button_b_press = lambda : print("Button B pressed")
+buttons.on_button_b_long_press = lambda : print("Button B long press")
+buttons.on_button_b_release = lambda : print("Button B released")
+
+buttons.on_button_c_press = lambda : print("Button C pressed")
+buttons.on_button_c_long_press = lambda : print("Button C long press")
+buttons.on_button_c_release = lambda : print("Button C released")
+
 
 while True:
-    buttons.update()
+    buttons_state_changed = buttons.update()
     
-    if buttons.is_pressed(0) == True:
-      buttons.set_leds(1, 0, 0)
-    elif buttons.is_pressed(1) == True:
-      buttons.set_leds(0, 1, 0)
-    elif buttons.is_pressed(2) == True:
-      buttons.set_leds(0, 0, 1)
-    else:
-      buttons.set_leds(0, 0, 0)
+    if(buttons_state_changed):    
+      led_a_status = buttons.is_pressed(0)
+      led_b_status = buttons.is_pressed(1)
+      led_c_status = buttons.is_pressed(2)
+      buttons.set_led_status(led_a_status, led_b_status, led_c_status)
