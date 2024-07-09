@@ -96,6 +96,8 @@ class Modulino:
   i2c_bus = None
   pinstrap_address = None # TODO what do we use this for?
   default_addresses = []
+  # Addresses of modulinos without native I2C modules need to be converted from 8 to 7-bits  
+  convert_default_addresses = True
   
   def __init__(self, i2c_bus=None, address=None, name=None):
     if i2c_bus is None:
@@ -106,10 +108,13 @@ class Modulino:
     self.address = address
     self.name = name
 
-    if self.address == None:
-      # Need to convert the 8-bit address to 7-bit
-      actual_addresses = list(map(lambda addr: addr >> 1, self.default_addresses))
-      self.address = self.discover(actual_addresses)
+    if self.address == None and len(self.default_addresses) > 0:
+      if self.convert_default_addresses:
+        # Need to convert the 8-bit address to 7-bit
+        actual_addresses = list(map(lambda addr: addr >> 1, self.default_addresses))
+        self.address = self.discover(actual_addresses)
+      else:
+        self.address = self.discover(self.default_addresses)
 
   def discover(self, default_addresses):
     """
