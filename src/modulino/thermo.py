@@ -14,16 +14,16 @@ class ModulinoThermo(Modulino):
 
     def __init__(self, i2c_bus = None, address: int = DEFAULT_ADDRESS) -> None:
         super().__init__(i2c_bus, address, "THERMO")
-        self._sensor = hs3003.HS3003(self.i2c_bus)
+        self.sensor = hs3003.HS3003(self.i2c_bus)
 
     @property
     def measurements(self) -> Measurement:
         """
         Return Temperature and Relative Humidity or None if the data is stalled
         """
-        (temperature, humidity) = self._sensor.measurements
+        (temperature, humidity) = self.sensor.measurements
         
-        if self._sensor._status_bit == 1:
+        if self.sensor._status_bit == 1:
             return Measurement(None, None)
 
         return Measurement(temperature, humidity)
