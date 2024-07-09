@@ -1,10 +1,15 @@
 from modulino import ModulinoKnob
-from machine import SoftI2C, I2C, Pin
 from time import sleep
 
 knob = ModulinoKnob()
 knob.begin()
+previous_knob_value = None
 
 while True:
-    print(f"🎛️ Value: {knob.get()}")
+    new_knob_value = knob.get()
+    if new_knob_value != previous_knob_value:
+        previous_knob_value = new_knob_value
+        print(f"🎛️ Value: {new_knob_value}")
+    
+    print(f"🔘 Pressed: {knob.pressed}")
     sleep(0.1)

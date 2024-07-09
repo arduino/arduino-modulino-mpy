@@ -2,14 +2,12 @@ from .modulino import Modulino
 
 class ModulinoKnob(Modulino):
   
-  def __init__(self, i2c_bus=None, address=0xFF):
-    super().__init__(i2c_bus, 0x3A, "ENCODER")
-    # self.i2c_bus = i2c_bus
-    # self.address = 0x3A #address or 3E
-    # self.name = "ENCODER"
+  default_addresses = [0x74, 0x76]
+  
+  def __init__(self, i2c_bus=None, address=None):
+    super().__init__(i2c_bus, address, "ENCODER")
     self.data = bytearray(3)
-    self.match = [0x3A]
-    self.pressed = False
+    self._pressed = False
     self.value = 0
     self.bug_on_set = True
 
@@ -23,9 +21,10 @@ class ModulinoKnob(Modulino):
       self.set(val)
     
   def get(self):
-    self.read(self.data, 3)
-    self.pressed = self.data[2]
-    self.value = (int)(self.data[0] | (self.data[1] << 8))
+    self.data = self.read(3)
+    self._pressed = self.data[2] != 0
+    self.value = int.from_bytes(self.data[0:2], 'little', True)
+    
     if self.value >= 32768:
       self.value = self.value - 65536
     return self.value
@@ -37,5 +36,6 @@ class ModulinoKnob(Modulino):
     buf[0:2] = value.to_bytes(2, 'little')
     self.write(buf)
 
-  def is_pressed(self):
-    return self.pressed
+  @property
+  def pressed(self):
+    return self._pressed
