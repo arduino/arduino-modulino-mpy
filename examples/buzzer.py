@@ -1,7 +1,6 @@
 from modulino import ModulinoBuzzer
 
 buzzer = ModulinoBuzzer()
-buzzer.begin()
 
 melody = [
     (ModulinoBuzzer.PITCHES["NOTE_E5"], 125),
@@ -19,4 +18,4 @@ melody = [
 
 # Super Mario Bros theme
 for note, duration in melody:
-    buzzer.tone(note, duration)
+    buzzer.tone(note, duration, blocking=True)

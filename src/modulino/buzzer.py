@@ -95,17 +95,18 @@ class ModulinoBuzzer(Modulino):
     "REST": 0
   }
 
-  def __init__(self, i2c_bus = None, address=0xFF):
-    super().__init__(i2c_bus, 0x1E, "BUZZER")
-    self.data = bytearray(8)
-    self.match = [0x1E]
+  default_addresses = [0x3C]
 
-  def tone(self, frequency, lenght_ms=0):
-    self.data[0:4]=frequency.to_bytes(4,'little') #index, index+len
+  def __init__(self, i2c_bus = None, address = None):
+    super().__init__(i2c_bus, address, "BUZZER")
+    self.data = bytearray(8)
+
+  def tone(self, frequency, lenght_ms=0xFFFF, blocking=False):
+    self.data[0:4]=frequency.to_bytes(4,'little')
     self.data[4:8]=lenght_ms.to_bytes(4,'little')
     self.write(self.data)
     
-    if lenght_ms != 0:
+    if blocking:
       sleep_ms(lenght_ms)
 
   def no_tone(self):
