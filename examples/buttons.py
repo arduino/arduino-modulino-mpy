@@ -3,7 +3,7 @@ from sys import exit
 
 buttons = ModulinoButtons()
 
-if not buttons:
+if not buttons.connected:
     print("🤷 No button modulino found")    
     exit()
 

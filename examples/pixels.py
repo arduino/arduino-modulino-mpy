@@ -3,7 +3,7 @@ from time import sleep
 
 pixels = ModulinoPixels()
 
-if not pixels:
+if not pixels.connected:
     print("🤷 No pixel modulino found")    
     exit()
 
