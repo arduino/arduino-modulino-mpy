@@ -4,7 +4,7 @@ from sys import exit
 
 thermo_module = ModulinoThermo()
 
-if not thermo_module:
+if not thermo_module.connected:
     print("🤷 No thermo modulino found")    
     exit()
 

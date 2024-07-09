@@ -8,6 +8,8 @@ from micropython_hs3003 import hs3003
 Measurement = namedtuple('Measurement', ['temperature', 'relative_humidity'])
 
 class ModulinoThermo(Modulino):
+    # The default I2C address of the HS3003 sensor cannot be changed by the user
+    # so we can define it as a constant and avoid discovery overhead.
     DEFAULT_ADDRESS = const(0x44)
 
     def __init__(self, i2c_bus = None, address: int = DEFAULT_ADDRESS) -> None:
