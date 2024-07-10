@@ -3,13 +3,14 @@ from time import sleep
 
 knob = ModulinoKnob()
 knob.value = 128 # (Optional) Set an initial value
-previous_knob_value = None
+
+knob.on_press = lambda: print("🔘 Pressed!")
+knob.on_release = lambda: print("🔘 Released!")
+knob.on_rotate_clockwise = lambda value: print(f"🎛️ Rotated clockwise! Value: {value}")
+knob.on_rotate_counter_clockwise = lambda value: print(f"🎛️ Rotated counter clockwise! Value: {value}")
 
 while True:
-    new_knob_value = knob.value
-    if new_knob_value != previous_knob_value:
-        previous_knob_value = new_knob_value
-        print(f"🎛️ Value: {new_knob_value}")
-    
-    #print(f"🔘 Pressed: {knob.pressed}")
+    if(knob.update()):
+        print("👀 Knob changed!")
+
     sleep(0.1)
