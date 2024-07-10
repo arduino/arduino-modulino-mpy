@@ -27,7 +27,6 @@ Implementation Notes
 
 import time
 import struct
-from adafruit_bus_device import i2c_device
 from micropython import const
 
 __version__ = "0.0.0+auto.0"
@@ -87,10 +86,10 @@ class VL53L4CD:
 
     def __init__(self, i2c, address=41):
         self._i2c = i2c
-        self.i2c_device = i2c_device.I2CDevice(i2c, address)
+        self._device_address = address
         model_id, module_type = self.model_info
         if model_id != 0xEB or module_type != 0xAA:
-            raise RuntimeError("Wrong sensor ID or type!")
+            raise RuntimeError(f"Wrong sensor ID ({model_id}) or type!")
         self._ranging = False
         self._sensor_init()
 
@@ -446,14 +445,12 @@ class VL53L4CD:
     def _write_register(self, address, data, length=None):
         if length is None:
             length = len(data)
-        with self.i2c_device as i2c:
-            i2c.write(struct.pack(">H", address) + data[:length])
+        self._i2c.writeto(self._device_address, struct.pack(">H", address) + data[:length])
 
     def _read_register(self, address, length=1):
         data = bytearray(length)
-        with self.i2c_device as i2c:
-            i2c.write(struct.pack(">H", address))
-            i2c.readinto(data)
+        self._i2c.writeto(self._device_address, struct.pack(">H", address), False)
+        self._i2c.readfrom_into(self._device_address, data)
         return data
 
     def set_address(self, new_address):
@@ -465,4 +462,4 @@ class VL53L4CD:
         self._write_register(
             _VL53L4CD_I2C_SLAVE_DEVICE_ADDRESS, struct.pack(">B", new_address)
         )
-        self.i2c_device = i2c_device.I2CDevice(self._i2c, new_address)
+        self._device_address = new_address
