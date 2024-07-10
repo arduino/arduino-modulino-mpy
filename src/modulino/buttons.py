@@ -11,7 +11,7 @@ class ModulinoButtons(Modulino):
     super().__init__(i2c_bus, address, "BUTTONS")
     self.long_press_threshold = self.default_long_press_threshold
 
-    self.previous_status = bytearray(3)
+    self.previous_status = [None, None, None]
     self.last_press_timestamps = [None, None, None]
 
     # Button callbacks
