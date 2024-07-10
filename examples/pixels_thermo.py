@@ -1,39 +1,43 @@
 from modulino import ModulinoPixels, ModulinoThermo
 from time import sleep
-#Module.reset_bus()
 
 pixels = ModulinoPixels()
-pixels.begin()
 thermo_module = ModulinoThermo()
-thermo_module.begin()
+
+# Yellow to red scale with 8 steps in between
+colors = [
+    (255, 255, 0), 
+    (255, 204, 0), 
+    (255, 153, 0), 
+    (255, 102, 0),
+    (255, 51, 0), 
+    (255, 0, 0), 
+    (204, 0, 0), 
+    (153, 0, 0)
+]
+
+# Define the range of temperatures (°C) to map to the pixel strip
+temperature_range = (20, 30)
 
 while True:
-    # print(f"🌡️ Temperature: {thermo_module.temperature:.1f} °C")
-    # print(f"💧 Humidity: {thermo_module.relative_humidity:.1f} %")    
-    # print()
-    sleep(2)
-
-    # Map temperature from 25 to 30 degrees to 0 to 8 pixels
     temperature = thermo_module.temperature
-    if temperature < 25:
-        temperature = 25
-    elif temperature > 30:
-        temperature = 30
-    temperature -= 25
-    temperature_index = int(temperature * 8 / 5)
-    print(f"Temperature: {temperature_index}")    
+    print(f"🌡️ Temperature: {temperature:.1f} °C")    
 
-    for index in range(0, temperature_index):
-        # Green to red scale
-        colors = [
-            (0, 255, 0),
-            (85, 255, 0),
-            (170, 255, 0),
-            (255, 255, 0),
-            (255, 170, 0),
-            (255, 85, 0),
-            (255, 0, 0),
-            (255, 0, 0)
-        ]
+    # Constrain temperature to the given range
+    if temperature < temperature_range[0]:
+        temperature = temperature_range[0]
+    elif temperature > temperature_range[1]:
+        temperature = temperature_range[1]
+
+    # Map temperature to the pixel strip
+    # temperature_range[0]°C : 0 index -> first pixel
+    # temperature_range[1]°C : 7 index -> last pixel
+    temperature_index = int((temperature - temperature_range[0]) * 7 / (temperature_range[1] - temperature_range[0]))
+
+    pixels.clear_all()
+
+    for index in range(0, temperature_index + 1):        
         pixels.set_rgb(index, *colors[index], 100)
+        
     pixels.show()
+    sleep(1)
