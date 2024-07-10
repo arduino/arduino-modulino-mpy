@@ -93,8 +93,6 @@ class I2CHelper:
             return SoftI2C(scl=Pin(interface_info.scl) , sda=Pin(interface_info.sda), freq=I2CHelper.frequency)            
 
 class Modulino:
-  i2c_bus = None
-  pinstrap_address = None # TODO what do we use this for?
   default_addresses = []
   # Addresses of modulinos without native I2C modules need to be converted from 8 to 7-bits  
   convert_default_addresses = True
@@ -151,6 +149,22 @@ class Modulino:
       return False
     return self.address in self.i2c_bus.scan()
 
+  @property
+  def pin_strap_address(self):
+    """
+    Returns the pin strap i2c address of the modulino.
+    This address is set via resistors on the modulino board.
+    Since all modulinos generally use the same firmware, the pinstrap address
+    is needed to determine the type of the modulino at boot time, so it know what to do.
+    At boot it checks the internal flash in case its address has been overridden by the user
+    which would take precedence.
+    """
+    if self.address == None:
+      return None
+    data = self.i2c_bus.readfrom(self.address, 1, True)
+    # The first byte is always the pinstrap address
+    return data[0]
+
   def read(self, amount_of_bytes):
     """
     Reads the given amount of bytes from the i2c device and returns the data
@@ -163,7 +177,7 @@ class Modulino:
     if(len(data) < amount_of_bytes + 1 ):
        return None # Something went wrong in the data transmission
     
-    self.pinstrap_address = data[0]
+    # data[0] is always the pinstrap address
     return data[1:]
 
   def write(self, data_buffer):
