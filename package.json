@@ -1,6 +1,15 @@
 {
     "urls": [
-      ["modulino/__init__.py", "github:arduino/modulino-mpy/src/modulino/__init__.py"]
+      ["modulino/__init__.py", "github:arduino/modulino-mpy/src/modulino/__init__.py"],
+      ["modulino/buttons.py", "github:arduino/modulino-mpy/src/modulino/buttons.py"],
+      ["modulino/buzzer.py", "github:arduino/modulino-mpy/src/modulino/buzzer.py"],
+      ["modulino/distance.py", "github:arduino/modulino-mpy/src/modulino/distance.py"],
+      ["modulino/lib/vl53l4cd.py", "github:arduino/modulino-mpy/src/modulino/lib/vl53l4cd.py"],
+      ["modulino/knob.py", "github:arduino/modulino-mpy/src/modulino/knob.py"],
+      ["modulino/modulino.py", "github:arduino/modulino-mpy/src/modulino/modulino.py"],
+      ["modulino/movement.py", "github:arduino/modulino-mpy/src/modulino/movement.py"],
+      ["modulino/pixels.py", "github:arduino/modulino-mpy/src/modulino/pixels.py"],
+      ["modulino/thermo.py", "github:arduino/modulino-mpy/src/modulino/thermo.py"]
     ],
     "deps": [
         ["lsm6dsox"],
