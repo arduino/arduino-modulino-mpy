@@ -59,4 +59,4 @@ class ModulinoPixels(Modulino):
     self.data = bytearray([0xE0] * NUM_LEDS * 4)
 
   def show(self):
-    self.i2c_bus.writeto(self.address, bytes(self.data))
+    self.i2c_bus.writeto(self.address, self.data)
