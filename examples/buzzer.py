@@ -3,17 +3,17 @@ from modulino import ModulinoBuzzer
 buzzer = ModulinoBuzzer()
 
 melody = [
-    (ModulinoBuzzer.PITCHES["NOTE_E5"], 125),
-    (ModulinoBuzzer.PITCHES["NOTE_E5"], 125),
-    (ModulinoBuzzer.PITCHES["REST"], 125),
-    (ModulinoBuzzer.PITCHES["NOTE_E5"], 125),
-    (ModulinoBuzzer.PITCHES["REST"], 125),
-    (ModulinoBuzzer.PITCHES["NOTE_C5"], 125),
-    (ModulinoBuzzer.PITCHES["NOTE_E5"], 125),
-    (ModulinoBuzzer.PITCHES["REST"], 125),
-    (ModulinoBuzzer.PITCHES["NOTE_G5"], 125),
-    (ModulinoBuzzer.PITCHES["REST"], 375),
-    (ModulinoBuzzer.PITCHES["NOTE_G4"], 250)
+    (ModulinoBuzzer.NOTES["E5"], 125),
+    (ModulinoBuzzer.NOTES["E5"], 125),
+    (ModulinoBuzzer.NOTES["REST"], 125),
+    (ModulinoBuzzer.NOTES["E5"], 125),
+    (ModulinoBuzzer.NOTES["REST"], 125),
+    (ModulinoBuzzer.NOTES["C5"], 125),
+    (ModulinoBuzzer.NOTES["E5"], 125),
+    (ModulinoBuzzer.NOTES["REST"], 125),
+    (ModulinoBuzzer.NOTES["G5"], 125),
+    (ModulinoBuzzer.NOTES["REST"], 375),
+    (ModulinoBuzzer.NOTES["G4"], 250)
 ]
 
 # Super Mario Bros theme
