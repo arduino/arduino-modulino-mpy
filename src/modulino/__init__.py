@@ -11,3 +11,4 @@ from .buttons import ModulinoButtons
 from .knob import ModulinoKnob
 from .movement import ModulinoMovement
 from .distance import ModulinoDistance
+from .pressure import ModulinoPressure
