@@ -5,11 +5,11 @@ from micropython import const
 class ModulinoButtons(Modulino):
 
   default_addresses = [0x7C]
-  default_long_press_threshold = const(1000)
+  default_long_press_duration = const(1000) # 1 second
 
   def __init__(self, i2c_bus=None, address=None):
     super().__init__(i2c_bus, address, "BUTTONS")
-    self.long_press_threshold = self.default_long_press_threshold
+    self.long_press_duration = self.default_long_press_duration
 
     self._current_buttons_status = [None, None, None]
     self._last_press_timestamps = [None, None, None]
@@ -33,12 +33,12 @@ class ModulinoButtons(Modulino):
     self.write(data)
 
   @property
-  def long_press_threshold(self):
-    return self._long_press_threshold
+  def long_press_duration(self):
+    return self._long_press_duration
   
-  @long_press_threshold.setter
-  def long_press_threshold(self, value):
-    self._long_press_threshold = value
+  @long_press_duration.setter
+  def long_press_duration(self, value):
+    self._long_press_duration = value
 
   @property
   def on_button_a_press(self):
@@ -126,17 +126,17 @@ class ModulinoButtons(Modulino):
     self._current_buttons_status = new_status    
 
     # Check for long press
-    if(new_status[0] == 1 and previous_status[0] == 1 and self._last_press_timestamps[0] and current_timestamp - self._last_press_timestamps[0] > self.long_press_threshold):
+    if(new_status[0] == 1 and previous_status[0] == 1 and self._last_press_timestamps[0] and current_timestamp - self._last_press_timestamps[0] > self.long_press_duration):
       self._last_press_timestamps[0] = None
       if self._on_button_a_long_press:
         self._on_button_a_long_press()
 
-    if(new_status[1] == 1 and previous_status[1] == 1 and self._last_press_timestamps[1] and current_timestamp - self._last_press_timestamps[1] > self.long_press_threshold):
+    if(new_status[1] == 1 and previous_status[1] == 1 and self._last_press_timestamps[1] and current_timestamp - self._last_press_timestamps[1] > self.long_press_duration):
       self._last_press_timestamps[1] = None
       if self._on_button_b_long_press:
         self._on_button_b_long_press()
 
-    if(new_status[2] == 1 and previous_status[2] == 1 and self._last_press_timestamps[2] and current_timestamp - self._last_press_timestamps[2] > self.long_press_threshold):
+    if(new_status[2] == 1 and previous_status[2] == 1 and self._last_press_timestamps[2] and current_timestamp - self._last_press_timestamps[2] > self.long_press_duration):
       self._last_press_timestamps[2] = None
       if self._on_button_c_long_press:
         self._on_button_c_long_press()
