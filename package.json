@@ -12,9 +12,9 @@
       ["modulino/thermo.py", "github:arduino/modulino-mpy/src/modulino/thermo.py"]
     ],
     "deps": [
-        ["lsm6dsox"],
-        ["github:jposada202020/MicroPython_HS3003"],
-        ["lps22h"]
-    ],
+      ["lsm6dsox", "latest"],
+      ["lps22h", "latest"],
+      ["github:jposada202020/MicroPython_HS3003", "master"]
+  ],
     "version": "1.0.0"
   }
