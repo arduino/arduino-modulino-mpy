@@ -1,3 +1,7 @@
+"""
+Initial author: Sebastian Romero (s.romero@arduino.cc)
+"""
+
 from modulino import ModulinoDistance
 from time import sleep_ms
 

@@ -1,3 +1,7 @@
+"""
+Initial author: Sebastian Romero (s.romero@arduino.cc)
+"""
+
 from modulino import ModulinoPixels, ModulinoThermo
 from time import sleep
 

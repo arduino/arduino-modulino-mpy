@@ -1,3 +1,13 @@
+"""
+This example shows how to use the ModulinoButtons class to interact with the buttons of the Modulino.
+
+The ModulinoButtons class allows you to read the state of the buttons, set the state of the LEDs, and define callbacks for the different button events.
+It's necessary to call the `update()` method in each iteration of the loop to read the state of the buttons and execute the callbacks.
+Use the `long_press_duration` property to set the duration in milliseconds that the button must be pressed to trigger the long press event.
+
+Initial author: Sebastian Romero (s.romero@arduino.cc)
+"""
+
 from modulino import ModulinoButtons
 from sys import exit
 
@@ -24,7 +34,7 @@ while True:
     buttons_state_changed = buttons.update()
     
     if(buttons_state_changed):    
-      led_a_status = buttons.is_pressed(0)
-      led_b_status = buttons.is_pressed(1)
-      led_c_status = buttons.is_pressed(2)
+      led_a_status = buttons.is_pressed(0) # Turn LED A on if button A is pressed
+      led_b_status = buttons.is_pressed(1) # Turn LED B on if button B is pressed
+      led_c_status = buttons.is_pressed(2) # Turn LED C on if button C is pressed
       buttons.set_led_status(led_a_status, led_b_status, led_c_status)

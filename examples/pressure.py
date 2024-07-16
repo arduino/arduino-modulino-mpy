@@ -1,3 +1,7 @@
+"""
+Initial author: Sebastian Romero (s.romero@arduino.cc)
+"""
+
 import time
 from modulino import ModulinoPressure
 

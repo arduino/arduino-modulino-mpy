@@ -1,3 +1,7 @@
+"""
+Initial author: Sebastian Romero (s.romero@arduino.cc)
+"""
+
 from modulino import ModulinoThermo
 from time import sleep
 from sys import exit
@@ -8,8 +12,13 @@ if not thermo_module.connected:
     print("🤷 No thermo modulino found")    
     exit()
 
-while True:
-    print(f"🌡️ Temperature: {thermo_module.temperature:.1f} °C")
-    print(f"💧 Humidity: {thermo_module.relative_humidity:.1f} %")    
-    print()
+while True:    
+    temperature = thermo_module.temperature
+    humidity = thermo_module.relative_humidity
+    
+    if temperature != None and humidity != None:
+        print(f"🌡️ Temperature: {temperature:.1f} °C")
+        print(f"💧 Humidity: {humidity:.1f} %")    
+        print()
+        
     sleep(2)
