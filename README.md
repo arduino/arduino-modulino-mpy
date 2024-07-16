@@ -24,7 +24,7 @@ On boards that don't have a Qwiic connector you will need to buy a Qwiic to Dupo
 
 ## ⚙️ Installation
 
-The easiest way is to use [mpremote and mip](https://docs.micropython.org/en/latest/reference/packages.html#packages): `mpremote connect id:$device_sn mip install github:arduino/arduino-modulino-mpy`
+The easiest way is to use [mpremote and mip](https://docs.micropython.org/en/latest/reference/packages.html#packages): `mpremote mip install github:arduino/arduino-modulino-mpy`
 
 ## 🧑‍💻 Developer Installation
 
