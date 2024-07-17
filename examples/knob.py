@@ -15,6 +15,6 @@ knob.on_rotate_counter_clockwise = lambda value: print(f"🎛️ Rotated counter
 
 while True:
     if(knob.update()):
-        print("👀 Knob changed!")
+        print("👀 Knob value changed!")
 
     sleep(0.1)
