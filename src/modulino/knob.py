@@ -8,6 +8,7 @@ class ModulinoKnob(Modulino):
     super().__init__(i2c_bus, address, "ENCODER")
     self._pressed = None
     self._encoder_value = None
+    self._value_range = None
 
     # Encoder callbacks
     self._on_rotate_clockwise = None
@@ -18,10 +19,10 @@ class ModulinoKnob(Modulino):
     # Detect bug in the set command that would make
     # the encoder value become negative after setting it to x with x != 0 
     self._set_bug_detected = False
-    self._update_properties()
+    self._read_data()
     original_value = self._encoder_value
     self.value = 100
-    self._update_properties()    
+    self._read_data()    
     
     # If the value is not 100, then the set command has a bug
     if (self._encoder_value != 100):
@@ -45,7 +46,7 @@ class ModulinoKnob(Modulino):
       # Counter-clockwise rotation is indicated by a positive difference less than half the range
       return 0 < diff < 32768
 
-  def _update_properties(self):
+  def _read_data(self):
     data = self.read(3)
     self._pressed = data[2] != 0
     self._encoder_value = int.from_bytes(data[0:2], 'little', True)
@@ -54,11 +55,21 @@ class ModulinoKnob(Modulino):
     if self._encoder_value >= 32768:
       self._encoder_value = self._encoder_value - 65536
 
+    if(self._value_range != None):
+      # Constrain the value to the range self._value_range[0] to self._value_range[1]
+      constrained_value = max(self._value_range[0], min(self._value_range[1], self._encoder_value))
+      
+      if(constrained_value != self._encoder_value):
+        self.value = constrained_value
+
+  def reset(self):
+    self.value = 0
+
   def update(self):
     previous_value = self._encoder_value
     previous_pressed_status = self._pressed
 
-    self._update_properties()
+    self._read_data()
 
     # No need to execut the callbacks after the first update
     if(previous_value == None or previous_pressed_status == None):
@@ -80,6 +91,14 @@ class ModulinoKnob(Modulino):
       self._on_release()
 
     return (self._encoder_value != previous_value) or (self._pressed != previous_pressed_status)
+
+  @property
+  def range(self):
+    return self._value_range
+  
+  @range.setter
+  def range(self, value):
+    self._value_range = value
 
   @property
   def on_rotate_clockwise(self):
