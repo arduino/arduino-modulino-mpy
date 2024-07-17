@@ -24,19 +24,36 @@ for index in range(0, 8):
     ]
     pixels.set_rgb(index, *color_wheel_colors[index], 100)
 pixels.show()
-sleep(2)
+sleep(1)
 
 pixels.set_all_rgb(255, 0, 0, 100)
 pixels.show()
-sleep(2)
+sleep(1)
 
 pixels.set_all_color(ModulinoColor.GREEN, 100)
 pixels.show()
-sleep(2)
+sleep(1)
 
 pixels.set_all_color(ModulinoColor.BLUE, 100)
 pixels.show()
-sleep(2)
+sleep(1)
 
+
+# Night Rider animation
+
+for j in range(0, 3):
+    for i in range(0, 8):
+        pixels.clear_all()
+        pixels.set_rgb(i, 255, 0, 0, 100)
+        pixels.show()
+        sleep(0.05)
+
+    for i in range(7, -1, -1):
+        pixels.clear_all()
+        pixels.set_rgb(i, 255, 0, 0, 100)
+        pixels.show()
+        sleep(0.05)
+
+# Turn off all LEDs
 pixels.clear_all()    
 pixels.show()
