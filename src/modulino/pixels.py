@@ -43,11 +43,11 @@ class ModulinoPixels(Modulino):
     self.set_all_color(ModulinoColor(r, g, b), brightness)
 
   def set_all_color(self, color, brightness=100):
-    self.set_range_color(range(0, NUM_LEDS), color, brightness)
+    self.set_range_color(0, NUM_LEDS - 1, color, brightness)
 
   def set_color(self, idx, rgb : ModulinoColor , brightness=100):
     if idx < 0 or idx >= NUM_LEDS:
-      raise ValueError(f"LED index out of range (0..{NUM_LEDS - 1})")
+      raise ValueError(f"LED index out of range {idx} (Valid: 0..{NUM_LEDS - 1})")
 
     byte_index = idx * 4
     mapped_brightness = self._mapi(brightness, 0, 100, 0, 0x1f)
