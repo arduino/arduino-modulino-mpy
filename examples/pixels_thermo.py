@@ -1,4 +1,11 @@
 """
+This example shows how to use the ModulinoPixels and ModulinoThermo classes to display the temperature on a pixel strip.
+A high temperature is represented by red color and a lower temperature with a yellow color.
+
+The pixels will map to the temperature range so that the first pixel represents 
+the lowest temperature and the last pixel the highest temperature of the predefined range.
+You can change the temperature range to accommodate the temperature range of your environment.
+
 Initial author: Sebastian Romero (s.romero@arduino.cc)
 """
 
@@ -8,7 +15,7 @@ from time import sleep
 pixels = ModulinoPixels()
 thermo_module = ModulinoThermo()
 
-# Yellow to red scale with 8 steps in between
+# Yellow to red scale with 8 steps
 colors = [
     (255, 255, 0), 
     (255, 204, 0), 

@@ -1,4 +1,11 @@
 """
+This example shows how to use the Modulino library with a third party board.
+When running on a non-Arduino board, the I2C bus must be initialized manually.
+Usually the available I2C buses are predefined and can be accessed by their number, e.g. I2C(0).
+If not, the pins for SDA and SCL must be specified.
+
+Please note that the Modulinos are designed to work with a bus frequency of 100kHz.
+
 Initial author: Sebastian Romero (s.romero@arduino.cc)
 """
 

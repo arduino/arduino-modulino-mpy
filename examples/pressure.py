@@ -1,4 +1,7 @@
 """
+This example shows how to use the ModulinoPressure class to read the pressure, 
+temperature and altitude from the Modulino.
+
 Initial author: Sebastian Romero (s.romero@arduino.cc)
 """
 

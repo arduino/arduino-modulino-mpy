@@ -1,4 +1,9 @@
 """
+This example shows how to use the ModulinoPixels class to control a set of pixels.
+The pixels are set to different colors and animations.
+You can use the ModulinoColor class to set predefined colors:
+- RED, GREEN, BLUE, YELLOW, CYAN, VIOLET, WHITE
+
 Initial author: Sebastian Romero (s.romero@arduino.cc)
 """
 

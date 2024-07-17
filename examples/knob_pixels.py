@@ -1,4 +1,8 @@
 """
+This example shows how to use the ModulinoKnob and ModulinoPixels classes to control a set of pixels with a knob.
+The knob is used to set the number of pixels to turn on.
+The range property of the knob is used to map the knob values to the number of pixels to turn on.
+
 Initial author: Sebastian Romero (s.romero@arduino.cc)
 """
 

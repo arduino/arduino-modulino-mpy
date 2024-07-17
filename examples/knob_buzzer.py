@@ -1,4 +1,10 @@
 """
+This example demonstrates how to use the ModulinoKnob and ModulinoBuzzer classes to play different notes using a buzzer.
+The knob is used to select the note to play. The knob is rotated clockwise to increase the frequency of the note and counter-clockwise to decrease it.
+Once the knob is pressed, the buzzer stops playing the note.
+Only the notes between 400 and 2000 Hz from the predefined list are played in this example.
+You can run print(ModulinoBuzzer.NOTES) to see the full list of available notes.
+
 Initial author: Sebastian Romero (s.romero@arduino.cc)
 """
 

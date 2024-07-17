@@ -1,4 +1,15 @@
 """
+This example shows how to use the ModulinoKnob class to read the value of a rotary encoder knob.
+The knob is used to increase or decrease a value. The knob is rotated clockwise to increase the value and counter-clockwise to decrease it.
+
+You can register callbacks for the following events:
+- Press: The knob is pressed.
+- Release: The knob is released.
+- Rotate clockwise: The knob is rotated clockwise.
+- Rotate counter clockwise: The knob is rotated counter clockwise.
+
+Use reset() to reset the knob value to 0.
+
 Initial author: Sebastian Romero (s.romero@arduino.cc)
 """
 

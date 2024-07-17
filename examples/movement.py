@@ -1,4 +1,7 @@
 """
+This example shows how to use the ModulinoMovement class to read the accelerometer 
+and gyroscope values from the Modulino.
+
 Initial author: Sebastian Romero (s.romero@arduino.cc)
 """
 
