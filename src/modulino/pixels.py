@@ -26,26 +26,31 @@ class ModulinoPixels(Modulino):
     super().__init__(i2c_bus, address, "LEDS")
     self.clear_all()
 
-  def map(self, x, in_min, in_max, out_min, out_max) -> int | float:
+  def _map(self, x, in_min, in_max, out_min, out_max) -> int | float:
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
   
-  def mapi(self, x, in_min, in_max, out_min, out_max) -> int:
-    return int(self.map(x, in_min, in_max, out_min, out_max)) 
+  def _mapi(self, x, in_min, in_max, out_min, out_max) -> int:
+    return int(self._map(x, in_min, in_max, out_min, out_max)) 
   
-  def set_all_rgb(self, r, g, b, brightness=100):
-    for i in range(0, NUM_LEDS):
-      self.set_color(i, ModulinoColor(r, g, b), brightness)
+  def set_range_rgb(self, index_from, index_to, r, g, b, brightness=100):
+    self.set_range_color(index_from, index_to, ModulinoColor(r, g, b), brightness)
 
-  def set_all_color(self, color, brightness=100):
-    for i in range(0, NUM_LEDS):
+  def set_range_color(self, index_from, index_to, color, brightness=100):
+    for i in range(index_from, index_to + 1):
       self.set_color(i, color, brightness)
 
-  def set_color(self, idx, rgb, brightness=100):
+  def set_all_rgb(self, r, g, b, brightness=100):
+    self.set_all_color(ModulinoColor(r, g, b), brightness)
+
+  def set_all_color(self, color, brightness=100):
+    self.set_range_color(range(0, NUM_LEDS), color, brightness)
+
+  def set_color(self, idx, rgb : ModulinoColor , brightness=100):
     if idx < 0 or idx >= NUM_LEDS:
       raise ValueError(f"LED index out of range (0..{NUM_LEDS - 1})")
 
     byte_index = idx * 4
-    mapped_brightness = self.mapi(brightness, 0, 100, 0, 0x1f)
+    mapped_brightness = self._mapi(brightness, 0, 100, 0, 0x1f)
     color_data_bytes =  int(rgb) | mapped_brightness | 0xE0
     self.data[byte_index: byte_index+4] = color_data_bytes.to_bytes(4, 'little')
 
