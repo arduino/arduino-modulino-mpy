@@ -18,21 +18,34 @@ class ModulinoKnob(Modulino):
     # Detect bug in the set command that would make
     # the encoder value become negative after setting it to x with x != 0 
     self._set_bug_detected = False
-    self.update()
-    original_value = self.value
-    self.value = 100    
+    self._update_properties()
+    original_value = self._encoder_value
+    self.value = 100
+    self._update_properties()    
     
     # If the value is not 100, then the set command has a bug
-    if (self.value != 100):
+    if (self._encoder_value != 100):
       self._set_bug_detected = True
-      self.value = -original_value
-    else:
-      self.value = original_value
+    
+    self.value = original_value
 
-  def update(self):
-    previous_value = self._encoder_value
-    previous_pressed_status = self._pressed
+    # Reset state to make sure the first update doesn't trigger the callbacks
+    self._encoder_value = None
+    self._pressed_status = None
 
+  def _has_rotated_clockwise(self, previous_value, current_value):
+    # Calculate difference considering wraparound
+    diff = (current_value- previous_value + 65536) % 65536
+    # Clockwise rotation is indicated by a positive difference less than half the range
+    return 0 < diff < 32768
+
+  def _has_rotated_counter_clockwise(self, previous_value, current_value):
+      # Calculate difference considering wraparound
+      diff = (previous_value - current_value+ 65536) % 65536
+      # Counter-clockwise rotation is indicated by a positive difference less than half the range
+      return 0 < diff < 32768
+
+  def _update_properties(self):
     data = self.read(3)
     self._pressed = data[2] != 0
     self._encoder_value = int.from_bytes(data[0:2], 'little', True)
@@ -41,12 +54,18 @@ class ModulinoKnob(Modulino):
     if self._encoder_value >= 32768:
       self._encoder_value = self._encoder_value - 65536
 
+  def update(self):
+    previous_value = self._encoder_value
+    previous_pressed_status = self._pressed
+
+    self._update_properties()
+
     # No need to execut the callbacks after the first update
     if(previous_value == None or previous_pressed_status == None):
       return False
 
-    has_rotated_clockwise = self._encoder_value > previous_value or (self._encoder_value == -32768 and previous_value == 32767)
-    has_rotated_counter_clockwise = self._encoder_value < previous_value or (self._encoder_value == 32767 and previous_value == -32768)
+    has_rotated_clockwise = self._has_rotated_clockwise(previous_value, self._encoder_value)
+    has_rotated_counter_clockwise = self._has_rotated_counter_clockwise(previous_value, self._encoder_value)
 
     if(self._on_rotate_clockwise and has_rotated_clockwise):
       self._on_rotate_clockwise(self._encoder_value)
@@ -101,10 +120,15 @@ class ModulinoKnob(Modulino):
   @value.setter
   def value(self, new_value):
     if (self._set_bug_detected):
-      new_value = -new_value
+      target_value = -new_value
+    else:
+      target_value = new_value
+
     buf = bytearray(4)
-    buf[0:2] = new_value.to_bytes(2, 'little')
-    self.write(buf)
+    buf[0:2] = target_value.to_bytes(2, 'little')
+
+    if(self.write(buf)):
+      self._encoder_value = new_value
 
   @property
   def pressed(self):
