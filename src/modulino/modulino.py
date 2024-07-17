@@ -9,6 +9,7 @@ I2CInterface = namedtuple('I2CInterface', ['type', 'bus_number', "scl", "sda"])
 
 DEVICE_I2C_INTERFACES = {
     "Arduino Nano ESP32" : I2CInterface("hw", 0, None, None),
+    "Arduino Nano RP2040 Connect" : I2CInterface("hw", 0, None, None),
     "Arduino Portenta H7" : I2CInterface("hw", 3, None, None),
     "Arduino Portenta C33" : I2CInterface("hw", 0, None, None),
     "Generic ESP32S3 module" : I2CInterface("hw", 0, None, None),
@@ -167,7 +168,8 @@ class Modulino:
 
   def read(self, amount_of_bytes):
     """
-    Reads the given amount of bytes from the i2c device and returns the data
+    Reads the given amount of bytes from the i2c device and returns the data.
+    It skips the first byte which is the pinstrap address.
     """
 
     if self.address == None:
