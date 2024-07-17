@@ -100,6 +100,7 @@ class ModulinoBuzzer(Modulino):
   def __init__(self, i2c_bus = None, address = None):
     super().__init__(i2c_bus, address, "BUZZER")
     self.data = bytearray(8)
+    self.no_tone()
 
   def tone(self, frequency, lenght_ms=0xFFFF, blocking=False):
     self.data[0:4]=frequency.to_bytes(4,'little')
