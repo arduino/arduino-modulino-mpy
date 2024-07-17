@@ -14,6 +14,8 @@ class ModulinoColor:
 ModulinoColor.RED = ModulinoColor(255, 0, 0)
 ModulinoColor.GREEN = ModulinoColor(0, 255, 0)
 ModulinoColor.BLUE = ModulinoColor(0, 0, 255)
+ModulinoColor.YELLOW = ModulinoColor(255, 255, 0)
+ModulinoColor.CYAN = ModulinoColor(0, 255, 255)
 ModulinoColor.VIOLET = ModulinoColor(255, 0, 255)
 ModulinoColor.WHITE = ModulinoColor(255, 255, 255)
 
