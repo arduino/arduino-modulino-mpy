@@ -24,7 +24,11 @@ On boards that don't have a Qwiic connector you will need to buy a Qwiic to Dupo
 
 ## ⚙️ Installation
 
-The easiest way is to use [mpremote and mip](https://docs.micropython.org/en/latest/reference/packages.html#packages): `mpremote mip install github:arduino/arduino-modulino-mpy`
+The easiest way is to use [mpremote and mip](https://docs.micropython.org/en/latest/reference/packages.html#packages): 
+
+```bash
+mpremote mip install github:arduino/arduino-modulino-mpy
+```
 
 ## 🧑‍💻 Developer Installation
 
@@ -43,6 +47,12 @@ mpremote connect id:387784598440 mount src run ./examples/board_control.py
 
 The specified serial number passed to the `id` attribute can be retrieved using `mpremote connect list`.
 The serial number is the value in the second column.
+
+To select and run the desired example you can run:
+
+```
+python run_examples.py
+```
 
 ## 🐛 Reporting Issues
 
