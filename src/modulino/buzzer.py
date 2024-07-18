@@ -108,7 +108,9 @@ class ModulinoBuzzer(Modulino):
     self.write(self.data)
     
     if blocking:
-      sleep_ms(lenght_ms)
+      # Subtract 5ms to avoid unwanted pauses between tones
+      # Those pauses are caused by the time it takes to send the data to the buzzer
+      sleep_ms(lenght_ms - 5)
 
   def no_tone(self):
     self.data = bytearray(8)
