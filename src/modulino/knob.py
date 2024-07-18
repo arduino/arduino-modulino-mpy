@@ -98,6 +98,9 @@ class ModulinoKnob(Modulino):
   
   @range.setter
   def range(self, value):
+    if(value[0] < -32768 or value[1] > 32767):
+      raise ValueError("Range must be between -32768 and 32767")
+
     self._value_range = value
 
     if(self.value == None):
