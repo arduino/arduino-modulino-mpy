@@ -1,5 +1,6 @@
 """
 This example shows how to use the ModulinoPixels and ModulinoThermo classes to display the temperature on a pixel strip.
+
 A high temperature is represented by red color and a lower temperature with a yellow color.
 
 The pixels will map to the temperature range so that the first pixel represents 

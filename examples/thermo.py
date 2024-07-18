@@ -1,6 +1,6 @@
 """
-This example shows how to use the ModulinoThermo class to read 
-the temperature and humidity from the Modulino.
+This example shows how to use the ModulinoThermo class to read the temperature and humidity from the Modulino.
+
 If those values are temporarily unavailable, they will be set to None.
 
 Initial author: Sebastian Romero (s.romero@arduino.cc)

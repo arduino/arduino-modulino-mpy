@@ -1,5 +1,6 @@
 """
 This example shows how to use the ModulinoKnob class to read the value of a rotary encoder knob.
+
 The knob is used to increase or decrease a value. The knob is rotated clockwise to increase the value and counter-clockwise to decrease it.
 
 You can register callbacks for the following events:
