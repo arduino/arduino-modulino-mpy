@@ -1,3 +1,5 @@
+![](./docs/assets/library-banner.svg)
+
 # 📦 Modulino MicroPython Package
 
 This package contains an API to connect to Arduino Modulinos, read their data and control them.
