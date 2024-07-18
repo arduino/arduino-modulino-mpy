@@ -100,6 +100,15 @@ class ModulinoKnob(Modulino):
   def range(self, value):
     self._value_range = value
 
+    if(self.value == None):
+      return
+
+    # Adjust existing value to the new range
+    if(self.value < self._value_range[0]):
+      self.value = self._value_range[0]
+    elif(self.value > self._value_range[1]):
+      self.value = self._value_range[1]
+
   @property
   def on_rotate_clockwise(self):
     return self._on_rotate_clockwise
@@ -138,6 +147,10 @@ class ModulinoKnob(Modulino):
 
   @value.setter
   def value(self, new_value):
+    if(self._value_range != None): 
+      if(new_value < self._value_range[0]) or (new_value > self._value_range[1]):
+        raise ValueError(f"Value {new_value} is out of range ({self._value_range[0]} to {self._value_range[1]})")
+
     if (self._set_bug_detected):
       target_value = -new_value
     else:
