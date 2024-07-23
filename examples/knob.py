@@ -23,8 +23,8 @@ knob.range = (-10, 10) # (Optional) Set a value range
 
 knob.on_press = lambda: print("🔘 Pressed!")
 knob.on_release = lambda: knob.reset()
-knob.on_rotate_clockwise = lambda value: print(f"🎛️ Rotated clockwise! Value: {value}")
-knob.on_rotate_counter_clockwise = lambda value: print(f"🎛️ Rotated counter clockwise! Value: {value}")
+knob.on_rotate_clockwise = lambda steps, value: print(f"🎛️ Rotated {steps} steps clockwise! Value: {value}")
+knob.on_rotate_counter_clockwise = lambda steps, value: print(f"🎛️ Rotated {steps} steps counter clockwise! Value: {value}")
 
 while True:
     if(knob.update()):

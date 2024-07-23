@@ -20,12 +20,12 @@ notes = sorted(list(filter(lambda note: note >= 400 and note <= 2000, ModulinoBu
 knob.range = (0, len(notes) - 1)
 knob.on_press = lambda : buzzer.no_tone()
 
-def on_knob_rotate_clockwise(value):
+def on_knob_rotate_clockwise(_, value):
     frequency = notes[value]
     print(f"🎵 Frequency: {frequency} Hz")
     buzzer.tone(frequency)
 
-def on_knob_rotate_counter_clockwise(value):
+def on_knob_rotate_counter_clockwise(_, value):
     frequency = notes[value]
     print(f"🎵 Frequency: {frequency} Hz")
     buzzer.tone(frequency)

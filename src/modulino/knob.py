@@ -46,6 +46,18 @@ class ModulinoKnob(Modulino):
       # Counter-clockwise rotation is indicated by a positive difference less than half the range
       return 0 < diff < 32768
 
+  def _get_steps(self, previous_value, current_value):
+    # Calculate difference considering wraparound
+    diff = (current_value - previous_value + 65536) % 65536
+    # Clockwise rotation is indicated by a positive difference less than half the range
+    if 0 < diff < 32768:
+      return diff
+    # Counter-clockwise rotation is indicated by a negative difference less than half the range
+    elif 32768 < diff < 65536:
+      return diff - 65536
+    else:
+      return 0
+
   def _read_data(self):
     data = self.read(3)
     self._pressed = data[2] != 0
@@ -78,11 +90,14 @@ class ModulinoKnob(Modulino):
     has_rotated_clockwise = self._has_rotated_clockwise(previous_value, self._encoder_value)
     has_rotated_counter_clockwise = self._has_rotated_counter_clockwise(previous_value, self._encoder_value)
 
+    # Figure out how many steps the encoder has moved since the last update
+    steps = self._get_steps(previous_value, self._encoder_value)
+
     if(self._on_rotate_clockwise and has_rotated_clockwise):
-      self._on_rotate_clockwise(self._encoder_value)
+      self._on_rotate_clockwise(steps, self._encoder_value)
 
     if(self._on_rotate_counter_clockwise and has_rotated_counter_clockwise):
-      self._on_rotate_counter_clockwise(self._encoder_value)
+      self._on_rotate_counter_clockwise(steps, self._encoder_value)
 
     if(self._on_press and self._pressed and not previous_pressed_status):
       self._on_press()
