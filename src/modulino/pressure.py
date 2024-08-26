@@ -2,6 +2,8 @@ from .modulino import Modulino
 from lps22h import LPS22H
 
 class ModulinoPressure(Modulino):
+    # Module can have one of two default addresses
+    # based on the solder jumper configuration on the board
     default_addresses = [0x5C, 0x5D]
     convert_default_addresses = False
 

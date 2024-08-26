@@ -2,6 +2,8 @@ from .modulino import Modulino
 from lsm6dsox import LSM6DSOX
 
 class ModulinoMovement(Modulino):
+    # Module can have one of two default addresses
+    # based on the solder jumper configuration on the board
     default_addresses = [0x6A, 0x6B]
     convert_default_addresses = False
 

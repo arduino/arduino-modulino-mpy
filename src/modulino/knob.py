@@ -2,6 +2,8 @@ from .modulino import Modulino
 
 class ModulinoKnob(Modulino):
   
+  # This module can have one of two default addresses
+  # This is for a use case where two encoders are bundled together in a package
   default_addresses = [0x74, 0x76]
   
   def __init__(self, i2c_bus=None, address=None):
