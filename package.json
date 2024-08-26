@@ -9,6 +9,7 @@
       ["modulino/modulino.py", "github:arduino/modulino-mpy/src/modulino/modulino.py"],
       ["modulino/movement.py", "github:arduino/modulino-mpy/src/modulino/movement.py"],
       ["modulino/pixels.py", "github:arduino/modulino-mpy/src/modulino/pixels.py"],
+      ["modulino/pressure.py", "github:arduino/modulino-mpy/src/modulino/pressure.py"],
       ["modulino/thermo.py", "github:arduino/modulino-mpy/src/modulino/thermo.py"]
     ],
     "deps": [
