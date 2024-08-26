@@ -10,14 +10,19 @@ Initial author: Sebastian Romero (s.romero@arduino.cc)
 """
 
 from modulino import Modulino
+from modulino import ModulinoPixels
 from machine import I2C, Pin
 
 # The modulinos use a frequency of 100kHz by default.
 bus = I2C(0, freq=100000)
 # bus = I2C(0, scl=Pin(18), sda=Pin(19), freq=100000) # If you need to specify the pins
 
-# In case the board was reset in the mean time some modulinos might
-# be stuck in a pending operation. To get them unstuck we need to reset the bus.
+# In case the board was reset during a previous operation the modulinos might
+# end up with a stuck bus. To get them unstuck we need to reset the bus.
 bus = Modulino.reset_bus(bus)
 
 # Do something with your modulino...
+# For example controlling the pixels:
+pixels = ModulinoPixels(bus)
+pixels.set_all_rgb(0, 255, 0, 100)
+pixels.show()
