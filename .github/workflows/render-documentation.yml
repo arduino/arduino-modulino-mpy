@@ -1,0 +1,36 @@
+name: Render Documentation
+
+on:
+  push:
+    branches:
+      - main
+      - docs
+    paths:
+      - ".github/workflows/render-documentation.ya?ml"
+      - "src/**"
+  workflow_dispatch:
+      
+jobs:
+  render-docs:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        if: github.event_name != 'pull_request'
+      - uses: actions/checkout@v4
+        if: github.event_name == 'pull_request'
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
+      - name: Install dependencies
+        run: pip3 install pydoc-markdown
+      - name: Render documentation
+        run: pydoc-markdown
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "Update documentation"
+          file_pattern: "docs/**"
+          commit_user_name: "GitHub Action"
+          commit_user_email: "action@github.com"
