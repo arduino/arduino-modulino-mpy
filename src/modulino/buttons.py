@@ -166,3 +166,15 @@ class ModulinoButtons(Modulino):
 
   def is_pressed(self, index):
     return self._current_buttons_status[index]
+  
+  @property
+  def button_a_pressed(self):
+    return self.is_pressed(0)
+  
+  @property
+  def button_b_pressed(self):
+    return self.is_pressed(1)
+  
+  @property
+  def button_c_pressed(self):
+    return self.is_pressed(2)
