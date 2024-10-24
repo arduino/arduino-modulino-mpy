@@ -104,10 +104,13 @@ class Modulino:
     else:
         self.i2c_bus = i2c_bus
 
-    self.address = address
     self.name = name
+    self.address = address
 
-    if self.address == None and len(self.default_addresses) > 0:
+    if self.address == None:
+      if len(self.default_addresses) == 0:
+        raise RuntimeError(f"No default addresses defined for the {self.name} device.")
+      
       if self.convert_default_addresses:
         # Need to convert the 8-bit address to 7-bit
         actual_addresses = list(map(lambda addr: addr >> 1, self.default_addresses))
@@ -115,6 +118,11 @@ class Modulino:
       else:
         self.address = self.discover(self.default_addresses)
 
+      if self.address == None:
+        raise RuntimeError(f"Couldn't find the {self.name} device on the bus. Try resetting the board.")
+    elif not self.connected:
+      raise RuntimeError(f"Couldn't find a {self.name} device with address {hex(self.address)} on the bus. Try resetting the board.")
+    
   def discover(self, default_addresses):
     """
     Tries to find the given modulino device in the device chain
