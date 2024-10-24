@@ -1,7 +1,12 @@
 [[tool.pydoc-markdown.loaders]]
 type = "python"
 search_path = [ "./src" ]
-packages = ["arduino_nicla_sense_env"]
+packages = ["modulino"]
+
+[[tool.pydoc-markdown.processors]]
+type = "filter"
+skip_empty_modules = true
+expression = "not \"modulino.lib\" in name and default()"
 
 [tool.pydoc-markdown.renderer]
 type = "markdown"
