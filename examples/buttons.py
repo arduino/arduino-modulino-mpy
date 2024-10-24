@@ -9,13 +9,8 @@ Initial author: Sebastian Romero (s.romero@arduino.cc)
 """
 
 from modulino import ModulinoButtons
-from sys import exit
 
 buttons = ModulinoButtons()
-
-if not buttons.connected:
-    print("🤷 No button modulino found")    
-    exit()
 
 buttons.on_button_a_press = lambda : print("Button A pressed")
 buttons.on_button_a_long_press = lambda : print("Button A long press")

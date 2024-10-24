@@ -10,13 +10,8 @@ Initial author: Sebastian Romero (s.romero@arduino.cc)
 
 from modulino import ModulinoPixels, ModulinoColor
 from time import sleep
-from sys import exit
 
 pixels = ModulinoPixels()
-
-if not pixels.connected:
-    print("🤷 No pixel modulino found")    
-    exit()
 
 for index in range(0, 8):
     color_wheel_colors = [

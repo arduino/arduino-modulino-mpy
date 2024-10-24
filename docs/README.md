@@ -8,10 +8,6 @@ To use this library you can import the `modulino` module along with the desired 
 from modulino import ModulinoPixels
 
 pixels = ModulinoPixels()
-
-if not pixels.connected:
-    print("🤷 No pixel modulino found")    
-    exit()
 ```
 Once the desired object is obtained you can call functions and query properties on these objects such as `pixels.set_all_rgb(255, 0, 0)`.
 
