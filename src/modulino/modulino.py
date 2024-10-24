@@ -15,6 +15,14 @@ DEVICE_I2C_INTERFACES = {
     "Generic ESP32S3 module" : I2CInterface("hw", 0, None, None),
 }
 
+PINSTRAP_ADDRESS_MAP = {
+    0x3C: "Buzzer",
+    0x7C: "Buttons",
+    0x76: "Knob",
+    0x74: "Knob",
+    0x6C: "Pixels"
+}
+
 class I2CHelper:
     """
     A helper class for interacting with I2C devices on supported boards.
@@ -174,6 +182,31 @@ class Modulino:
     # The first byte is always the pinstrap address
     return data[0]
 
+  @property
+  def device_type(self):
+    """
+    Returns the type of the modulino based on the pinstrap address.
+    """
+    return PINSTRAP_ADDRESS_MAP.get(self.pin_strap_address, None)
+
+  def change_address(self, new_address):
+    """
+    Sets the address of the i2c device to the given value.
+    """
+    # TODO: Check if device supports this feature by looking at the type
+
+    data = bytearray(40)
+    # Set the first two bytes to 'C' and 'F' followed by the new address
+    data[0:2] = b'CF'
+    data[2] = new_address * 2
+
+    try:
+      self.write(data)
+    except OSError:
+      pass # Device resets immediately and causes ENODEV to be thrown which is expected
+    
+    self.address = new_address
+
   def read(self, amount_of_bytes):
     """
     Reads the given amount of bytes from the i2c device and returns the data.
@@ -206,6 +239,19 @@ class Modulino:
     or if a custom one was set.
     """
     return self.address in self.default_addresses
+
+  @staticmethod
+  def available_devices():
+    """
+    Finds all devices on the i2c bus and returns a list of Modulino objects.
+    """
+    bus = I2CHelper.get_interface()
+    device_addresses = bus.scan()
+    devices = []
+    for address in device_addresses:
+      device = Modulino(i2c_bus=bus, address=address)
+      devices.append(device)
+    return devices
 
   @staticmethod
   def reset_bus(i2c_bus):
