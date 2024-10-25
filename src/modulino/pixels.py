@@ -62,6 +62,10 @@ class ModulinoPixels(Modulino):
   def clear(self, idx):
     self.set_color(idx, ModulinoColor(0, 0, 0), 0)
 
+  def clear_range(self, start, end):
+    for i in range(start, end):
+        self.clear(i)
+        
   def clear_all(self):
     self.data = bytearray([0xE0] * NUM_LEDS * 4)
 
