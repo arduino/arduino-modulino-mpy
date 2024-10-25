@@ -144,21 +144,24 @@ class ModulinoButtons(Modulino):
     # Check for press and release
     if(button_states_changed):
 
-      if(new_status[0] == 1 and previous_status[0] == 0 and self._on_button_a_press):
+      if(new_status[0] == 1 and previous_status[0] == 0):
         self._last_press_timestamps[0] = ticks_ms()
-        self._on_button_a_press()
+        if(self._on_button_a_press):
+          self._on_button_a_press()
       elif(new_status[0] == 0 and previous_status[0] == 1 and self._on_button_a_release):
         self._on_button_a_release()
       
-      if(new_status[1] == 1 and previous_status[1] == 0 and self._on_button_b_press):
+      if(new_status[1] == 1 and previous_status[1] == 0):
         self._last_press_timestamps[1] = ticks_ms()        
-        self._on_button_b_press()
+        if(self._on_button_b_press):
+          self._on_button_b_press()
       elif(new_status[1] == 0 and previous_status[1] == 1 and self._on_button_b_release):
         self._on_button_b_release()
       
-      if(new_status[2] == 1 and previous_status[2] == 0 and self._on_button_c_press):
+      if(new_status[2] == 1 and previous_status[2] == 0):
         self._last_press_timestamps[2] = ticks_ms()
-        self._on_button_c_press()
+        if(self._on_button_c_press):
+          self._on_button_c_press()
       elif(new_status[2] == 0 and previous_status[2] == 1 and self._on_button_c_release):
         self._on_button_c_release()
 
