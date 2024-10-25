@@ -14,9 +14,12 @@
     * [\_\_bool\_\_](#modulino.modulino.Modulino.__bool__)
     * [connected](#modulino.modulino.Modulino.connected)
     * [pin\_strap\_address](#modulino.modulino.Modulino.pin_strap_address)
+    * [device\_type](#modulino.modulino.Modulino.device_type)
+    * [change\_address](#modulino.modulino.Modulino.change_address)
     * [read](#modulino.modulino.Modulino.read)
     * [write](#modulino.modulino.Modulino.write)
     * [has\_default\_address](#modulino.modulino.Modulino.has_default_address)
+    * [available\_devices](#modulino.modulino.Modulino.available_devices)
     * [reset\_bus](#modulino.modulino.Modulino.reset_bus)
 * [pixels](#modulino.pixels)
   * [ModulinoColor](#modulino.pixels.ModulinoColor)
@@ -157,6 +160,27 @@ is needed to determine the type of the modulino at boot time, so it know what to
 At boot it checks the internal flash in case its address has been overridden by the user
 which would take precedence.
 
+<a id="modulino.modulino.Modulino.device_type"></a>
+
+### `device_type`
+
+```python
+@property
+def device_type()
+```
+
+Returns the type of the modulino based on the pinstrap address.
+
+<a id="modulino.modulino.Modulino.change_address"></a>
+
+### `change_address`
+
+```python
+def change_address(new_address)
+```
+
+Sets the address of the i2c device to the given value.
+
 <a id="modulino.modulino.Modulino.read"></a>
 
 ### `read`
@@ -189,6 +213,17 @@ def has_default_address()
 
 Determines if the given modulino has a default address
 or if a custom one was set.
+
+<a id="modulino.modulino.Modulino.available_devices"></a>
+
+### `available_devices`
+
+```python
+@staticmethod
+def available_devices()
+```
+
+Finds all devices on the i2c bus and returns a list of Modulino objects.
 
 <a id="modulino.modulino.Modulino.reset_bus"></a>
 
