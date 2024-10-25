@@ -55,6 +55,10 @@ class I2CHelper:
       # This is a workaround to get the SCL and SDA pins from a given bus object.
       # Unfortunately the I2C class does not expose those attributes directly.
       interface, scl_pin_number, sda_pin_number = I2CHelper.extract_i2c_info(i2c_bus)
+      
+      scl_pin = Pin(scl_pin_number, Pin.IN) # Detach pin from I2C
+      sda_pin = Pin(sda_pin_number, Pin.IN) # Detach pin from I2C
+
       scl_pin = Pin(scl_pin_number, Pin.OUT)
       sda_pin = Pin(sda_pin_number, Pin.OUT)
       
@@ -243,7 +247,10 @@ class Modulino:
   @staticmethod
   def available_devices():
     """
-    Finds all devices on the i2c bus and returns a list of Modulino objects.
+    Finds all devices on the i2c bus and returns them as a list of Modulino objects.
+
+    Returns:
+        list: A list of Modulino objects.
     """
     bus = I2CHelper.get_interface()
     device_addresses = bus.scan()
@@ -260,8 +267,7 @@ class Modulino:
     The modulinos that are equipped with a micro controller use DMA operations. 
     If the host board does a reset during such operation it can make the bus get stuck. 
     
-    Returns
-        ----
+    Returns:
         I2C: A new i2c bus object after resetting the bus.
     """
     return I2CHelper.reset_bus(i2c_bus)
