@@ -223,7 +223,10 @@ or if a custom one was set.
 def available_devices()
 ```
 
-Finds all devices on the i2c bus and returns a list of Modulino objects.
+Finds all devices on the i2c bus and returns them as a list of Modulino objects.
+
+Returns:
+    list: A list of Modulino objects.
 
 <a id="modulino.modulino.Modulino.reset_bus"></a>
 
@@ -238,8 +241,7 @@ Resets the i2c bus. This is useful when the bus is in an unknown state.
 The modulinos that are equipped with a micro controller use DMA operations. 
 If the host board does a reset during such operation it can make the bus get stuck. 
 
-Returns
-    ----
+Returns:
     I2C: A new i2c bus object after resetting the bus.
 
 <a id="modulino.pixels.ModulinoColor"></a>
