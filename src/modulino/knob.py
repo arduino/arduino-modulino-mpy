@@ -126,7 +126,7 @@ class ModulinoKnob(Modulino):
     Sets the range of the encoder value.
 
     Parameters:
-      value (tuple): A tuple with two integers representing the minimum and maximum values of the range.
+        value (tuple): A tuple with two integers representing the minimum and maximum values of the range.
     """
     if(value[0] < -32768 or value[1] > 32767):
       raise ValueError("Range must be between -32768 and 32767")
@@ -152,7 +152,7 @@ class ModulinoKnob(Modulino):
     Sets the callback for the rotate clockwise event.
 
     Parameters:
-      value (function): The function to be called when the encoder is rotated clockwise.
+        value (function): The function to be called when the encoder is rotated clockwise.
     """
     self._on_rotate_clockwise = value
 
@@ -166,7 +166,7 @@ class ModulinoKnob(Modulino):
     Sets the callback for the rotate counter clockwise event.
 
     Parameters:
-      value (function): The function to be called when the encoder is rotated counter clockwise.
+        value (function): The function to be called when the encoder is rotated counter clockwise.
     """
     self._on_rotate_counter_clockwise = value
 
@@ -180,7 +180,7 @@ class ModulinoKnob(Modulino):
     Sets the callback for the press event.
 
     Parameters:
-      value (function): The function to be called when the encoder is pressed.
+        value (function): The function to be called when the encoder is pressed.
     """
     self._on_press = value
 
@@ -194,7 +194,7 @@ class ModulinoKnob(Modulino):
     Sets the callback for the release event.
 
     Parameters:
-      value (function): The function to be called when the encoder is released.
+        value (function): The function to be called when the encoder is released.
     """
     self._on_release = value
 
@@ -211,7 +211,7 @@ class ModulinoKnob(Modulino):
     Sets the value of the encoder. This overrides the previous value.
 
     Parameters:
-      new_value (int): The new value of the encoder.
+        new_value (int): The new value of the encoder.
     """
     if(self._value_range != None): 
       if(new_value < self._value_range[0]) or (new_value > self._value_range[1]):

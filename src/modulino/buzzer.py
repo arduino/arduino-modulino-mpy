@@ -108,9 +108,9 @@ class ModulinoBuzzer(Modulino):
     If blocking is set to True, the function will wait until the tone is finished.
 
     Parameters:
-      frequency: The frequency of the tone in Hz
-      lenght_ms: The duration of the tone in milliseconds
-      blocking: If set to True, the function will wait until the tone is finished
+        frequency: The frequency of the tone in Hz
+        lenght_ms: The duration of the tone in milliseconds
+        blocking: If set to True, the function will wait until the tone is finished
     """
     self.data[0:4]=frequency.to_bytes(4,'little')
     self.data[4:8]=lenght_ms.to_bytes(4,'little')

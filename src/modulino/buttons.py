@@ -30,7 +30,7 @@ class ModulinoButtons(Modulino):
     Turn on or off the button LEDs according to the given status.
 
     Parameters:
-      a (bool): The status of the LED A.
+        a (bool): The status of the LED A.
       b (bool): The status of the LED B.
       c (bool): The status of the LED C.
     """
@@ -183,7 +183,7 @@ class ModulinoButtons(Modulino):
     Returns True if the button at the given index is currently pressed.
 
     Parameters:
-      index (int): The index of the button. A = 0, B = 1, C = 2.
+        index (int): The index of the button. A = 0, B = 1, C = 2.
     """
     return self._current_buttons_status[index]
   
