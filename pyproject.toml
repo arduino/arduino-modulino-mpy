@@ -8,6 +8,9 @@ type = "filter"
 skip_empty_modules = true
 expression = "not \"modulino.lib\" in name and default()"
 
+[[tool.pydoc-markdown.processors]]
+type = "google"
+
 [tool.pydoc-markdown.renderer]
 type = "markdown"
 filename = "docs/api.md"
