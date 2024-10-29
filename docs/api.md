@@ -8,8 +8,31 @@
   * [ModulinoButtons](#modulino.buttons.ModulinoButtons)
     * [default\_long\_press\_duration](#modulino.buttons.ModulinoButtons.default_long_press_duration)
     * [set\_led\_status](#modulino.buttons.ModulinoButtons.set_led_status)
+    * [long\_press\_duration](#modulino.buttons.ModulinoButtons.long_press_duration)
+    * [long\_press\_duration](#modulino.buttons.ModulinoButtons.long_press_duration)
+    * [on\_button\_a\_press](#modulino.buttons.ModulinoButtons.on_button_a_press)
+    * [on\_button\_a\_press](#modulino.buttons.ModulinoButtons.on_button_a_press)
+    * [on\_button\_a\_release](#modulino.buttons.ModulinoButtons.on_button_a_release)
+    * [on\_button\_a\_release](#modulino.buttons.ModulinoButtons.on_button_a_release)
+    * [on\_button\_a\_long\_press](#modulino.buttons.ModulinoButtons.on_button_a_long_press)
+    * [on\_button\_a\_long\_press](#modulino.buttons.ModulinoButtons.on_button_a_long_press)
+    * [on\_button\_b\_press](#modulino.buttons.ModulinoButtons.on_button_b_press)
+    * [on\_button\_b\_press](#modulino.buttons.ModulinoButtons.on_button_b_press)
+    * [on\_button\_b\_release](#modulino.buttons.ModulinoButtons.on_button_b_release)
+    * [on\_button\_b\_release](#modulino.buttons.ModulinoButtons.on_button_b_release)
+    * [on\_button\_b\_long\_press](#modulino.buttons.ModulinoButtons.on_button_b_long_press)
+    * [on\_button\_b\_long\_press](#modulino.buttons.ModulinoButtons.on_button_b_long_press)
+    * [on\_button\_c\_press](#modulino.buttons.ModulinoButtons.on_button_c_press)
+    * [on\_button\_c\_press](#modulino.buttons.ModulinoButtons.on_button_c_press)
+    * [on\_button\_c\_release](#modulino.buttons.ModulinoButtons.on_button_c_release)
+    * [on\_button\_c\_release](#modulino.buttons.ModulinoButtons.on_button_c_release)
+    * [on\_button\_c\_long\_press](#modulino.buttons.ModulinoButtons.on_button_c_long_press)
+    * [on\_button\_c\_long\_press](#modulino.buttons.ModulinoButtons.on_button_c_long_press)
     * [update](#modulino.buttons.ModulinoButtons.update)
     * [is\_pressed](#modulino.buttons.ModulinoButtons.is_pressed)
+    * [button\_a\_pressed](#modulino.buttons.ModulinoButtons.button_a_pressed)
+    * [button\_b\_pressed](#modulino.buttons.ModulinoButtons.button_b_pressed)
+    * [button\_c\_pressed](#modulino.buttons.ModulinoButtons.button_c_pressed)
 * [modulino](#modulino.modulino)
   * [I2CHelper](#modulino.modulino.I2CHelper)
     * [frequency](#modulino.modulino.I2CHelper.frequency)
@@ -32,9 +55,14 @@
     * [reset](#modulino.knob.ModulinoKnob.reset)
     * [update](#modulino.knob.ModulinoKnob.update)
     * [range](#modulino.knob.ModulinoKnob.range)
+    * [range](#modulino.knob.ModulinoKnob.range)
+    * [on\_rotate\_clockwise](#modulino.knob.ModulinoKnob.on_rotate_clockwise)
     * [on\_rotate\_clockwise](#modulino.knob.ModulinoKnob.on_rotate_clockwise)
     * [on\_rotate\_counter\_clockwise](#modulino.knob.ModulinoKnob.on_rotate_counter_clockwise)
+    * [on\_rotate\_counter\_clockwise](#modulino.knob.ModulinoKnob.on_rotate_counter_clockwise)
     * [on\_press](#modulino.knob.ModulinoKnob.on_press)
+    * [on\_press](#modulino.knob.ModulinoKnob.on_press)
+    * [on\_release](#modulino.knob.ModulinoKnob.on_release)
     * [on\_release](#modulino.knob.ModulinoKnob.on_release)
     * [value](#modulino.knob.ModulinoKnob.value)
     * [value](#modulino.knob.ModulinoKnob.value)
@@ -50,6 +78,7 @@
     * [set\_color](#modulino.pixels.ModulinoPixels.set_color)
     * [set\_rgb](#modulino.pixels.ModulinoPixels.set_rgb)
     * [clear](#modulino.pixels.ModulinoPixels.clear)
+    * [clear\_range](#modulino.pixels.ModulinoPixels.clear_range)
     * [clear\_all](#modulino.pixels.ModulinoPixels.clear_all)
     * [show](#modulino.pixels.ModulinoPixels.show)
 * [thermo](#modulino.thermo)
@@ -66,6 +95,21 @@
 class ModulinoBuzzer(Modulino)
 ```
 
+Class to play tones on the buzzer of the Modulino.
+The supported notes are defined as follows:
+- B0
+- C1, CS1, D1, DS1, E1, F1, FS1, G1, GS1, A1, AS1, B1
+- C2, CS2, D2, DS2, E2, F2, FS2, G2, GS2, A2, AS2, B2
+- C3, CS3, D3, DS3, E3, F3, FS3, G3, GS3, A3, AS3, B3
+- C4, CS4, D4, DS4, E4, F4, FS4, G4, GS4, A4, AS4, B4
+- C5, CS5, D5, DS5, E5, F5, FS5, G5, GS5, A5, AS5, B5
+- C6, CS6, D6, DS6, E6, F6, FS6, G6, GS6, A6, AS6, B6
+- C7, CS7, D7, DS7, E7, F7, FS7, G7, GS7, A7, AS7, B7
+- C8, CS8, D8, DS8
+- REST (Silence)
+
+Those notes are accessible through ModulinoBuzzer.NOTES e.g. ModulinoBuzzer.NOTES["C4"]
+
 <a id="modulino.buzzer.ModulinoBuzzer.tone"></a>
 
 ### `tone`
@@ -77,10 +121,11 @@ def tone(frequency, lenght_ms=0xFFFF, blocking=False)
 Plays a tone with the given frequency and duration.
 If blocking is set to True, the function will wait until the tone is finished.
 
-Parameters:
-    frequency: The frequency of the tone in Hz
-    lenght_ms: The duration of the tone in milliseconds
-    blocking: If set to True, the function will wait until the tone is finished
+**Arguments**:
+
+- `frequency` - The frequency of the tone in Hz
+- `lenght_ms` - The duration of the tone in milliseconds. If omitted, the tone will play indefinitely
+- `blocking` - If set to True, the function will wait until the tone is finished
 
 <a id="modulino.buzzer.ModulinoBuzzer.no_tone"></a>
 
@@ -116,10 +161,233 @@ def set_led_status(a, b, c)
 
 Turn on or off the button LEDs according to the given status.
 
-Parameters:
-    a (bool): The status of the LED A.
-  b (bool): The status of the LED B.
-  c (bool): The status of the LED C.
+**Arguments**:
+
+- `a` _bool_ - The status of the LED A.
+- `b` _bool_ - The status of the LED B.
+- `c` _bool_ - The status of the LED C.
+
+<a id="modulino.buttons.ModulinoButtons.long_press_duration"></a>
+
+### `long_press_duration`
+
+```python
+@property
+def long_press_duration()
+```
+
+Returns the duration in milliseconds that the button must
+be pressed to trigger the long press event
+
+<a id="modulino.buttons.ModulinoButtons.long_press_duration"></a>
+
+### `long_press_duration`
+
+```python
+@long_press_duration.setter
+def long_press_duration(value)
+```
+
+Sets the duration in milliseconds that the button must
+be pressed to trigger the long press event
+
+<a id="modulino.buttons.ModulinoButtons.on_button_a_press"></a>
+
+### `on_button_a_press`
+
+```python
+@property
+def on_button_a_press()
+```
+
+Returns the callback for the press event of button A.
+
+<a id="modulino.buttons.ModulinoButtons.on_button_a_press"></a>
+
+### `on_button_a_press`
+
+```python
+@on_button_a_press.setter
+def on_button_a_press(value)
+```
+
+Sets the callback for the press event of button A.
+
+<a id="modulino.buttons.ModulinoButtons.on_button_a_release"></a>
+
+### `on_button_a_release`
+
+```python
+@property
+def on_button_a_release()
+```
+
+Returns the callback for the release event of button A.
+
+<a id="modulino.buttons.ModulinoButtons.on_button_a_release"></a>
+
+### `on_button_a_release`
+
+```python
+@on_button_a_release.setter
+def on_button_a_release(value)
+```
+
+Sets the callback for the release event of button A.
+
+<a id="modulino.buttons.ModulinoButtons.on_button_a_long_press"></a>
+
+### `on_button_a_long_press`
+
+```python
+@property
+def on_button_a_long_press()
+```
+
+Returns the callback for the long press event of button A.
+
+<a id="modulino.buttons.ModulinoButtons.on_button_a_long_press"></a>
+
+### `on_button_a_long_press`
+
+```python
+@on_button_a_long_press.setter
+def on_button_a_long_press(value)
+```
+
+Sets the callback for the long press event of button A.
+
+<a id="modulino.buttons.ModulinoButtons.on_button_b_press"></a>
+
+### `on_button_b_press`
+
+```python
+@property
+def on_button_b_press()
+```
+
+Returns the callback for the press event of button B.
+
+<a id="modulino.buttons.ModulinoButtons.on_button_b_press"></a>
+
+### `on_button_b_press`
+
+```python
+@on_button_b_press.setter
+def on_button_b_press(value)
+```
+
+Sets the callback for the press event of button B.
+
+<a id="modulino.buttons.ModulinoButtons.on_button_b_release"></a>
+
+### `on_button_b_release`
+
+```python
+@property
+def on_button_b_release()
+```
+
+Returns the callback for the release event of button B.
+
+<a id="modulino.buttons.ModulinoButtons.on_button_b_release"></a>
+
+### `on_button_b_release`
+
+```python
+@on_button_b_release.setter
+def on_button_b_release(value)
+```
+
+Sets the callback for the release event of button B.
+
+<a id="modulino.buttons.ModulinoButtons.on_button_b_long_press"></a>
+
+### `on_button_b_long_press`
+
+```python
+@property
+def on_button_b_long_press()
+```
+
+Returns the callback for the long press event of button B.
+
+<a id="modulino.buttons.ModulinoButtons.on_button_b_long_press"></a>
+
+### `on_button_b_long_press`
+
+```python
+@on_button_b_long_press.setter
+def on_button_b_long_press(value)
+```
+
+Sets the callback for the long press event of button B.
+
+<a id="modulino.buttons.ModulinoButtons.on_button_c_press"></a>
+
+### `on_button_c_press`
+
+```python
+@property
+def on_button_c_press()
+```
+
+Returns the callback for the press event of button C.
+
+<a id="modulino.buttons.ModulinoButtons.on_button_c_press"></a>
+
+### `on_button_c_press`
+
+```python
+@on_button_c_press.setter
+def on_button_c_press(value)
+```
+
+Sets the callback for the press event of button C.
+
+<a id="modulino.buttons.ModulinoButtons.on_button_c_release"></a>
+
+### `on_button_c_release`
+
+```python
+@property
+def on_button_c_release()
+```
+
+Returns the callback for the release event of button C.
+
+<a id="modulino.buttons.ModulinoButtons.on_button_c_release"></a>
+
+### `on_button_c_release`
+
+```python
+@on_button_c_release.setter
+def on_button_c_release(value)
+```
+
+Sets the callback for the release event of button C.
+
+<a id="modulino.buttons.ModulinoButtons.on_button_c_long_press"></a>
+
+### `on_button_c_long_press`
+
+```python
+@property
+def on_button_c_long_press()
+```
+
+Returns the callback for the long press event of button C.
+
+<a id="modulino.buttons.ModulinoButtons.on_button_c_long_press"></a>
+
+### `on_button_c_long_press`
+
+```python
+@on_button_c_long_press.setter
+def on_button_c_long_press(value)
+```
+
+Sets the callback for the long press event of button C.
 
 <a id="modulino.buttons.ModulinoButtons.update"></a>
 
@@ -132,8 +400,9 @@ def update()
 Update the button status and call the corresponding callbacks.
 Returns True if any of the buttons has changed its state.
 
-Returns:
-  bool: True if any of the buttons has changed its state.
+**Returns**:
+
+- `bool` - True if any of the buttons has changed its state.
 
 <a id="modulino.buttons.ModulinoButtons.is_pressed"></a>
 
@@ -145,8 +414,42 @@ def is_pressed(index)
 
 Returns True if the button at the given index is currently pressed.
 
-Parameters:
-    index (int): The index of the button. A = 0, B = 1, C = 2.
+**Arguments**:
+
+- `index` _int_ - The index of the button. A = 0, B = 1, C = 2.
+
+<a id="modulino.buttons.ModulinoButtons.button_a_pressed"></a>
+
+### `button_a_pressed`
+
+```python
+@property
+def button_a_pressed()
+```
+
+Returns True if button A is currently pressed.
+
+<a id="modulino.buttons.ModulinoButtons.button_b_pressed"></a>
+
+### `button_b_pressed`
+
+```python
+@property
+def button_b_pressed()
+```
+
+Returns True if button B is currently pressed.
+
+<a id="modulino.buttons.ModulinoButtons.button_c_pressed"></a>
+
+### `button_c_pressed`
+
+```python
+@property
+def button_c_pressed()
+```
+
+Returns True if button C is currently pressed.
 
 <a id="modulino.modulino.I2CHelper"></a>
 
@@ -187,11 +490,14 @@ def find_interface() -> I2C
 
 Returns an instance of the I2C interface for the current board.
 
-Raises:
-    RuntimeError: If the current board is not supported.
+**Raises**:
 
-Returns:
-    I2C: An instance of the I2C interface.
+- `RuntimeError` - If the current board is not supported.
+  
+
+**Returns**:
+
+- `I2C` - An instance of the I2C interface.
 
 <a id="modulino.modulino.Modulino"></a>
 
@@ -318,8 +624,9 @@ def available_devices()
 
 Finds all devices on the i2c bus and returns them as a list of Modulino objects.
 
-Returns:
-    list: A list of Modulino objects.
+**Returns**:
+
+- `list` - A list of Modulino objects.
 
 <a id="modulino.modulino.Modulino.reset_bus"></a>
 
@@ -330,12 +637,13 @@ Returns:
 def reset_bus(i2c_bus)
 ```
 
-Resets the i2c bus. This is useful when the bus is in an unknown state. 
-The modulinos that are equipped with a micro controller use DMA operations. 
-If the host board does a reset during such operation it can make the bus get stuck. 
+Resets the i2c bus. This is useful when the bus is in an unknown state.
+The modulinos that are equipped with a micro controller use DMA operations.
+If the host board does a reset during such operation it can make the bus get stuck.
 
-Returns:
-    I2C: A new i2c bus object after resetting the bus.
+**Returns**:
+
+- `I2C` - A new i2c bus object after resetting the bus.
 
 <a id="modulino.knob.ModulinoKnob"></a>
 
@@ -363,8 +671,19 @@ Resets the encoder value to 0.
 def update()
 ```
 
-Reads new data from the Modulino and calls the corresponding callbacks 
+Reads new data from the Modulino and calls the corresponding callbacks
 if the encoder value or pressed status has changed.
+
+<a id="modulino.knob.ModulinoKnob.range"></a>
+
+### `range`
+
+```python
+@property
+def range()
+```
+
+Returns the range of the encoder value.
 
 <a id="modulino.knob.ModulinoKnob.range"></a>
 
@@ -377,8 +696,20 @@ def range(value)
 
 Sets the range of the encoder value.
 
-Parameters:
-    value (tuple): A tuple with two integers representing the minimum and maximum values of the range.
+**Arguments**:
+
+- `value` _tuple_ - A tuple with two integers representing the minimum and maximum values of the range.
+
+<a id="modulino.knob.ModulinoKnob.on_rotate_clockwise"></a>
+
+### `on_rotate_clockwise`
+
+```python
+@property
+def on_rotate_clockwise()
+```
+
+Returns the callback for the rotate clockwise event.
 
 <a id="modulino.knob.ModulinoKnob.on_rotate_clockwise"></a>
 
@@ -391,8 +722,20 @@ def on_rotate_clockwise(value)
 
 Sets the callback for the rotate clockwise event.
 
-Parameters:
-    value (function): The function to be called when the encoder is rotated clockwise.
+**Arguments**:
+
+- `value` _function_ - The function to be called when the encoder is rotated clockwise.
+
+<a id="modulino.knob.ModulinoKnob.on_rotate_counter_clockwise"></a>
+
+### `on_rotate_counter_clockwise`
+
+```python
+@property
+def on_rotate_counter_clockwise()
+```
+
+Returns the callback for the rotate counter clockwise event.
 
 <a id="modulino.knob.ModulinoKnob.on_rotate_counter_clockwise"></a>
 
@@ -405,8 +748,20 @@ def on_rotate_counter_clockwise(value)
 
 Sets the callback for the rotate counter clockwise event.
 
-Parameters:
-    value (function): The function to be called when the encoder is rotated counter clockwise.
+**Arguments**:
+
+- `value` _function_ - The function to be called when the encoder is rotated counter clockwise.
+
+<a id="modulino.knob.ModulinoKnob.on_press"></a>
+
+### `on_press`
+
+```python
+@property
+def on_press()
+```
+
+Returns the callback for the press event.
 
 <a id="modulino.knob.ModulinoKnob.on_press"></a>
 
@@ -419,8 +774,20 @@ def on_press(value)
 
 Sets the callback for the press event.
 
-Parameters:
-    value (function): The function to be called when the encoder is pressed.
+**Arguments**:
+
+- `value` _function_ - The function to be called when the encoder is pressed.
+
+<a id="modulino.knob.ModulinoKnob.on_release"></a>
+
+### `on_release`
+
+```python
+@property
+def on_release()
+```
+
+Returns the callback for the release event.
 
 <a id="modulino.knob.ModulinoKnob.on_release"></a>
 
@@ -433,8 +800,9 @@ def on_release(value)
 
 Sets the callback for the release event.
 
-Parameters:
-    value (function): The function to be called when the encoder is released.
+**Arguments**:
+
+- `value` _function_ - The function to be called when the encoder is released.
 
 <a id="modulino.knob.ModulinoKnob.value"></a>
 
@@ -458,8 +826,9 @@ def value(new_value)
 
 Sets the value of the encoder. This overrides the previous value.
 
-Parameters:
-    new_value (int): The new value of the encoder.
+**Arguments**:
+
+- `new_value` _int_ - The new value of the encoder.
 
 <a id="modulino.knob.ModulinoKnob.pressed"></a>
 
@@ -508,13 +877,14 @@ def set_range_rgb(index_from, index_to, r, g, b, brightness=100)
 
 Sets the color of the LEDs in the given range to the given RGB values.
 
-Parameters:
-    index_from (int): The starting index of the range.
-    index_to (int): The ending index (inclusive) of the range.
-    r (int): The red value of the color.
-    g (int): The green value of the color.
-    b (int): The blue value of the color.
-    brightness (int): The brightness of the LED. It should be a value between 0 and 100.
+**Arguments**:
+
+- `index_from` _int_ - The starting index of the range.
+- `index_to` _int_ - The ending index (inclusive) of the range.
+- `r` _int_ - The red value of the color.
+- `g` _int_ - The green value of the color.
+- `b` _int_ - The blue value of the color.
+- `brightness` _int_ - The brightness of the LED. It should be a value between 0 and 100.
 
 <a id="modulino.pixels.ModulinoPixels.set_range_color"></a>
 
@@ -526,11 +896,12 @@ def set_range_color(index_from, index_to, color, brightness=100)
 
 Sets the color of the LEDs in the given range to the given color.
 
-Parameters:
-    index_from (int): The starting index of the range.
-    index_to (int): The ending index (inclusive) of the range.
-    color (ModulinoColor): The color of the LEDs.
-    brightness (int): The brightness of the LED. It should be a value between 0 and 100.
+**Arguments**:
+
+- `index_from` _int_ - The starting index of the range.
+- `index_to` _int_ - The ending index (inclusive) of the range.
+- `color` _ModulinoColor_ - The color of the LEDs.
+- `brightness` _int_ - The brightness of the LED. It should be a value between 0 and 100.
 
 <a id="modulino.pixels.ModulinoPixels.set_all_rgb"></a>
 
@@ -542,11 +913,12 @@ def set_all_rgb(r, g, b, brightness=100)
 
 Sets the color of all the LEDs to the given RGB values.
 
-Parameters:
-    r (int): The red value of the color.
-    g (int): The green value of the color.
-    b (int): The blue value of the color.
-    brightness (int): The brightness of the LED. It should be a value between 0 and 100.
+**Arguments**:
+
+- `r` _int_ - The red value of the color.
+- `g` _int_ - The green value of the color.
+- `b` _int_ - The blue value of the color.
+- `brightness` _int_ - The brightness of the LED. It should be a value between 0 and 100.
 
 <a id="modulino.pixels.ModulinoPixels.set_all_color"></a>
 
@@ -558,9 +930,10 @@ def set_all_color(color, brightness=100)
 
 Sets the color of all the LEDs to the given color.
 
-Parameters:
-    color (ModulinoColor): The color of the LEDs.
-    brightness (int): The brightness of the LED. It should be a value between 0 and 100.
+**Arguments**:
+
+- `color` _ModulinoColor_ - The color of the LEDs.
+- `brightness` _int_ - The brightness of the LED. It should be a value between 0 and 100.
 
 <a id="modulino.pixels.ModulinoPixels.set_color"></a>
 
@@ -572,10 +945,11 @@ def set_color(idx, rgb: ModulinoColor, brightness=100)
 
 Sets the color of the given LED index to the given color.
 
-Parameters:
-    idx (int): The index of the LED.
-    rgb (ModulinoColor): The color of the LED.
-    brightness (int): The brightness of the LED. It should be a value between 0 and 100.
+**Arguments**:
+
+- `idx` _int_ - The index of the LED.
+- `rgb` _ModulinoColor_ - The color of the LED.
+- `brightness` _int_ - The brightness of the LED. It should be a value between 0 and 100.
 
 <a id="modulino.pixels.ModulinoPixels.set_rgb"></a>
 
@@ -587,12 +961,13 @@ def set_rgb(idx, r, g, b, brightness=100)
 
 Set the color of the given LED index to the given RGB values.
 
-Parameters:
-    idx (int): The index of the LED.
-    r (int): The red value of the color.
-    g (int): The green value of the color.
-    b (int): The blue value of the color.
-    brightness (int): The brightness of the LED. It should be a value between 0 and 100.
+**Arguments**:
+
+- `idx` _int_ - The index of the LED.
+- `r` _int_ - The red value of the color.
+- `g` _int_ - The green value of the color.
+- `b` _int_ - The blue value of the color.
+- `brightness` _int_ - The brightness of the LED. It should be a value between 0 and 100.
 
 <a id="modulino.pixels.ModulinoPixels.clear"></a>
 
@@ -604,8 +979,24 @@ def clear(idx)
 
 Turns off the LED at the given index.
 
-Parameters:
-    idx (int): The index of the LED.
+**Arguments**:
+
+- `idx` _int_ - The index of the LED.
+
+<a id="modulino.pixels.ModulinoPixels.clear_range"></a>
+
+### `clear_range`
+
+```python
+def clear_range(start, end)
+```
+
+Turns off the LEDs in the given range.
+
+**Arguments**:
+
+- `start` _int_ - The starting index of the range.
+- `end` _int_ - The ending index (inclusive) of the range.
 
 <a id="modulino.pixels.ModulinoPixels.clear_all"></a>
 
@@ -617,8 +1008,9 @@ def clear_all()
 
 Turns all the LEDs off.
 
-Parameters:
-    idx (int): The index of the LED
+**Arguments**:
+
+- `idx` _int_ - The index of the LED
 
 <a id="modulino.pixels.ModulinoPixels.show"></a>
 
