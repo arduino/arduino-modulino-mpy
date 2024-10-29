@@ -3,6 +3,12 @@ from micropython import const
 
 class ModulinoColor:
   def __init__(self, r, g, b):
+    if r < 0 or r > 255:
+      raise ValueError(f"Red value {r} should be between 0 and 255")
+    if g < 0 or g > 255:
+      raise ValueError(f"Green value {g} should be between 0 and 255")
+    if b < 0 or b > 255:
+      raise ValueError(f"Blue value {b} should be between 0 and 255")
     self.r = r
     self.g = g
     self.b = b
