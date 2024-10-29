@@ -78,9 +78,9 @@ Plays a tone with the given frequency and duration.
 If blocking is set to True, the function will wait until the tone is finished.
 
 Parameters:
-  frequency: The frequency of the tone in Hz
-  lenght_ms: The duration of the tone in milliseconds
-  blocking: If set to True, the function will wait until the tone is finished
+    frequency: The frequency of the tone in Hz
+    lenght_ms: The duration of the tone in milliseconds
+    blocking: If set to True, the function will wait until the tone is finished
 
 <a id="modulino.buzzer.ModulinoBuzzer.no_tone"></a>
 
@@ -117,7 +117,7 @@ def set_led_status(a, b, c)
 Turn on or off the button LEDs according to the given status.
 
 Parameters:
-  a (bool): The status of the LED A.
+    a (bool): The status of the LED A.
   b (bool): The status of the LED B.
   c (bool): The status of the LED C.
 
@@ -146,7 +146,7 @@ def is_pressed(index)
 Returns True if the button at the given index is currently pressed.
 
 Parameters:
-  index (int): The index of the button. A = 0, B = 1, C = 2.
+    index (int): The index of the button. A = 0, B = 1, C = 2.
 
 <a id="modulino.modulino.I2CHelper"></a>
 
@@ -378,7 +378,7 @@ def range(value)
 Sets the range of the encoder value.
 
 Parameters:
-  value (tuple): A tuple with two integers representing the minimum and maximum values of the range.
+    value (tuple): A tuple with two integers representing the minimum and maximum values of the range.
 
 <a id="modulino.knob.ModulinoKnob.on_rotate_clockwise"></a>
 
@@ -392,7 +392,7 @@ def on_rotate_clockwise(value)
 Sets the callback for the rotate clockwise event.
 
 Parameters:
-  value (function): The function to be called when the encoder is rotated clockwise.
+    value (function): The function to be called when the encoder is rotated clockwise.
 
 <a id="modulino.knob.ModulinoKnob.on_rotate_counter_clockwise"></a>
 
@@ -406,7 +406,7 @@ def on_rotate_counter_clockwise(value)
 Sets the callback for the rotate counter clockwise event.
 
 Parameters:
-  value (function): The function to be called when the encoder is rotated counter clockwise.
+    value (function): The function to be called when the encoder is rotated counter clockwise.
 
 <a id="modulino.knob.ModulinoKnob.on_press"></a>
 
@@ -420,7 +420,7 @@ def on_press(value)
 Sets the callback for the press event.
 
 Parameters:
-  value (function): The function to be called when the encoder is pressed.
+    value (function): The function to be called when the encoder is pressed.
 
 <a id="modulino.knob.ModulinoKnob.on_release"></a>
 
@@ -434,7 +434,7 @@ def on_release(value)
 Sets the callback for the release event.
 
 Parameters:
-  value (function): The function to be called when the encoder is released.
+    value (function): The function to be called when the encoder is released.
 
 <a id="modulino.knob.ModulinoKnob.value"></a>
 
@@ -459,7 +459,7 @@ def value(new_value)
 Sets the value of the encoder. This overrides the previous value.
 
 Parameters:
-  new_value (int): The new value of the encoder.
+    new_value (int): The new value of the encoder.
 
 <a id="modulino.knob.ModulinoKnob.pressed"></a>
 
@@ -509,12 +509,12 @@ def set_range_rgb(index_from, index_to, r, g, b, brightness=100)
 Sets the color of the LEDs in the given range to the given RGB values.
 
 Parameters:
-  index_from (int): The starting index of the range.
-  index_to (int): The ending index (inclusive) of the range.
-  r (int): The red value of the color.
-  g (int): The green value of the color.
-  b (int): The blue value of the color.
-  brightness (int): The brightness of the LED. It should be a value between 0 and 100.
+    index_from (int): The starting index of the range.
+    index_to (int): The ending index (inclusive) of the range.
+    r (int): The red value of the color.
+    g (int): The green value of the color.
+    b (int): The blue value of the color.
+    brightness (int): The brightness of the LED. It should be a value between 0 and 100.
 
 <a id="modulino.pixels.ModulinoPixels.set_range_color"></a>
 
@@ -527,10 +527,10 @@ def set_range_color(index_from, index_to, color, brightness=100)
 Sets the color of the LEDs in the given range to the given color.
 
 Parameters:
-  index_from (int): The starting index of the range.
-  index_to (int): The ending index (inclusive) of the range.
-  color (ModulinoColor): The color of the LEDs.
-  brightness (int): The brightness of the LED. It should be a value between 0 and 100.
+    index_from (int): The starting index of the range.
+    index_to (int): The ending index (inclusive) of the range.
+    color (ModulinoColor): The color of the LEDs.
+    brightness (int): The brightness of the LED. It should be a value between 0 and 100.
 
 <a id="modulino.pixels.ModulinoPixels.set_all_rgb"></a>
 
@@ -543,10 +543,10 @@ def set_all_rgb(r, g, b, brightness=100)
 Sets the color of all the LEDs to the given RGB values.
 
 Parameters:
-  r (int): The red value of the color.
-  g (int): The green value of the color.
-  b (int): The blue value of the color.
-  brightness (int): The brightness of the LED. It should be a value between 0 and 100.
+    r (int): The red value of the color.
+    g (int): The green value of the color.
+    b (int): The blue value of the color.
+    brightness (int): The brightness of the LED. It should be a value between 0 and 100.
 
 <a id="modulino.pixels.ModulinoPixels.set_all_color"></a>
 
@@ -559,8 +559,8 @@ def set_all_color(color, brightness=100)
 Sets the color of all the LEDs to the given color.
 
 Parameters:
-  color (ModulinoColor): The color of the LEDs.
-  brightness (int): The brightness of the LED. It should be a value between 0 and 100.
+    color (ModulinoColor): The color of the LEDs.
+    brightness (int): The brightness of the LED. It should be a value between 0 and 100.
 
 <a id="modulino.pixels.ModulinoPixels.set_color"></a>
 
@@ -573,9 +573,9 @@ def set_color(idx, rgb: ModulinoColor, brightness=100)
 Sets the color of the given LED index to the given color.
 
 Parameters:
-  idx (int): The index of the LED.
-  rgb (ModulinoColor): The color of the LED.
-  brightness (int): The brightness of the LED. It should be a value between 0 and 100.
+    idx (int): The index of the LED.
+    rgb (ModulinoColor): The color of the LED.
+    brightness (int): The brightness of the LED. It should be a value between 0 and 100.
 
 <a id="modulino.pixels.ModulinoPixels.set_rgb"></a>
 
@@ -588,11 +588,11 @@ def set_rgb(idx, r, g, b, brightness=100)
 Set the color of the given LED index to the given RGB values.
 
 Parameters:
-  idx (int): The index of the LED.
-  r (int): The red value of the color.
-  g (int): The green value of the color.
-  b (int): The blue value of the color.
-  brightness (int): The brightness of the LED. It should be a value between 0 and 100.
+    idx (int): The index of the LED.
+    r (int): The red value of the color.
+    g (int): The green value of the color.
+    b (int): The blue value of the color.
+    brightness (int): The brightness of the LED. It should be a value between 0 and 100.
 
 <a id="modulino.pixels.ModulinoPixels.clear"></a>
 
@@ -605,7 +605,7 @@ def clear(idx)
 Turns off the LED at the given index.
 
 Parameters:
-  idx (int): The index of the LED.
+    idx (int): The index of the LED.
 
 <a id="modulino.pixels.ModulinoPixels.clear_all"></a>
 
@@ -618,7 +618,7 @@ def clear_all()
 Turns all the LEDs off.
 
 Parameters:
-  idx (int): The index of the LED
+    idx (int): The index of the LED
 
 <a id="modulino.pixels.ModulinoPixels.show"></a>
 
