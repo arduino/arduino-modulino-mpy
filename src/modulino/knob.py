@@ -118,6 +118,9 @@ class ModulinoKnob(Modulino):
 
   @property
   def range(self):
+    """
+    Returns the range of the encoder value.
+    """    
     return self._value_range
   
   @range.setter
@@ -144,6 +147,9 @@ class ModulinoKnob(Modulino):
 
   @property
   def on_rotate_clockwise(self):
+    """
+    Returns the callback for the rotate clockwise event.
+    """
     return self._on_rotate_clockwise
   
   @on_rotate_clockwise.setter
@@ -158,6 +164,9 @@ class ModulinoKnob(Modulino):
 
   @property
   def on_rotate_counter_clockwise(self):
+    """
+    Returns the callback for the rotate counter clockwise event.
+    """
     return self._on_rotate_counter_clockwise
   
   @on_rotate_counter_clockwise.setter
@@ -172,6 +181,9 @@ class ModulinoKnob(Modulino):
 
   @property
   def on_press(self):
+    """
+    Returns the callback for the press event.
+    """
     return self._on_press
   
   @on_press.setter
@@ -186,6 +198,9 @@ class ModulinoKnob(Modulino):
 
   @property
   def on_release(self):
+    """
+    Returns the callback for the release event.
+    """
     return self._on_release
   
   @on_release.setter

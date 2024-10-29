@@ -31,8 +31,8 @@ class ModulinoButtons(Modulino):
 
     Parameters:
         a (bool): The status of the LED A.
-      b (bool): The status of the LED B.
-      c (bool): The status of the LED C.
+        b (bool): The status of the LED B.
+        c (bool): The status of the LED C.
     """
     data = bytearray(3)
     data[0] = 1 if a else 0
@@ -42,82 +42,144 @@ class ModulinoButtons(Modulino):
 
   @property
   def long_press_duration(self):
+    """
+    Returns the duration in milliseconds that the button must 
+    be pressed to trigger the long press event
+    """
     return self._long_press_duration
   
   @long_press_duration.setter
   def long_press_duration(self, value):
+    """
+    Sets the duration in milliseconds that the button must 
+    be pressed to trigger the long press event
+    """
     self._long_press_duration = value
 
   @property
   def on_button_a_press(self):
+    """
+    Returns the callback for the press event of button A.    
+    """
     return self._on_button_a_press
   
   @on_button_a_press.setter
   def on_button_a_press(self, value):
+    """
+    Sets the callback for the press event of button A.
+    """
     self._on_button_a_press = value
 
   @property
   def on_button_a_release(self):
+    """
+    Returns the callback for the release event of button A.
+    """
     return self._on_button_a_release
   
   @on_button_a_release.setter
   def on_button_a_release(self, value):
+    """
+    Sets the callback for the release event of button A.
+    """
     self._on_button_a_release = value
 
   @property
   def on_button_a_long_press(self):
+    """
+    Returns the callback for the long press event of button A.
+    """
     return self._on_button_a_long_press
   
   @on_button_a_long_press.setter
   def on_button_a_long_press(self, value):
+    """
+    Sets the callback for the long press event of button A.
+    """
     self._on_button_a_long_press = value
 
   @property
   def on_button_b_press(self):
+    """
+    Returns the callback for the press event of button B.
+    """
     return self._on_button_b_press
   
   @on_button_b_press.setter
   def on_button_b_press(self, value):
+    """
+    Sets the callback for the press event of button B.
+    """
     self._on_button_b_press = value
 
   @property
   def on_button_b_release(self):
+    """
+    Returns the callback for the release event of button B.
+    """
     return self._on_button_b_release
   
   @on_button_b_release.setter
   def on_button_b_release(self, value):
+    """
+    Sets the callback for the release event of button B.
+    """
     self._on_button_b_release = value
 
   @property
   def on_button_b_long_press(self):
+    """
+    Returns the callback for the long press event of button B.
+    """
     return self._on_button_b_long_press
   
   @on_button_b_long_press.setter
   def on_button_b_long_press(self, value):
+    """
+    Sets the callback for the long press event of button B.
+    """
     self._on_button_b_long_press = value
 
   @property
   def on_button_c_press(self):
+    """
+    Returns the callback for the press event of button C.
+    """
     return self._on_button_c_press
   
   @on_button_c_press.setter
   def on_button_c_press(self, value):
+    """
+    Sets the callback for the press event of button C.
+    """
     self._on_button_c_press = value
 
   @property
   def on_button_c_release(self):
+    """
+    Returns the callback for the release event of button C.
+    """
     return self._on_button_c_release
   
   @on_button_c_release.setter
   def on_button_c_release(self, value):
+    """
+    Sets the callback for the release event of button C.
+    """
     self._on_button_c_release = value
 
   @property
   def on_button_c_long_press(self):
+    """
+    Returns the callback for the long press event of button C.
+    """
     return self._on_button_c_long_press
   
   @on_button_c_long_press.setter
   def on_button_c_long_press(self, value):
+    """
+    Sets the callback for the long press event of button C.
+    """
     self._on_button_c_long_press = value
 
   def update(self):
@@ -189,12 +251,21 @@ class ModulinoButtons(Modulino):
   
   @property
   def button_a_pressed(self):
+    """
+    Returns True if button A is currently pressed.
+    """
     return self.is_pressed(0)
   
   @property
   def button_b_pressed(self):
+    """
+    Returns True if button B is currently pressed.
+    """
     return self.is_pressed(1)
   
   @property
   def button_c_pressed(self):
+    """
+    Returns True if button C is currently pressed.
+    """
     return self.is_pressed(2)

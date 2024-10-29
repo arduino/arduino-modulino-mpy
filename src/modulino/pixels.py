@@ -129,6 +129,13 @@ class ModulinoPixels(Modulino):
     self.set_color(idx, ModulinoColor(0, 0, 0), 0)
 
   def clear_range(self, start, end):
+    """
+    Turns off the LEDs in the given range.
+
+    Parameters:
+        start (int): The starting index of the range.
+        end (int): The ending index (inclusive) of the range.
+    """
     for i in range(start, end):
         self.clear(i)
         
