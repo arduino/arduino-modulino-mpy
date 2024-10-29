@@ -103,6 +103,15 @@ class ModulinoBuzzer(Modulino):
     self.no_tone()
 
   def tone(self, frequency, lenght_ms=0xFFFF, blocking=False):
+    """
+    Plays a tone with the given frequency and duration.
+    If blocking is set to True, the function will wait until the tone is finished.
+
+    Parameters:
+      frequency: The frequency of the tone in Hz
+      lenght_ms: The duration of the tone in milliseconds
+      blocking: If set to True, the function will wait until the tone is finished
+    """
     self.data[0:4]=frequency.to_bytes(4,'little')
     self.data[4:8]=lenght_ms.to_bytes(4,'little')
     self.write(self.data)
@@ -113,5 +122,8 @@ class ModulinoBuzzer(Modulino):
       sleep_ms(lenght_ms - 5)
 
   def no_tone(self):
+    """
+    Stops the current tone from playing.
+    """
     self.data = bytearray(8)
     self.write(self.data)

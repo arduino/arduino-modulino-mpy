@@ -26,6 +26,14 @@ class ModulinoButtons(Modulino):
     self._on_button_c_long_press = None
   
   def set_led_status(self, a, b, c):
+    """
+    Turn on or off the button LEDs according to the given status.
+
+    Parameters:
+      a (bool): The status of the LED A.
+      b (bool): The status of the LED B.
+      c (bool): The status of the LED C.
+    """
     data = bytearray(3)
     data[0] = 1 if a else 0
     data[1] = 1 if b else 0
@@ -116,6 +124,9 @@ class ModulinoButtons(Modulino):
     """
     Update the button status and call the corresponding callbacks.
     Returns True if any of the buttons has changed its state.
+
+    Returns:
+      bool: True if any of the buttons has changed its state.
     """
     new_status = self.read(3)
     button_states_changed = new_status != self._current_buttons_status
@@ -168,6 +179,12 @@ class ModulinoButtons(Modulino):
     return button_states_changed
 
   def is_pressed(self, index):
+    """
+    Returns True if the button at the given index is currently pressed.
+
+    Parameters:
+      index (int): The index of the button. A = 0, B = 1, C = 2.
+    """
     return self._current_buttons_status[index]
   
   @property

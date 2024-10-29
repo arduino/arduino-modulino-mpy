@@ -77,9 +77,16 @@ class ModulinoKnob(Modulino):
         self.value = constrained_value
 
   def reset(self):
+    """
+    Resets the encoder value to 0.
+    """
     self.value = 0
 
   def update(self):
+    """
+    Reads new data from the Modulino and calls the corresponding callbacks 
+    if the encoder value or pressed status has changed.
+    """
     previous_value = self._encoder_value
     previous_pressed_status = self._pressed
 
@@ -115,6 +122,12 @@ class ModulinoKnob(Modulino):
   
   @range.setter
   def range(self, value):
+    """
+    Sets the range of the encoder value.
+
+    Parameters:
+      value (tuple): A tuple with two integers representing the minimum and maximum values of the range.
+    """
     if(value[0] < -32768 or value[1] > 32767):
       raise ValueError("Range must be between -32768 and 32767")
 
@@ -135,6 +148,12 @@ class ModulinoKnob(Modulino):
   
   @on_rotate_clockwise.setter
   def on_rotate_clockwise(self, value):
+    """
+    Sets the callback for the rotate clockwise event.
+
+    Parameters:
+      value (function): The function to be called when the encoder is rotated clockwise.
+    """
     self._on_rotate_clockwise = value
 
   @property
@@ -143,6 +162,12 @@ class ModulinoKnob(Modulino):
   
   @on_rotate_counter_clockwise.setter
   def on_rotate_counter_clockwise(self, value):
+    """
+    Sets the callback for the rotate counter clockwise event.
+
+    Parameters:
+      value (function): The function to be called when the encoder is rotated counter clockwise.
+    """
     self._on_rotate_counter_clockwise = value
 
   @property
@@ -151,6 +176,12 @@ class ModulinoKnob(Modulino):
   
   @on_press.setter
   def on_press(self, value):
+    """
+    Sets the callback for the press event.
+
+    Parameters:
+      value (function): The function to be called when the encoder is pressed.
+    """
     self._on_press = value
 
   @property
@@ -159,14 +190,29 @@ class ModulinoKnob(Modulino):
   
   @on_release.setter
   def on_release(self, value):
+    """
+    Sets the callback for the release event.
+
+    Parameters:
+      value (function): The function to be called when the encoder is released.
+    """
     self._on_release = value
 
   @property
   def value(self):
+    """
+    Returns the current value of the encoder.
+    """
     return self._encoder_value
 
   @value.setter
   def value(self, new_value):
+    """
+    Sets the value of the encoder. This overrides the previous value.
+
+    Parameters:
+      new_value (int): The new value of the encoder.
+    """
     if(self._value_range != None): 
       if(new_value < self._value_range[0]) or (new_value > self._value_range[1]):
         raise ValueError(f"Value {new_value} is out of range ({self._value_range[0]} to {self._value_range[1]})")
@@ -184,4 +230,7 @@ class ModulinoKnob(Modulino):
 
   @property
   def pressed(self):
+    """
+    Returns the pressed status of the encoder.
+    """
     return self._pressed
