@@ -2,11 +2,11 @@
 
 * [buzzer](#modulino.buzzer)
   * [ModulinoBuzzer](#modulino.buzzer.ModulinoBuzzer)
+    * [NOTES](#modulino.buzzer.ModulinoBuzzer.NOTES)
     * [tone](#modulino.buzzer.ModulinoBuzzer.tone)
     * [no\_tone](#modulino.buzzer.ModulinoBuzzer.no_tone)
 * [buttons](#modulino.buttons)
   * [ModulinoButtons](#modulino.buttons.ModulinoButtons)
-    * [default\_long\_press\_duration](#modulino.buttons.ModulinoButtons.default_long_press_duration)
     * [set\_led\_status](#modulino.buttons.ModulinoButtons.set_led_status)
     * [long\_press\_duration](#modulino.buttons.ModulinoButtons.long_press_duration)
     * [long\_press\_duration](#modulino.buttons.ModulinoButtons.long_press_duration)
@@ -33,12 +33,16 @@
     * [button\_a\_pressed](#modulino.buttons.ModulinoButtons.button_a_pressed)
     * [button\_b\_pressed](#modulino.buttons.ModulinoButtons.button_b_pressed)
     * [button\_c\_pressed](#modulino.buttons.ModulinoButtons.button_c_pressed)
+* [pressure](#modulino.pressure)
+  * [ModulinoPressure](#modulino.pressure.ModulinoPressure)
+    * [pressure](#modulino.pressure.ModulinoPressure.pressure)
+    * [temperature](#modulino.pressure.ModulinoPressure.temperature)
+    * [altitude](#modulino.pressure.ModulinoPressure.altitude)
 * [modulino](#modulino.modulino)
-  * [I2CHelper](#modulino.modulino.I2CHelper)
-    * [frequency](#modulino.modulino.I2CHelper.frequency)
-    * [reset\_bus](#modulino.modulino.I2CHelper.reset_bus)
-    * [find\_interface](#modulino.modulino.I2CHelper.find_interface)
   * [Modulino](#modulino.modulino.Modulino)
+    * [default\_addresses](#modulino.modulino.Modulino.default_addresses)
+    * [convert\_default\_addresses](#modulino.modulino.Modulino.convert_default_addresses)
+    * [\_\_init\_\_](#modulino.modulino.Modulino.__init__)
     * [discover](#modulino.modulino.Modulino.discover)
     * [\_\_bool\_\_](#modulino.modulino.Modulino.__bool__)
     * [connected](#modulino.modulino.Modulino.connected)
@@ -50,6 +54,9 @@
     * [has\_default\_address](#modulino.modulino.Modulino.has_default_address)
     * [available\_devices](#modulino.modulino.Modulino.available_devices)
     * [reset\_bus](#modulino.modulino.Modulino.reset_bus)
+* [distance](#modulino.distance)
+  * [ModulinoDistance](#modulino.distance.ModulinoDistance)
+    * [distance](#modulino.distance.ModulinoDistance.distance)
 * [knob](#modulino.knob)
   * [ModulinoKnob](#modulino.knob.ModulinoKnob)
     * [reset](#modulino.knob.ModulinoKnob.reset)
@@ -69,6 +76,7 @@
     * [pressed](#modulino.knob.ModulinoKnob.pressed)
 * [pixels](#modulino.pixels)
   * [ModulinoColor](#modulino.pixels.ModulinoColor)
+    * [\_\_init\_\_](#modulino.pixels.ModulinoColor.__init__)
     * [\_\_int\_\_](#modulino.pixels.ModulinoColor.__int__)
   * [ModulinoPixels](#modulino.pixels.ModulinoPixels)
     * [set\_range\_rgb](#modulino.pixels.ModulinoPixels.set_range_rgb)
@@ -81,7 +89,12 @@
     * [clear\_range](#modulino.pixels.ModulinoPixels.clear_range)
     * [clear\_all](#modulino.pixels.ModulinoPixels.clear_all)
     * [show](#modulino.pixels.ModulinoPixels.show)
+* [movement](#modulino.movement)
+  * [ModulinoMovement](#modulino.movement.ModulinoMovement)
+    * [accelerometer](#modulino.movement.ModulinoMovement.accelerometer)
+    * [gyro](#modulino.movement.ModulinoMovement.gyro)
 * [thermo](#modulino.thermo)
+  * [Measurement](#modulino.thermo.Measurement)
   * [ModulinoThermo](#modulino.thermo.ModulinoThermo)
     * [measurements](#modulino.thermo.ModulinoThermo.measurements)
     * [relative\_humidity](#modulino.thermo.ModulinoThermo.relative_humidity)
@@ -95,7 +108,14 @@
 class ModulinoBuzzer(Modulino)
 ```
 
-Class to play tones on the buzzer of the Modulino.
+Class to play tones on the piezo element of the Modulino Buzzer.
+Predefined notes are available in the NOTES dictionary e.g. ModulinoBuzzer.NOTES["C4"]
+
+<a id="modulino.buzzer.ModulinoBuzzer.NOTES"></a>
+
+### `NOTES`
+
+Dictionary with the notes and their corresponding frequencies.
 The supported notes are defined as follows:
 - B0
 - C1, CS1, D1, DS1, E1, F1, FS1, G1, GS1, A1, AS1, B1
@@ -108,14 +128,14 @@ The supported notes are defined as follows:
 - C8, CS8, D8, DS8
 - REST (Silence)
 
-Those notes are accessible through ModulinoBuzzer.NOTES e.g. ModulinoBuzzer.NOTES["C4"]
-
 <a id="modulino.buzzer.ModulinoBuzzer.tone"></a>
 
 ### `tone`
 
 ```python
-def tone(frequency, lenght_ms=0xFFFF, blocking=False)
+def tone(frequency: int,
+         lenght_ms: int = 0xFFFF,
+         blocking: bool = False) -> None
 ```
 
 Plays a tone with the given frequency and duration.
@@ -132,7 +152,7 @@ If blocking is set to True, the function will wait until the tone is finished.
 ### `no_tone`
 
 ```python
-def no_tone()
+def no_tone() -> None
 ```
 
 Stops the current tone from playing.
@@ -145,18 +165,14 @@ Stops the current tone from playing.
 class ModulinoButtons(Modulino)
 ```
 
-<a id="modulino.buttons.ModulinoButtons.default_long_press_duration"></a>
-
-### `default_long_press_duration`
-
-1 second
+Class to interact with the buttons of the Modulino Buttons.
 
 <a id="modulino.buttons.ModulinoButtons.set_led_status"></a>
 
 ### `set_led_status`
 
 ```python
-def set_led_status(a, b, c)
+def set_led_status(a: bool, b: bool, c: bool) -> None
 ```
 
 Turn on or off the button LEDs according to the given status.
@@ -173,7 +189,7 @@ Turn on or off the button LEDs according to the given status.
 
 ```python
 @property
-def long_press_duration()
+def long_press_duration() -> int
 ```
 
 Returns the duration in milliseconds that the button must
@@ -185,7 +201,7 @@ be pressed to trigger the long press event
 
 ```python
 @long_press_duration.setter
-def long_press_duration(value)
+def long_press_duration(value: int) -> None
 ```
 
 Sets the duration in milliseconds that the button must
@@ -208,7 +224,7 @@ Returns the callback for the press event of button A.
 
 ```python
 @on_button_a_press.setter
-def on_button_a_press(value)
+def on_button_a_press(value) -> None
 ```
 
 Sets the callback for the press event of button A.
@@ -230,7 +246,7 @@ Returns the callback for the release event of button A.
 
 ```python
 @on_button_a_release.setter
-def on_button_a_release(value)
+def on_button_a_release(value) -> None
 ```
 
 Sets the callback for the release event of button A.
@@ -252,7 +268,7 @@ Returns the callback for the long press event of button A.
 
 ```python
 @on_button_a_long_press.setter
-def on_button_a_long_press(value)
+def on_button_a_long_press(value) -> None
 ```
 
 Sets the callback for the long press event of button A.
@@ -274,7 +290,7 @@ Returns the callback for the press event of button B.
 
 ```python
 @on_button_b_press.setter
-def on_button_b_press(value)
+def on_button_b_press(value) -> None
 ```
 
 Sets the callback for the press event of button B.
@@ -296,7 +312,7 @@ Returns the callback for the release event of button B.
 
 ```python
 @on_button_b_release.setter
-def on_button_b_release(value)
+def on_button_b_release(value) -> None
 ```
 
 Sets the callback for the release event of button B.
@@ -318,7 +334,7 @@ Returns the callback for the long press event of button B.
 
 ```python
 @on_button_b_long_press.setter
-def on_button_b_long_press(value)
+def on_button_b_long_press(value) -> None
 ```
 
 Sets the callback for the long press event of button B.
@@ -340,7 +356,7 @@ Returns the callback for the press event of button C.
 
 ```python
 @on_button_c_press.setter
-def on_button_c_press(value)
+def on_button_c_press(value) -> None
 ```
 
 Sets the callback for the press event of button C.
@@ -362,7 +378,7 @@ Returns the callback for the release event of button C.
 
 ```python
 @on_button_c_release.setter
-def on_button_c_release(value)
+def on_button_c_release(value) -> None
 ```
 
 Sets the callback for the release event of button C.
@@ -384,7 +400,7 @@ Returns the callback for the long press event of button C.
 
 ```python
 @on_button_c_long_press.setter
-def on_button_c_long_press(value)
+def on_button_c_long_press(value) -> None
 ```
 
 Sets the callback for the long press event of button C.
@@ -394,7 +410,7 @@ Sets the callback for the long press event of button C.
 ### `update`
 
 ```python
-def update()
+def update() -> bool
 ```
 
 Update the button status and call the corresponding callbacks.
@@ -409,7 +425,7 @@ Returns True if any of the buttons has changed its state.
 ### `is_pressed`
 
 ```python
-def is_pressed(index)
+def is_pressed(index: int) -> bool
 ```
 
 Returns True if the button at the given index is currently pressed.
@@ -424,7 +440,7 @@ Returns True if the button at the given index is currently pressed.
 
 ```python
 @property
-def button_a_pressed()
+def button_a_pressed() -> bool
 ```
 
 Returns True if button A is currently pressed.
@@ -435,7 +451,7 @@ Returns True if button A is currently pressed.
 
 ```python
 @property
-def button_b_pressed()
+def button_b_pressed() -> bool
 ```
 
 Returns True if button B is currently pressed.
@@ -446,58 +462,59 @@ Returns True if button B is currently pressed.
 
 ```python
 @property
-def button_c_pressed()
+def button_c_pressed() -> bool
 ```
 
 Returns True if button C is currently pressed.
 
-<a id="modulino.modulino.I2CHelper"></a>
+<a id="modulino.pressure.ModulinoPressure"></a>
 
-## class `I2CHelper`
-
-```python
-class I2CHelper()
-```
-
-A helper class for interacting with I2C devices on supported boards.
-
-<a id="modulino.modulino.I2CHelper.frequency"></a>
-
-### `frequency`
-
-Modulinos operate at 100kHz
-
-<a id="modulino.modulino.I2CHelper.reset_bus"></a>
-
-### `reset_bus`
+## class `ModulinoPressure`
 
 ```python
-@staticmethod
-def reset_bus(i2c_bus)
+class ModulinoPressure(Modulino)
 ```
 
-Resets the I2C bus in case it got stuck. To unblock the bus the SDA line is kept high for 20 clock cycles
-Which causes the triggering of a NAK message.
+Class to interact with the pressure sensor of the Modulino Pressure.
 
-<a id="modulino.modulino.I2CHelper.find_interface"></a>
+<a id="modulino.pressure.ModulinoPressure.pressure"></a>
 
-### `find_interface`
+### `pressure`
 
 ```python
-@staticmethod
-def find_interface() -> I2C
+@property
+def pressure() -> float
 ```
-
-Returns an instance of the I2C interface for the current board.
-
-**Raises**:
-
-- `RuntimeError` - If the current board is not supported.
-  
 
 **Returns**:
 
-- `I2C` - An instance of the I2C interface.
+- `float` - The pressure in hectopascals.
+
+<a id="modulino.pressure.ModulinoPressure.temperature"></a>
+
+### `temperature`
+
+```python
+@property
+def temperature() -> float
+```
+
+**Returns**:
+
+- `float` - The temperature in degrees Celsius.
+
+<a id="modulino.pressure.ModulinoPressure.altitude"></a>
+
+### `altitude`
+
+```python
+@property
+def altitude() -> float
+```
+
+**Returns**:
+
+- `float` - The altitude in meters.
 
 <a id="modulino.modulino.Modulino"></a>
 
@@ -507,24 +524,59 @@ Returns an instance of the I2C interface for the current board.
 class Modulino()
 ```
 
+Base class for all Modulino devices.
+
+<a id="modulino.modulino.Modulino.default_addresses"></a>
+
+### `default_addresses`
+
+A list of default addresses that the modulino can have.
+This list needs to be overridden derived classes.
+
+<a id="modulino.modulino.Modulino.convert_default_addresses"></a>
+
+### `convert_default_addresses`
+
+Determines if the default addresses need to be converted from 8-bit to 7-bit.
+Addresses of modulinos without native I2C modules need to be converted.
+This class variable needs to be overridden in derived classes.
+
+<a id="modulino.modulino.Modulino.__init__"></a>
+
+### `__init__`
+
+```python
+def __init__(i2c_bus: I2C = None, address: int = None, name: str = None)
+```
+
+Initializes the Modulino object with the given i2c bus and address.
+If the address is not provided, the device will try to auto discover it.
+If the address is provided, the device will check if it is connected to the bus.
+If the address is 8-bit, it will be converted to 7-bit.
+If no bus is provided, the default bus will be used if available.
+
 <a id="modulino.modulino.Modulino.discover"></a>
 
 ### `discover`
 
 ```python
-def discover(default_addresses)
+def discover(default_addresses: list[int]) -> int | None
 ```
 
 Tries to find the given modulino device in the device chain
 based on the pre-defined default addresses.
 If the address has been changed to a custom one it won't be found with this function.
 
+**Returns**:
+
+  int | None: The address of the device if found, None otherwise.
+
 <a id="modulino.modulino.Modulino.__bool__"></a>
 
 ### `__bool__`
 
 ```python
-def __bool__()
+def __bool__() -> bool
 ```
 
 Boolean cast operator to determine if the given i2c device has a correct address
@@ -538,7 +590,7 @@ because otherwise the address would be None.
 
 ```python
 @property
-def connected()
+def connected() -> bool
 ```
 
 Determines if the given modulino is connected to the i2c bus.
@@ -549,7 +601,7 @@ Determines if the given modulino is connected to the i2c bus.
 
 ```python
 @property
-def pin_strap_address()
+def pin_strap_address() -> int | None
 ```
 
 Returns the pin strap i2c address of the modulino.
@@ -559,47 +611,65 @@ is needed to determine the type of the modulino at boot time, so it know what to
 At boot it checks the internal flash in case its address has been overridden by the user
 which would take precedence.
 
+**Returns**:
+
+  int | None: The pin strap address of the modulino.
+
 <a id="modulino.modulino.Modulino.device_type"></a>
 
 ### `device_type`
 
 ```python
 @property
-def device_type()
+def device_type() -> str | None
 ```
 
-Returns the type of the modulino based on the pinstrap address.
+Returns the type of the modulino based on the pinstrap address as a string.
 
 <a id="modulino.modulino.Modulino.change_address"></a>
 
 ### `change_address`
 
 ```python
-def change_address(new_address)
+def change_address(new_address: int)
 ```
 
 Sets the address of the i2c device to the given value.
+This is only supported on Modulinos that have a microcontroller.
 
 <a id="modulino.modulino.Modulino.read"></a>
 
 ### `read`
 
 ```python
-def read(amount_of_bytes)
+def read(amount_of_bytes: int) -> bytes | None
 ```
 
 Reads the given amount of bytes from the i2c device and returns the data.
 It skips the first byte which is the pinstrap address.
+
+**Returns**:
+
+  bytes | None: The data read from the device.
 
 <a id="modulino.modulino.Modulino.write"></a>
 
 ### `write`
 
 ```python
-def write(data_buffer)
+def write(data_buffer: bytearray) -> bool
 ```
 
 Writes the given buffer to the i2c device.
+
+**Arguments**:
+
+- `data_buffer` _bytearray_ - The data to be written to the device.
+  
+
+**Returns**:
+
+- `bool` - True if the data was written successfully, False otherwise.
 
 <a id="modulino.modulino.Modulino.has_default_address"></a>
 
@@ -607,7 +677,7 @@ Writes the given buffer to the i2c device.
 
 ```python
 @property
-def has_default_address()
+def has_default_address() -> bool
 ```
 
 Determines if the given modulino has a default address
@@ -619,7 +689,7 @@ or if a custom one was set.
 
 ```python
 @staticmethod
-def available_devices()
+def available_devices() -> list[Modulino]
 ```
 
 Finds all devices on the i2c bus and returns them as a list of Modulino objects.
@@ -634,7 +704,7 @@ Finds all devices on the i2c bus and returns them as a list of Modulino objects.
 
 ```python
 @staticmethod
-def reset_bus(i2c_bus)
+def reset_bus(i2c_bus: I2C) -> I2C
 ```
 
 Resets the i2c bus. This is useful when the bus is in an unknown state.
@@ -645,6 +715,29 @@ If the host board does a reset during such operation it can make the bus get stu
 
 - `I2C` - A new i2c bus object after resetting the bus.
 
+<a id="modulino.distance.ModulinoDistance"></a>
+
+## class `ModulinoDistance`
+
+```python
+class ModulinoDistance(Modulino)
+```
+
+Class to interact with the distance sensor of the Modulino Distance.
+
+<a id="modulino.distance.ModulinoDistance.distance"></a>
+
+### `distance`
+
+```python
+@property
+def distance() -> int
+```
+
+**Returns**:
+
+- `int` - The distance in centimeters.
+
 <a id="modulino.knob.ModulinoKnob"></a>
 
 ## class `ModulinoKnob`
@@ -653,12 +746,14 @@ If the host board does a reset during such operation it can make the bus get stu
 class ModulinoKnob(Modulino)
 ```
 
+Class to interact with the rotary encoder of the Modulinio Knob.
+
 <a id="modulino.knob.ModulinoKnob.reset"></a>
 
 ### `reset`
 
 ```python
-def reset()
+def reset() -> None
 ```
 
 Resets the encoder value to 0.
@@ -668,11 +763,15 @@ Resets the encoder value to 0.
 ### `update`
 
 ```python
-def update()
+def update() -> bool
 ```
 
 Reads new data from the Modulino and calls the corresponding callbacks
 if the encoder value or pressed status has changed.
+
+**Returns**:
+
+- `bool` - True if the encoder value or pressed status has changed.
 
 <a id="modulino.knob.ModulinoKnob.range"></a>
 
@@ -680,7 +779,7 @@ if the encoder value or pressed status has changed.
 
 ```python
 @property
-def range()
+def range() -> tuple[int, int]
 ```
 
 Returns the range of the encoder value.
@@ -691,7 +790,7 @@ Returns the range of the encoder value.
 
 ```python
 @range.setter
-def range(value)
+def range(value: tuple[int, int]) -> None
 ```
 
 Sets the range of the encoder value.
@@ -717,7 +816,7 @@ Returns the callback for the rotate clockwise event.
 
 ```python
 @on_rotate_clockwise.setter
-def on_rotate_clockwise(value)
+def on_rotate_clockwise(value) -> None
 ```
 
 Sets the callback for the rotate clockwise event.
@@ -743,7 +842,7 @@ Returns the callback for the rotate counter clockwise event.
 
 ```python
 @on_rotate_counter_clockwise.setter
-def on_rotate_counter_clockwise(value)
+def on_rotate_counter_clockwise(value) -> None
 ```
 
 Sets the callback for the rotate counter clockwise event.
@@ -769,7 +868,7 @@ Returns the callback for the press event.
 
 ```python
 @on_press.setter
-def on_press(value)
+def on_press(value) -> None
 ```
 
 Sets the callback for the press event.
@@ -795,7 +894,7 @@ Returns the callback for the release event.
 
 ```python
 @on_release.setter
-def on_release(value)
+def on_release(value) -> None
 ```
 
 Sets the callback for the release event.
@@ -810,7 +909,7 @@ Sets the callback for the release event.
 
 ```python
 @property
-def value()
+def value() -> int
 ```
 
 Returns the current value of the encoder.
@@ -821,7 +920,7 @@ Returns the current value of the encoder.
 
 ```python
 @value.setter
-def value(new_value)
+def value(new_value: int) -> None
 ```
 
 Sets the value of the encoder. This overrides the previous value.
@@ -836,7 +935,7 @@ Sets the value of the encoder. This overrides the previous value.
 
 ```python
 @property
-def pressed()
+def pressed() -> bool
 ```
 
 Returns the pressed status of the encoder.
@@ -849,12 +948,40 @@ Returns the pressed status of the encoder.
 class ModulinoColor()
 ```
 
+Class to represent an RGB color.
+It comes with predefined colors:
+- RED
+- GREEN
+- BLUE
+- YELLOW
+- CYAN
+- VIOLET
+- WHITE
+
+They can be accessed e.g. as ModulinoColor.RED
+
+<a id="modulino.pixels.ModulinoColor.__init__"></a>
+
+### `__init__`
+
+```python
+def __init__(r: int, g: int, b: int)
+```
+
+Initializes the color with the given RGB values.
+
+**Arguments**:
+
+- `r` _int_ - The red value of the color.
+- `g` _int_ - The green value of the color.
+- `b` _int_ - The blue value of the color.
+
 <a id="modulino.pixels.ModulinoColor.__int__"></a>
 
 ### `__int__`
 
 ```python
-def __int__()
+def __int__() -> int
 ```
 
 Return the 32-bit integer representation of the color.
@@ -867,12 +994,19 @@ Return the 32-bit integer representation of the color.
 class ModulinoPixels(Modulino)
 ```
 
+Class to interact with the LEDs of the Modulino Pixels.
+
 <a id="modulino.pixels.ModulinoPixels.set_range_rgb"></a>
 
 ### `set_range_rgb`
 
 ```python
-def set_range_rgb(index_from, index_to, r, g, b, brightness=100)
+def set_range_rgb(index_from: int,
+                  index_to: int,
+                  r: int,
+                  g: int,
+                  b: int,
+                  brightness: int = 100) -> None
 ```
 
 Sets the color of the LEDs in the given range to the given RGB values.
@@ -891,7 +1025,10 @@ Sets the color of the LEDs in the given range to the given RGB values.
 ### `set_range_color`
 
 ```python
-def set_range_color(index_from, index_to, color, brightness=100)
+def set_range_color(index_from: int,
+                    index_to: int,
+                    color: ModulinoColor,
+                    brightness: int = 100) -> None
 ```
 
 Sets the color of the LEDs in the given range to the given color.
@@ -908,7 +1045,7 @@ Sets the color of the LEDs in the given range to the given color.
 ### `set_all_rgb`
 
 ```python
-def set_all_rgb(r, g, b, brightness=100)
+def set_all_rgb(r: int, g: int, b: int, brightness: int = 100) -> None
 ```
 
 Sets the color of all the LEDs to the given RGB values.
@@ -925,7 +1062,7 @@ Sets the color of all the LEDs to the given RGB values.
 ### `set_all_color`
 
 ```python
-def set_all_color(color, brightness=100)
+def set_all_color(color: ModulinoColor, brightness: int = 100) -> None
 ```
 
 Sets the color of all the LEDs to the given color.
@@ -940,7 +1077,7 @@ Sets the color of all the LEDs to the given color.
 ### `set_color`
 
 ```python
-def set_color(idx, rgb: ModulinoColor, brightness=100)
+def set_color(idx: int, rgb: ModulinoColor, brightness: int = 100) -> None
 ```
 
 Sets the color of the given LED index to the given color.
@@ -956,7 +1093,7 @@ Sets the color of the given LED index to the given color.
 ### `set_rgb`
 
 ```python
-def set_rgb(idx, r, g, b, brightness=100)
+def set_rgb(idx: int, r: int, g: int, b: int, brightness: int = 100) -> None
 ```
 
 Set the color of the given LED index to the given RGB values.
@@ -974,7 +1111,7 @@ Set the color of the given LED index to the given RGB values.
 ### `clear`
 
 ```python
-def clear(idx)
+def clear(idx: int) -> None
 ```
 
 Turns off the LED at the given index.
@@ -988,7 +1125,7 @@ Turns off the LED at the given index.
 ### `clear_range`
 
 ```python
-def clear_range(start, end)
+def clear_range(start: int, end: int) -> None
 ```
 
 Turns off the LEDs in the given range.
@@ -1003,7 +1140,7 @@ Turns off the LEDs in the given range.
 ### `clear_all`
 
 ```python
-def clear_all()
+def clear_all() -> None
 ```
 
 Turns all the LEDs off.
@@ -1017,11 +1154,53 @@ Turns all the LEDs off.
 ### `show`
 
 ```python
-def show()
+def show() -> None
 ```
 
 Applies the changes to the LEDs. This function needs to be called after any changes to the LEDs.
 Otherwise, the changes will not be visible.
+
+<a id="modulino.movement.ModulinoMovement"></a>
+
+## class `ModulinoMovement`
+
+```python
+class ModulinoMovement(Modulino)
+```
+
+Class to interact with the movement sensor (IMU) of the Modulino Movement.
+
+<a id="modulino.movement.ModulinoMovement.accelerometer"></a>
+
+### `accelerometer`
+
+```python
+@property
+def accelerometer() -> tuple[float, float, float]
+```
+
+**Returns**:
+
+  tuple[float, float, float]: The acceleration values in the x, y, and z axes.
+
+<a id="modulino.movement.ModulinoMovement.gyro"></a>
+
+### `gyro`
+
+```python
+@property
+def gyro() -> tuple[float, float, float]
+```
+
+**Returns**:
+
+  tuple[float, float, float]: The angular velocity values in the x, y, and z axes.
+
+<a id="modulino.thermo.Measurement"></a>
+
+### `Measurement`
+
+A named tuple to store the temperature and relative humidity measurements.
 
 <a id="modulino.thermo.ModulinoThermo"></a>
 
@@ -1030,6 +1209,8 @@ Otherwise, the changes will not be visible.
 ```python
 class ModulinoThermo(Modulino)
 ```
+
+Class to interact with the temperature and humidity sensor of the Modulino Thermo.
 
 <a id="modulino.thermo.ModulinoThermo.measurements"></a>
 
