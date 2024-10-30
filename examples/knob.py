@@ -21,8 +21,12 @@ knob = ModulinoKnob()
 knob.value = 5 # (Optional) Set an initial value
 knob.range = (-10, 10) # (Optional) Set a value range
 
+def on_release():
+    knob.reset()
+    print("🔘 Released! Knob's value was reset.")
+
 knob.on_press = lambda: print("🔘 Pressed!")
-knob.on_release = lambda: knob.reset()
+knob.on_release = on_release
 knob.on_rotate_clockwise = lambda steps, value: print(f"🎛️ Rotated {steps} steps clockwise! Value: {value}")
 knob.on_rotate_counter_clockwise = lambda steps, value: print(f"🎛️ Rotated {steps} steps counter clockwise! Value: {value}")
 
