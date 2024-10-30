@@ -130,6 +130,11 @@ class Modulino:
     If the address is provided, the device will check if it is connected to the bus.
     If the address is 8-bit, it will be converted to 7-bit.
     If no bus is provided, the default bus will be used if available.
+
+    Parameters:
+      i2c_bus (I2C): The I2C bus to use. If not provided, the default I2C bus will be used.
+      address (int): The address of the device. If not provided, the device will try to auto discover it.
+      name (str): The name of the device.
     """
 
     if i2c_bus is None:
@@ -159,7 +164,7 @@ class Modulino:
   def discover(self, default_addresses: list[int]) -> int | None:
     """
     Tries to find the given modulino device in the device chain
-    based on the pre-defined default addresses.
+    based on the pre-defined default addresses. The first address found will be returned.
     If the address has been changed to a custom one it won't be found with this function.
 
     Returns:

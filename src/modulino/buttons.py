@@ -10,7 +10,15 @@ class ModulinoButtons(Modulino):
   default_addresses = [0x7C]
   _default_long_press_duration = const(1000) # 1 second
 
-  def __init__(self, i2c_bus=None, address=None):
+  def __init__(self, i2c_bus = None, address = None):
+    """
+    Initializes the Modulino Buttons.
+
+    Parameters:
+        i2c_bus (I2C): The I2C bus to use. If not provided, the default I2C bus will be used.
+        address (int): The I2C address of the module. If not provided, the default address will be used.
+    """
+
     super().__init__(i2c_bus, address, "BUTTONS")
     self.long_press_duration = self._default_long_press_duration
 

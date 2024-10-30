@@ -10,6 +10,14 @@ class ModulinoKnob(Modulino):
   default_addresses = [0x74, 0x76]
   
   def __init__(self, i2c_bus = None, address = None):
+    """
+    Initializes the Modulino Knob.
+
+    Parameters:
+        i2c_bus (I2C): The I2C bus to use. If not provided, the default I2C bus will be used.
+        address (int): The I2C address of the module. If not provided, the default address will be used.
+    """
+
     super().__init__(i2c_bus, address, "ENCODER")
     self._pressed: bool = None
     self._encoder_value: int = None
