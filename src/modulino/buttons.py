@@ -3,13 +3,16 @@ from time import ticks_ms
 from micropython import const
 
 class ModulinoButtons(Modulino):
+  """
+  Class to interact with the buttons of the Modulino Buttons.
+  """
 
   default_addresses = [0x7C]
-  default_long_press_duration = const(1000) # 1 second
+  _default_long_press_duration = const(1000) # 1 second
 
   def __init__(self, i2c_bus=None, address=None):
     super().__init__(i2c_bus, address, "BUTTONS")
-    self.long_press_duration = self.default_long_press_duration
+    self.long_press_duration = self._default_long_press_duration
 
     self._current_buttons_status = [None, None, None]
     self._last_press_timestamps = [None, None, None]
@@ -25,7 +28,7 @@ class ModulinoButtons(Modulino):
     self._on_button_b_long_press = None
     self._on_button_c_long_press = None
   
-  def set_led_status(self, a, b, c):
+  def set_led_status(self, a: bool, b: bool, c: bool):
     """
     Turn on or off the button LEDs according to the given status.
 
@@ -41,15 +44,15 @@ class ModulinoButtons(Modulino):
     self.write(data)
 
   @property
-  def long_press_duration(self):
-    """
+  def long_press_duration(self) -> int:
+    """    
     Returns the duration in milliseconds that the button must 
     be pressed to trigger the long press event
     """
     return self._long_press_duration
   
   @long_press_duration.setter
-  def long_press_duration(self, value):
+  def long_press_duration(self, value : int):
     """
     Sets the duration in milliseconds that the button must 
     be pressed to trigger the long press event
@@ -57,7 +60,7 @@ class ModulinoButtons(Modulino):
     self._long_press_duration = value
 
   @property
-  def on_button_a_press(self):
+  def on_button_a_press(self) -> function:
     """
     Returns the callback for the press event of button A.    
     """
@@ -71,7 +74,7 @@ class ModulinoButtons(Modulino):
     self._on_button_a_press = value
 
   @property
-  def on_button_a_release(self):
+  def on_button_a_release(self) -> function:
     """
     Returns the callback for the release event of button A.
     """
@@ -85,7 +88,7 @@ class ModulinoButtons(Modulino):
     self._on_button_a_release = value
 
   @property
-  def on_button_a_long_press(self):
+  def on_button_a_long_press(self) -> function:
     """
     Returns the callback for the long press event of button A.
     """
@@ -99,7 +102,7 @@ class ModulinoButtons(Modulino):
     self._on_button_a_long_press = value
 
   @property
-  def on_button_b_press(self):
+  def on_button_b_press(self) -> function:
     """
     Returns the callback for the press event of button B.
     """
@@ -113,7 +116,7 @@ class ModulinoButtons(Modulino):
     self._on_button_b_press = value
 
   @property
-  def on_button_b_release(self):
+  def on_button_b_release(self) -> function:
     """
     Returns the callback for the release event of button B.
     """
@@ -127,7 +130,7 @@ class ModulinoButtons(Modulino):
     self._on_button_b_release = value
 
   @property
-  def on_button_b_long_press(self):
+  def on_button_b_long_press(self) -> function:
     """
     Returns the callback for the long press event of button B.
     """
@@ -141,7 +144,7 @@ class ModulinoButtons(Modulino):
     self._on_button_b_long_press = value
 
   @property
-  def on_button_c_press(self):
+  def on_button_c_press(self) -> function:
     """
     Returns the callback for the press event of button C.
     """
@@ -155,7 +158,7 @@ class ModulinoButtons(Modulino):
     self._on_button_c_press = value
 
   @property
-  def on_button_c_release(self):
+  def on_button_c_release(self) -> function:
     """
     Returns the callback for the release event of button C.
     """
@@ -169,7 +172,7 @@ class ModulinoButtons(Modulino):
     self._on_button_c_release = value
 
   @property
-  def on_button_c_long_press(self):
+  def on_button_c_long_press(self) -> function:
     """
     Returns the callback for the long press event of button C.
     """
@@ -182,7 +185,7 @@ class ModulinoButtons(Modulino):
     """
     self._on_button_c_long_press = value
 
-  def update(self):
+  def update(self) -> bool:
     """
     Update the button status and call the corresponding callbacks.
     Returns True if any of the buttons has changed its state.
@@ -240,7 +243,7 @@ class ModulinoButtons(Modulino):
 
     return button_states_changed
 
-  def is_pressed(self, index):
+  def is_pressed(self, index) -> bool:
     """
     Returns True if the button at the given index is currently pressed.
 
@@ -257,14 +260,14 @@ class ModulinoButtons(Modulino):
     return self.is_pressed(0)
   
   @property
-  def button_b_pressed(self):
+  def button_b_pressed(self) -> bool:
     """
     Returns True if button B is currently pressed.
     """
     return self.is_pressed(1)
   
   @property
-  def button_c_pressed(self):
+  def button_c_pressed(self) -> bool:
     """
     Returns True if button C is currently pressed.
     """

@@ -1,6 +1,9 @@
 from .modulino import Modulino
 
 class ModulinoKnob(Modulino):
+  """
+  Class to interact with the rotary encoder of the Modulinio Knob.
+  """
   
   # This module can have one of two default addresses
   # This is for a use case where two encoders are bundled together in a package
@@ -36,19 +39,42 @@ class ModulinoKnob(Modulino):
     self._encoder_value = None
     self._pressed_status = None
 
-  def _has_rotated_clockwise(self, previous_value, current_value):
+  def _has_rotated_clockwise(self, previous_value, current_value) -> bool:
+    """
+    Determines if the encoder has rotated clockwise.
+
+    Parameters:
+        previous_value (int): The previous value of the encoder.
+        current_value (int): The current value of the encoder.
+
+    Returns:
+        bool: True if the encoder has rotated clockwise.
+    """
     # Calculate difference considering wraparound
     diff = (current_value- previous_value + 65536) % 65536
     # Clockwise rotation is indicated by a positive difference less than half the range
     return 0 < diff < 32768
 
-  def _has_rotated_counter_clockwise(self, previous_value, current_value):
+  def _has_rotated_counter_clockwise(self, previous_value, current_value) -> bool:
+      """
+      Determines if the encoder has rotated counter clockwise.
+
+      Parameters:
+          previous_value (int): The previous value of the encoder.
+          current_value (int): The current value of the encoder.
+
+      Returns:
+          bool: True if the encoder has rotated counter clockwise.
+      """
       # Calculate difference considering wraparound
       diff = (previous_value - current_value+ 65536) % 65536
       # Counter-clockwise rotation is indicated by a positive difference less than half the range
       return 0 < diff < 32768
 
-  def _get_steps(self, previous_value, current_value):
+  def _get_steps(self, previous_value, current_value) -> int:
+    """
+    Calculates the number of steps the encoder has moved since the last update.
+    """
     # Calculate difference considering wraparound
     diff = (current_value - previous_value + 65536) % 65536
     # Clockwise rotation is indicated by a positive difference less than half the range
@@ -61,6 +87,11 @@ class ModulinoKnob(Modulino):
       return 0
 
   def _read_data(self):
+    """
+    Reads the encoder value and pressed status from the Modulino.
+    Adjusts the value to the range if it is set.
+    Converts the encoder value to a signed 16-bit integer.
+    """
     data = self.read(3)
     self._pressed = data[2] != 0
     self._encoder_value = int.from_bytes(data[0:2], 'little', True)
@@ -82,10 +113,13 @@ class ModulinoKnob(Modulino):
     """
     self.value = 0
 
-  def update(self):
+  def update(self) -> bool:
     """
     Reads new data from the Modulino and calls the corresponding callbacks 
     if the encoder value or pressed status has changed.
+
+    Returns:
+        bool: True if the encoder value or pressed status has changed.
     """
     previous_value = self._encoder_value
     previous_pressed_status = self._pressed
@@ -117,7 +151,7 @@ class ModulinoKnob(Modulino):
     return (self._encoder_value != previous_value) or (self._pressed != previous_pressed_status)
 
   @property
-  def range(self):
+  def range(self) -> tuple[int, int]:
     """
     Returns the range of the encoder value.
     """    
@@ -146,7 +180,7 @@ class ModulinoKnob(Modulino):
       self.value = self._value_range[1]
 
   @property
-  def on_rotate_clockwise(self):
+  def on_rotate_clockwise(self) -> function:
     """
     Returns the callback for the rotate clockwise event.
     """
@@ -163,7 +197,7 @@ class ModulinoKnob(Modulino):
     self._on_rotate_clockwise = value
 
   @property
-  def on_rotate_counter_clockwise(self):
+  def on_rotate_counter_clockwise(self) -> function:
     """
     Returns the callback for the rotate counter clockwise event.
     """
@@ -180,7 +214,7 @@ class ModulinoKnob(Modulino):
     self._on_rotate_counter_clockwise = value
 
   @property
-  def on_press(self):
+  def on_press(self) -> function:
     """
     Returns the callback for the press event.
     """
@@ -197,7 +231,7 @@ class ModulinoKnob(Modulino):
     self._on_press = value
 
   @property
-  def on_release(self):
+  def on_release(self) -> function:
     """
     Returns the callback for the release event.
     """
@@ -214,7 +248,7 @@ class ModulinoKnob(Modulino):
     self._on_release = value
 
   @property
-  def value(self):
+  def value(self) -> int:
     """
     Returns the current value of the encoder.
     """
@@ -244,7 +278,7 @@ class ModulinoKnob(Modulino):
       self._encoder_value = new_value
 
   @property
-  def pressed(self):
+  def pressed(self) -> bool:
     """
     Returns the pressed status of the encoder.
     """

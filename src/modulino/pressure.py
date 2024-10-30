@@ -2,6 +2,10 @@ from .modulino import Modulino
 from lps22h import LPS22H
 
 class ModulinoPressure(Modulino):
+    """
+    Class to interact with the pressure sensor of the Modulino Pressure.
+    """
+
     # Module can have one of two default addresses
     # based on the solder jumper configuration on the board
     default_addresses = [0x5C, 0x5D]
@@ -12,13 +16,25 @@ class ModulinoPressure(Modulino):
         self.sensor = LPS22H(self.i2c_bus, self.address)
 
     @property
-    def pressure(self):
+    def pressure(self) -> float:
+        """
+        Returns:
+            float: The pressure in hectopascals.
+        """
         return self.sensor.pressure()
     
     @property
-    def temperature(self):
+    def temperature(self) -> float:
+        """
+        Returns:
+            float: The temperature in degrees Celsius.
+        """
         return self.sensor.temperature()
     
     @property
-    def altitude(self):
+    def altitude(self) -> float:
+        """
+        Returns:
+            float: The altitude in meters.
+        """
         return self.sensor.altitude()

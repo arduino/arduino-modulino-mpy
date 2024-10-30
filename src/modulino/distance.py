@@ -2,6 +2,10 @@ from .modulino import Modulino
 from .lib.vl53l4cd import VL53L4CD
 
 class ModulinoDistance(Modulino):
+    """
+    Class to interact with the distance sensor of the Modulino Distance.
+    """
+
     default_addresses = [0x29]
     convert_default_addresses = False
 
@@ -14,6 +18,12 @@ class ModulinoDistance(Modulino):
 
     @property
     def _distance_raw(self):
+        """
+        Reads the raw distance value from the sensor and clears the interrupt.
+
+        Returns:
+            int: The distance in centimeters.
+        """
         while not self.sensor.data_ready:
             pass
         self.sensor.clear_interrupt()
@@ -21,6 +31,10 @@ class ModulinoDistance(Modulino):
 
     @property
     def distance(self):
+        """
+        Returns:
+            int: The distance in centimeters.
+        """
         while True:
             raw_distance = self._distance_raw
             # Filter out invalid readings

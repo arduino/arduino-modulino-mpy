@@ -6,8 +6,13 @@ from collections import namedtuple
 from micropython_hs3003 import hs3003
 
 Measurement = namedtuple('Measurement', ['temperature', 'relative_humidity'])
+"""A named tuple to store the temperature and relative humidity measurements."""
 
 class ModulinoThermo(Modulino):
+    """
+    Class to interact with the temperature and humidity sensor of the Modulino Thermo.
+    """
+
     # The default I2C address of the HS3003 sensor cannot be changed by the user
     # so we can define it as a constant and avoid discovery overhead.
     DEFAULT_ADDRESS = const(0x44)

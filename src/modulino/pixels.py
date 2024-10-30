@@ -2,7 +2,30 @@ from .modulino import Modulino
 from micropython import const
 
 class ModulinoColor:
+  """
+  Class to represent an RGB color.
+  It comes with predefined colors:
+  - RED
+  - GREEN
+  - BLUE
+  - YELLOW
+  - CYAN
+  - VIOLET
+  - WHITE
+
+  They can be accessed e.g. as ModulinoColor.RED
+  """
+  
   def __init__(self, r, g, b):
+    """
+    Initializes the color with the given RGB values.
+
+    Parameters:
+        r (int): The red value of the color.
+        g (int): The green value of the color.
+        b (int): The blue value of the color.
+    """
+
     if r < 0 or r > 255:
       raise ValueError(f"Red value {r} should be between 0 and 255")
     if g < 0 or g > 255:
@@ -28,6 +51,10 @@ ModulinoColor.WHITE = ModulinoColor(255, 255, 255)
 NUM_LEDS = const(8)
 
 class ModulinoPixels(Modulino):
+  """
+  Class to interact with the LEDs of the Modulino Pixels.
+  """
+
   default_addresses = [0x6C]
 
   def __init__(self, i2c_bus = None, address=None):
@@ -128,7 +155,7 @@ class ModulinoPixels(Modulino):
     """
     self.set_color(idx, ModulinoColor(0, 0, 0), 0)
 
-  def clear_range(self, start, end):
+  def clear_range(self, start : int, end : int):
     """
     Turns off the LEDs in the given range.
 

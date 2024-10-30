@@ -106,11 +106,32 @@ class _I2CHelper:
             return SoftI2C(scl=Pin(interface_info.scl) , sda=Pin(interface_info.sda), freq=_I2CHelper.frequency)            
 
 class Modulino:
+  """
+  Base class for all Modulino devices.
+  """
+
   default_addresses = []
-  # Addresses of modulinos without native I2C modules need to be converted from 8 to 7-bits  
+  """
+  A list of default addresses that the modulino can have.
+  This list needs to be overridden derived classes.
+  """
+  
   convert_default_addresses = True
+  """
+  Determines if the default addresses need to be converted from 8-bit to 7-bit.
+  Addresses of modulinos without native I2C modules need to be converted.
+  This class variable needs to be overridden in derived classes.
+  """
   
   def __init__(self, i2c_bus=None, address=None, name=None):
+    """
+    Initializes the Modulino object with the given i2c bus and address.
+    If the address is not provided, the device will try to auto discover it.
+    If the address is provided, the device will check if it is connected to the bus.
+    If the address is 8-bit, it will be converted to 7-bit.
+    If no bus is provided, the default bus will be used if available.
+    """
+
     if i2c_bus is None:
         self.i2c_bus = _I2CHelper.get_interface()
     else:
@@ -135,11 +156,14 @@ class Modulino:
     elif not self.connected:
       raise RuntimeError(f"Couldn't find a {self.name} device with address {hex(self.address)} on the bus. Try resetting the board.")
     
-  def discover(self, default_addresses):
+  def discover(self, default_addresses) -> int | None:
     """
     Tries to find the given modulino device in the device chain
     based on the pre-defined default addresses.
     If the address has been changed to a custom one it won't be found with this function.
+
+    Returns:
+        int | None: The address of the device if found, None otherwise.
     """
     if(len(default_addresses) == 0):
       return None
@@ -151,7 +175,7 @@ class Modulino:
       
     return None
 
-  def __bool__(self):
+  def __bool__(self) -> bool:
     """
     Boolean cast operator to determine if the given i2c device has a correct address
     and if the bus is defined.
@@ -162,7 +186,7 @@ class Modulino:
     return self.i2c_bus != None and self.address != None and self.address <= 127 and self.address >= 0 
 
   @property
-  def connected(self):
+  def connected(self) -> bool:
     """
     Determines if the given modulino is connected to the i2c bus.
     """
@@ -171,7 +195,7 @@ class Modulino:
     return self.address in self.i2c_bus.scan()
 
   @property
-  def pin_strap_address(self):
+  def pin_strap_address(self) -> int | None:
     """
     Returns the pin strap i2c address of the modulino.
     This address is set via resistors on the modulino board.
@@ -179,6 +203,9 @@ class Modulino:
     is needed to determine the type of the modulino at boot time, so it know what to do.
     At boot it checks the internal flash in case its address has been overridden by the user
     which would take precedence.
+
+    Returns:
+        int | None: The pin strap address of the modulino.
     """
     if self.address == None:
       return None
@@ -187,15 +214,16 @@ class Modulino:
     return data[0]
 
   @property
-  def device_type(self):
+  def device_type(self) -> str | None:
     """
-    Returns the type of the modulino based on the pinstrap address.
+    Returns the type of the modulino based on the pinstrap address as a string.
     """
     return PINSTRAP_ADDRESS_MAP.get(self.pin_strap_address, None)
 
   def change_address(self, new_address):
     """
     Sets the address of the i2c device to the given value.
+    This is only supported on Modulinos that have a microcontroller.
     """
     # TODO: Check if device supports this feature by looking at the type
 
@@ -211,10 +239,13 @@ class Modulino:
     
     self.address = new_address
 
-  def read(self, amount_of_bytes):
+  def read(self, amount_of_bytes) -> bytes | None:
     """
     Reads the given amount of bytes from the i2c device and returns the data.
     It skips the first byte which is the pinstrap address.
+
+    Returns:
+        bytes | None: The data read from the device.
     """
 
     if self.address == None:
@@ -227,9 +258,15 @@ class Modulino:
     # data[0] is always the pinstrap address
     return data[1:]
 
-  def write(self, data_buffer):
+  def write(self, data_buffer) -> bool:
     """
     Writes the given buffer to the i2c device.
+
+    Parameters:
+        data_buffer (bytearray): The data to be written to the device.
+
+    Returns:
+        bool: True if the data was written successfully, False otherwise.
     """
     if self.address == None:
       return False
@@ -237,7 +274,7 @@ class Modulino:
     return True
 
   @property
-  def has_default_address(self):
+  def has_default_address(self) -> bool:
     """
     Determines if the given modulino has a default address
     or if a custom one was set.
@@ -245,7 +282,7 @@ class Modulino:
     return self.address in self.default_addresses
 
   @staticmethod
-  def available_devices():
+  def available_devices() -> list[Modulino]:
     """
     Finds all devices on the i2c bus and returns them as a list of Modulino objects.
 

@@ -3,21 +3,10 @@ from time import sleep_ms
 
 class ModulinoBuzzer(Modulino):
   """
-  Class to play tones on the buzzer of the Modulino.
-  The supported notes are defined as follows:
-  - B0
-  - C1, CS1, D1, DS1, E1, F1, FS1, G1, GS1, A1, AS1, B1
-  - C2, CS2, D2, DS2, E2, F2, FS2, G2, GS2, A2, AS2, B2
-  - C3, CS3, D3, DS3, E3, F3, FS3, G3, GS3, A3, AS3, B3
-  - C4, CS4, D4, DS4, E4, F4, FS4, G4, GS4, A4, AS4, B4
-  - C5, CS5, D5, DS5, E5, F5, FS5, G5, GS5, A5, AS5, B5
-  - C6, CS6, D6, DS6, E6, F6, FS6, G6, GS6, A6, AS6, B6
-  - C7, CS7, D7, DS7, E7, F7, FS7, G7, GS7, A7, AS7, B7
-  - C8, CS8, D8, DS8
-  - REST (Silence)
-
-  Those notes are accessible through ModulinoBuzzer.NOTES e.g. ModulinoBuzzer.NOTES["C4"]
+  Class to play tones on the piezo element of the Modulino Buzzer.
+  Predefined notes are available in the NOTES dictionary e.g. ModulinoBuzzer.NOTES["C4"]
   """
+
   NOTES = {
     "B0": 31,
     "C1": 33,
@@ -110,6 +99,20 @@ class ModulinoBuzzer(Modulino):
     "DS8": 4978,
     "REST": 0
   }
+  """
+  Dictionary with the notes and their corresponding frequencies.
+  The supported notes are defined as follows:
+  - B0
+  - C1, CS1, D1, DS1, E1, F1, FS1, G1, GS1, A1, AS1, B1
+  - C2, CS2, D2, DS2, E2, F2, FS2, G2, GS2, A2, AS2, B2
+  - C3, CS3, D3, DS3, E3, F3, FS3, G3, GS3, A3, AS3, B3
+  - C4, CS4, D4, DS4, E4, F4, FS4, G4, GS4, A4, AS4, B4
+  - C5, CS5, D5, DS5, E5, F5, FS5, G5, GS5, A5, AS5, B5
+  - C6, CS6, D6, DS6, E6, F6, FS6, G6, GS6, A6, AS6, B6
+  - C7, CS7, D7, DS7, E7, F7, FS7, G7, GS7, A7, AS7, B7
+  - C8, CS8, D8, DS8
+  - REST (Silence)
+  """
 
   default_addresses = [0x3C]
 
