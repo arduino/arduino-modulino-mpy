@@ -7,7 +7,7 @@ class ModulinoBuzzer(Modulino):
   Predefined notes are available in the NOTES dictionary e.g. ModulinoBuzzer.NOTES["C4"]
   """
 
-  NOTES = {
+  NOTES: dict[str, int] = {
     "B0": 31,
     "C1": 33,
     "CS1": 35,
@@ -116,12 +116,12 @@ class ModulinoBuzzer(Modulino):
 
   default_addresses = [0x3C]
 
-  def __init__(self, i2c_bus = None, address = None):
+  def __init__(self, i2c_bus=None, address=None):
     super().__init__(i2c_bus, address, "BUZZER")
     self.data = bytearray(8)
     self.no_tone()
 
-  def tone(self, frequency, lenght_ms=0xFFFF, blocking=False):
+  def tone(self, frequency: int, lenght_ms: int = 0xFFFF, blocking: bool = False) -> None:
     """
     Plays a tone with the given frequency and duration.
     If blocking is set to True, the function will wait until the tone is finished.
@@ -131,8 +131,8 @@ class ModulinoBuzzer(Modulino):
         lenght_ms: The duration of the tone in milliseconds. If omitted, the tone will play indefinitely
         blocking: If set to True, the function will wait until the tone is finished
     """
-    self.data[0:4]=frequency.to_bytes(4,'little')
-    self.data[4:8]=lenght_ms.to_bytes(4,'little')
+    self.data[0:4] = frequency.to_bytes(4, 'little')
+    self.data[4:8] = lenght_ms.to_bytes(4, 'little')
     self.write(self.data)
     
     if blocking:
@@ -140,7 +140,7 @@ class ModulinoBuzzer(Modulino):
       # Those pauses are caused by the time it takes to send the data to the buzzer
       sleep_ms(lenght_ms - 5)
 
-  def no_tone(self):
+  def no_tone(self) -> None:
     """
     Stops the current tone from playing.
     """

@@ -28,7 +28,7 @@ class ModulinoButtons(Modulino):
     self._on_button_b_long_press = None
     self._on_button_c_long_press = None
   
-  def set_led_status(self, a: bool, b: bool, c: bool):
+  def set_led_status(self, a: bool, b: bool, c: bool) -> None:
     """
     Turn on or off the button LEDs according to the given status.
 
@@ -52,7 +52,7 @@ class ModulinoButtons(Modulino):
     return self._long_press_duration
   
   @long_press_duration.setter
-  def long_press_duration(self, value : int):
+  def long_press_duration(self, value: int) -> None:
     """
     Sets the duration in milliseconds that the button must 
     be pressed to trigger the long press event
@@ -60,126 +60,126 @@ class ModulinoButtons(Modulino):
     self._long_press_duration = value
 
   @property
-  def on_button_a_press(self) -> function:
+  def on_button_a_press(self):
     """
     Returns the callback for the press event of button A.    
     """
     return self._on_button_a_press
   
   @on_button_a_press.setter
-  def on_button_a_press(self, value):
+  def on_button_a_press(self, value) -> None:
     """
     Sets the callback for the press event of button A.
     """
     self._on_button_a_press = value
 
   @property
-  def on_button_a_release(self) -> function:
+  def on_button_a_release(self):
     """
     Returns the callback for the release event of button A.
     """
     return self._on_button_a_release
   
   @on_button_a_release.setter
-  def on_button_a_release(self, value):
+  def on_button_a_release(self, value) -> None:
     """
     Sets the callback for the release event of button A.
     """
     self._on_button_a_release = value
 
   @property
-  def on_button_a_long_press(self) -> function:
+  def on_button_a_long_press(self):
     """
     Returns the callback for the long press event of button A.
     """
     return self._on_button_a_long_press
   
   @on_button_a_long_press.setter
-  def on_button_a_long_press(self, value):
+  def on_button_a_long_press(self, value) -> None:
     """
     Sets the callback for the long press event of button A.
     """
     self._on_button_a_long_press = value
 
   @property
-  def on_button_b_press(self) -> function:
+  def on_button_b_press(self):
     """
     Returns the callback for the press event of button B.
     """
     return self._on_button_b_press
   
   @on_button_b_press.setter
-  def on_button_b_press(self, value):
+  def on_button_b_press(self, value) -> None:
     """
     Sets the callback for the press event of button B.
     """
     self._on_button_b_press = value
 
   @property
-  def on_button_b_release(self) -> function:
+  def on_button_b_release(self):
     """
     Returns the callback for the release event of button B.
     """
     return self._on_button_b_release
   
   @on_button_b_release.setter
-  def on_button_b_release(self, value):
+  def on_button_b_release(self, value) -> None:
     """
     Sets the callback for the release event of button B.
     """
     self._on_button_b_release = value
 
   @property
-  def on_button_b_long_press(self) -> function:
+  def on_button_b_long_press(self):
     """
     Returns the callback for the long press event of button B.
     """
     return self._on_button_b_long_press
   
   @on_button_b_long_press.setter
-  def on_button_b_long_press(self, value):
+  def on_button_b_long_press(self, value) -> None:
     """
     Sets the callback for the long press event of button B.
     """
     self._on_button_b_long_press = value
 
   @property
-  def on_button_c_press(self) -> function:
+  def on_button_c_press(self):
     """
     Returns the callback for the press event of button C.
     """
     return self._on_button_c_press
   
   @on_button_c_press.setter
-  def on_button_c_press(self, value):
+  def on_button_c_press(self, value) -> None:
     """
     Sets the callback for the press event of button C.
     """
     self._on_button_c_press = value
 
   @property
-  def on_button_c_release(self) -> function:
+  def on_button_c_release(self):
     """
     Returns the callback for the release event of button C.
     """
     return self._on_button_c_release
   
   @on_button_c_release.setter
-  def on_button_c_release(self, value):
+  def on_button_c_release(self, value) -> None:
     """
     Sets the callback for the release event of button C.
     """
     self._on_button_c_release = value
 
   @property
-  def on_button_c_long_press(self) -> function:
+  def on_button_c_long_press(self):
     """
     Returns the callback for the long press event of button C.
     """
     return self._on_button_c_long_press
   
   @on_button_c_long_press.setter
-  def on_button_c_long_press(self, value):
+  def on_button_c_long_press(self, value) -> None:
     """
     Sets the callback for the long press event of button C.
     """
@@ -243,7 +243,7 @@ class ModulinoButtons(Modulino):
 
     return button_states_changed
 
-  def is_pressed(self, index) -> bool:
+  def is_pressed(self, index: int) -> bool:
     """
     Returns True if the button at the given index is currently pressed.
 
@@ -253,7 +253,7 @@ class ModulinoButtons(Modulino):
     return self._current_buttons_status[index]
   
   @property
-  def button_a_pressed(self):
+  def button_a_pressed(self) -> bool:
     """
     Returns True if button A is currently pressed.
     """

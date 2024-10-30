@@ -11,7 +11,7 @@ class ModulinoPressure(Modulino):
     default_addresses = [0x5C, 0x5D]
     convert_default_addresses = False
 
-    def __init__(self, i2c_bus=None, address: int | None = None) -> None:
+    def __init__(self, i2c_bus: I2C = None, address: int = None) -> None:
         super().__init__(i2c_bus, address, "PRESSURE")
         self.sensor = LPS22H(self.i2c_bus, self.address)
 

@@ -17,7 +17,7 @@ class ModulinoDistance(Modulino):
         self.sensor.start_ranging()
 
     @property
-    def _distance_raw(self):
+    def _distance_raw(self) -> int:
         """
         Reads the raw distance value from the sensor and clears the interrupt.
 
@@ -30,7 +30,7 @@ class ModulinoDistance(Modulino):
         return self.sensor.distance
 
     @property
-    def distance(self):
+    def distance(self) -> int:
         """
         Returns:
             int: The distance in centimeters.
