@@ -6,7 +6,9 @@ packages = ["modulino"]
 [[tool.pydoc-markdown.processors]]
 type = "filter"
 skip_empty_modules = true
-expression = "not \"modulino.lib\" in name and default()"
+do_not_filter_modules = false
+# Private classes need to be excluded explicitly since this is not supported yet by the filter processor
+expression = "not 'modulino.lib' in name and not (name.startswith('_') and not name.endswith('_')) and default()"
 
 [[tool.pydoc-markdown.processors]]
 type = "google"
