@@ -3,10 +3,12 @@
 * [buzzer](#modulino.buzzer)
   * [ModulinoBuzzer](#modulino.buzzer.ModulinoBuzzer)
     * [NOTES](#modulino.buzzer.ModulinoBuzzer.NOTES)
+    * [\_\_init\_\_](#modulino.buzzer.ModulinoBuzzer.__init__)
     * [tone](#modulino.buzzer.ModulinoBuzzer.tone)
     * [no\_tone](#modulino.buzzer.ModulinoBuzzer.no_tone)
 * [buttons](#modulino.buttons)
   * [ModulinoButtons](#modulino.buttons.ModulinoButtons)
+    * [\_\_init\_\_](#modulino.buttons.ModulinoButtons.__init__)
     * [set\_led\_status](#modulino.buttons.ModulinoButtons.set_led_status)
     * [long\_press\_duration](#modulino.buttons.ModulinoButtons.long_press_duration)
     * [long\_press\_duration](#modulino.buttons.ModulinoButtons.long_press_duration)
@@ -35,6 +37,7 @@
     * [button\_c\_pressed](#modulino.buttons.ModulinoButtons.button_c_pressed)
 * [pressure](#modulino.pressure)
   * [ModulinoPressure](#modulino.pressure.ModulinoPressure)
+    * [\_\_init\_\_](#modulino.pressure.ModulinoPressure.__init__)
     * [pressure](#modulino.pressure.ModulinoPressure.pressure)
     * [temperature](#modulino.pressure.ModulinoPressure.temperature)
     * [altitude](#modulino.pressure.ModulinoPressure.altitude)
@@ -56,9 +59,11 @@
     * [reset\_bus](#modulino.modulino.Modulino.reset_bus)
 * [distance](#modulino.distance)
   * [ModulinoDistance](#modulino.distance.ModulinoDistance)
+    * [\_\_init\_\_](#modulino.distance.ModulinoDistance.__init__)
     * [distance](#modulino.distance.ModulinoDistance.distance)
 * [knob](#modulino.knob)
   * [ModulinoKnob](#modulino.knob.ModulinoKnob)
+    * [\_\_init\_\_](#modulino.knob.ModulinoKnob.__init__)
     * [reset](#modulino.knob.ModulinoKnob.reset)
     * [update](#modulino.knob.ModulinoKnob.update)
     * [range](#modulino.knob.ModulinoKnob.range)
@@ -79,6 +84,7 @@
     * [\_\_init\_\_](#modulino.pixels.ModulinoColor.__init__)
     * [\_\_int\_\_](#modulino.pixels.ModulinoColor.__int__)
   * [ModulinoPixels](#modulino.pixels.ModulinoPixels)
+    * [\_\_init\_\_](#modulino.pixels.ModulinoPixels.__init__)
     * [set\_range\_rgb](#modulino.pixels.ModulinoPixels.set_range_rgb)
     * [set\_range\_color](#modulino.pixels.ModulinoPixels.set_range_color)
     * [set\_all\_rgb](#modulino.pixels.ModulinoPixels.set_all_rgb)
@@ -91,11 +97,13 @@
     * [show](#modulino.pixels.ModulinoPixels.show)
 * [movement](#modulino.movement)
   * [ModulinoMovement](#modulino.movement.ModulinoMovement)
+    * [\_\_init\_\_](#modulino.movement.ModulinoMovement.__init__)
     * [accelerometer](#modulino.movement.ModulinoMovement.accelerometer)
     * [gyro](#modulino.movement.ModulinoMovement.gyro)
 * [thermo](#modulino.thermo)
   * [Measurement](#modulino.thermo.Measurement)
   * [ModulinoThermo](#modulino.thermo.ModulinoThermo)
+    * [\_\_init\_\_](#modulino.thermo.ModulinoThermo.__init__)
     * [measurements](#modulino.thermo.ModulinoThermo.measurements)
     * [relative\_humidity](#modulino.thermo.ModulinoThermo.relative_humidity)
     * [temperature](#modulino.thermo.ModulinoThermo.temperature)
@@ -127,6 +135,21 @@ The supported notes are defined as follows:
 - C7, CS7, D7, DS7, E7, F7, FS7, G7, GS7, A7, AS7, B7
 - C8, CS8, D8, DS8
 - REST (Silence)
+
+<a id="modulino.buzzer.ModulinoBuzzer.__init__"></a>
+
+### `__init__`
+
+```python
+def __init__(i2c_bus=None, address=None)
+```
+
+Initializes the Modulino Buzzer.
+
+**Arguments**:
+
+- `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
+- `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
 
 <a id="modulino.buzzer.ModulinoBuzzer.tone"></a>
 
@@ -166,6 +189,21 @@ class ModulinoButtons(Modulino)
 ```
 
 Class to interact with the buttons of the Modulino Buttons.
+
+<a id="modulino.buttons.ModulinoButtons.__init__"></a>
+
+### `__init__`
+
+```python
+def __init__(i2c_bus=None, address=None)
+```
+
+Initializes the Modulino Buttons.
+
+**Arguments**:
+
+- `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
+- `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
 
 <a id="modulino.buttons.ModulinoButtons.set_led_status"></a>
 
@@ -477,6 +515,21 @@ class ModulinoPressure(Modulino)
 
 Class to interact with the pressure sensor of the Modulino Pressure.
 
+<a id="modulino.pressure.ModulinoPressure.__init__"></a>
+
+### `__init__`
+
+```python
+def __init__(i2c_bus: I2C = None, address: int = None) -> None
+```
+
+Initializes the Modulino Pressure.
+
+**Arguments**:
+
+- `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
+- `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
+
 <a id="modulino.pressure.ModulinoPressure.pressure"></a>
 
 ### `pressure`
@@ -555,6 +608,12 @@ If the address is provided, the device will check if it is connected to the bus.
 If the address is 8-bit, it will be converted to 7-bit.
 If no bus is provided, the default bus will be used if available.
 
+**Arguments**:
+
+- `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
+- `address` _int_ - The address of the device. If not provided, the device will try to auto discover it.
+- `name` _str_ - The name of the device.
+
 <a id="modulino.modulino.Modulino.discover"></a>
 
 ### `discover`
@@ -564,7 +623,7 @@ def discover(default_addresses: list[int]) -> int | None
 ```
 
 Tries to find the given modulino device in the device chain
-based on the pre-defined default addresses.
+based on the pre-defined default addresses. The first address found will be returned.
 If the address has been changed to a custom one it won't be found with this function.
 
 **Returns**:
@@ -725,6 +784,21 @@ class ModulinoDistance(Modulino)
 
 Class to interact with the distance sensor of the Modulino Distance.
 
+<a id="modulino.distance.ModulinoDistance.__init__"></a>
+
+### `__init__`
+
+```python
+def __init__(i2c_bus=None, address: int | None = None) -> None
+```
+
+Initializes the Modulino Distance.
+
+**Arguments**:
+
+- `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
+- `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
+
 <a id="modulino.distance.ModulinoDistance.distance"></a>
 
 ### `distance`
@@ -747,6 +821,21 @@ class ModulinoKnob(Modulino)
 ```
 
 Class to interact with the rotary encoder of the Modulinio Knob.
+
+<a id="modulino.knob.ModulinoKnob.__init__"></a>
+
+### `__init__`
+
+```python
+def __init__(i2c_bus=None, address=None)
+```
+
+Initializes the Modulino Knob.
+
+**Arguments**:
+
+- `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
+- `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
 
 <a id="modulino.knob.ModulinoKnob.reset"></a>
 
@@ -996,6 +1085,21 @@ class ModulinoPixels(Modulino)
 
 Class to interact with the LEDs of the Modulino Pixels.
 
+<a id="modulino.pixels.ModulinoPixels.__init__"></a>
+
+### `__init__`
+
+```python
+def __init__(i2c_bus=None, address=None)
+```
+
+Initializes the Modulino Pixels.
+
+**Arguments**:
+
+- `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
+- `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
+
 <a id="modulino.pixels.ModulinoPixels.set_range_rgb"></a>
 
 ### `set_range_rgb`
@@ -1170,6 +1274,21 @@ class ModulinoMovement(Modulino)
 
 Class to interact with the movement sensor (IMU) of the Modulino Movement.
 
+<a id="modulino.movement.ModulinoMovement.__init__"></a>
+
+### `__init__`
+
+```python
+def __init__(i2c_bus=None, address: int | None = None) -> None
+```
+
+Initializes the Modulino Movement.
+
+**Arguments**:
+
+- `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
+- `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
+
 <a id="modulino.movement.ModulinoMovement.accelerometer"></a>
 
 ### `accelerometer`
@@ -1211,6 +1330,21 @@ class ModulinoThermo(Modulino)
 ```
 
 Class to interact with the temperature and humidity sensor of the Modulino Thermo.
+
+<a id="modulino.thermo.ModulinoThermo.__init__"></a>
+
+### `__init__`
+
+```python
+def __init__(i2c_bus: I2C = None, address: int = DEFAULT_ADDRESS) -> None
+```
+
+Initializes the Modulino Thermo.
+
+**Arguments**:
+
+- `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
+- `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
 
 <a id="modulino.thermo.ModulinoThermo.measurements"></a>
 
