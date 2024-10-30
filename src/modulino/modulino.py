@@ -23,7 +23,7 @@ PINSTRAP_ADDRESS_MAP = {
     0x6C: "Pixels"
 }
 
-class I2CHelper:
+class _I2CHelper:
     """
     A helper class for interacting with I2C devices on supported boards.
     """
@@ -54,7 +54,7 @@ class I2CHelper:
 
       # This is a workaround to get the SCL and SDA pins from a given bus object.
       # Unfortunately the I2C class does not expose those attributes directly.
-      interface, scl_pin_number, sda_pin_number = I2CHelper.extract_i2c_info(i2c_bus)
+      interface, scl_pin_number, sda_pin_number = _I2CHelper.extract_i2c_info(i2c_bus)
       
       scl_pin = Pin(scl_pin_number, Pin.IN) # Detach pin from I2C
       sda_pin = Pin(sda_pin_number, Pin.IN) # Detach pin from I2C
@@ -62,7 +62,7 @@ class I2CHelper:
       scl_pin = Pin(scl_pin_number, Pin.OUT)
       sda_pin = Pin(sda_pin_number, Pin.OUT)
       
-      period = 1 / I2CHelper.frequency
+      period = 1 / _I2CHelper.frequency
       sda_pin.value(1)
       for _ in range(0, 20):
         scl_pin.value(1)
@@ -72,17 +72,17 @@ class I2CHelper:
       
       # Need to re-initialize the bus after resetting it
       # otherwise it gets stuck.
-      return I2C(interface, freq=I2CHelper.frequency)
+      return I2C(interface, freq=_I2CHelper.frequency)
 
     @staticmethod
     def get_interface() -> I2C:
-      if(I2CHelper.i2c_bus is None):        
-        I2CHelper.i2c_bus = I2CHelper.find_interface()
-        I2CHelper.i2c_bus = I2CHelper.reset_bus(I2CHelper.i2c_bus)
-      return I2CHelper.i2c_bus
+      if(_I2CHelper.i2c_bus is None):        
+        _I2CHelper.i2c_bus = _I2CHelper._find_interface()
+        _I2CHelper.i2c_bus = _I2CHelper.reset_bus(_I2CHelper.i2c_bus)
+      return _I2CHelper.i2c_bus
 
     @staticmethod
-    def find_interface() -> I2C:
+    def _find_interface() -> I2C:
         """
         Returns an instance of the I2C interface for the current board.
 
@@ -99,11 +99,11 @@ class I2CHelper:
             raise RuntimeError(f"I2C interface couldn't be determined automatically for '{board_name}'.")
 
         if interface_info.type == "hw":
-            return I2C(interface_info.bus_number, freq=I2CHelper.frequency)
+            return I2C(interface_info.bus_number, freq=_I2CHelper.frequency)
 
         if interface_info.type == "sw":
             from machine import SoftI2C, Pin
-            return SoftI2C(scl=Pin(interface_info.scl) , sda=Pin(interface_info.sda), freq=I2CHelper.frequency)            
+            return SoftI2C(scl=Pin(interface_info.scl) , sda=Pin(interface_info.sda), freq=_I2CHelper.frequency)            
 
 class Modulino:
   default_addresses = []
@@ -112,7 +112,7 @@ class Modulino:
   
   def __init__(self, i2c_bus=None, address=None, name=None):
     if i2c_bus is None:
-        self.i2c_bus = I2CHelper.get_interface()
+        self.i2c_bus = _I2CHelper.get_interface()
     else:
         self.i2c_bus = i2c_bus
 
@@ -252,7 +252,7 @@ class Modulino:
     Returns:
         list: A list of Modulino objects.
     """
-    bus = I2CHelper.get_interface()
+    bus = _I2CHelper.get_interface()
     device_addresses = bus.scan()
     devices = []
     for address in device_addresses:
@@ -270,4 +270,4 @@ class Modulino:
     Returns:
         I2C: A new i2c bus object after resetting the bus.
     """
-    return I2CHelper.reset_bus(i2c_bus)
+    return _I2CHelper.reset_bus(i2c_bus)
