@@ -8,7 +8,7 @@ class ModulinoButtons(Modulino):
   """
 
   default_addresses = [0x7C]
-  _default_long_press_duration = const(1000) # 1 second
+  default_long_press_duration = const(1000)
 
   def __init__(self, i2c_bus = None, address = None):
     """
@@ -20,7 +20,7 @@ class ModulinoButtons(Modulino):
     """
 
     super().__init__(i2c_bus, address, "BUTTONS")
-    self.long_press_duration = self._default_long_press_duration
+    self.long_press_duration = self.default_long_press_duration
 
     self._current_buttons_status = [None, None, None]
     self._last_press_timestamps = [None, None, None]
