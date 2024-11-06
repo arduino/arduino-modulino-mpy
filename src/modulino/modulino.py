@@ -56,22 +56,28 @@ class _I2CHelper:
     # Unfortunately the I2C class does not expose those attributes directly.
     interface, scl_pin_number, sda_pin_number = _I2CHelper.extract_i2c_info(i2c_bus)
 
-    scl_pin = Pin(scl_pin_number, Pin.IN)  # Detach pin from I2C
-    sda_pin = Pin(sda_pin_number, Pin.IN)  # Detach pin from I2C
+    # Detach pins from I2C and configure them as GPIO outputs in open-drain mode
+    scl_pin = Pin(scl_pin_number, Pin.OUT, Pin.OPEN_DRAIN)
+    sda_pin = Pin(sda_pin_number, Pin.OUT, Pin.OPEN_DRAIN)
 
-    scl_pin = Pin(scl_pin_number, Pin.OUT)
-    sda_pin = Pin(sda_pin_number, Pin.OUT)
-
-    period = 1 / _I2CHelper.frequency
+    # Set both lines high initially
+    scl_pin.value(1)
     sda_pin.value(1)
-    for _ in range(0, 20):
-      scl_pin.value(1)
-      sleep(period / 2)  # Add sleep to match the frequency
-      scl_pin.value(0)
-      sleep(period / 2)  # Add sleep to match the frequency
+    sleep(0.001)  # 1 millisecond delay to stabilize bus
+
+    # Pulse the SCL line 9 times to release any stuck device
+    for _ in range(9):
+        scl_pin.value(0)
+        sleep(0.001)  # 1 millisecond delay for each pulse
+        scl_pin.value(1)
+        sleep(0.001)
+
+    # Ensure SDA is high before re-initializing
+    sda_pin.value(1)
+    scl_pin.value(1)
+    sleep(0.001)  # 1 millisecond delay to stabilize bus
 
     # Need to re-initialize the bus after resetting it
-    # otherwise it gets stuck.
     return I2C(interface, freq=_I2CHelper.frequency)
 
   @staticmethod
