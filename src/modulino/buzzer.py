@@ -8,37 +8,6 @@ class ModulinoBuzzer(Modulino):
   """
 
   NOTES: dict[str, int] = {
-    "B0": 31,
-    "C1": 33,
-    "CS1": 35,
-    "D1": 37,
-    "DS1": 39,
-    "E1": 41,
-    "F1": 44,
-    "FS1": 46,
-    "G1": 49,
-    "GS1": 52,
-    "A1": 55,
-    "AS1": 58,
-    "B1": 62,
-    "C2": 65,
-    "CS2": 69,
-    "D2": 73,
-    "DS2": 78,
-    "E2": 82,
-    "F2": 87,
-    "FS2": 93,
-    "G2": 98,
-    "GS2": 104,
-    "A2": 110,
-    "AS2": 117,
-    "B2": 123,
-    "C3": 131,
-    "CS3": 139,
-    "D3": 147,
-    "DS3": 156,
-    "E3": 165,
-    "F3": 175,
     "FS3": 185,
     "G3": 196,
     "GS3": 208,
@@ -102,10 +71,7 @@ class ModulinoBuzzer(Modulino):
   """
   Dictionary with the notes and their corresponding frequencies.
   The supported notes are defined as follows:
-  - B0
-  - C1, CS1, D1, DS1, E1, F1, FS1, G1, GS1, A1, AS1, B1
-  - C2, CS2, D2, DS2, E2, F2, FS2, G2, GS2, A2, AS2, B2
-  - C3, CS3, D3, DS3, E3, F3, FS3, G3, GS3, A3, AS3, B3
+  - FS3, G3, GS3, A3, AS3, B3
   - C4, CS4, D4, DS4, E4, F4, FS4, G4, GS4, A4, AS4, B4
   - C5, CS5, D5, DS5, E5, F5, FS5, G5, GS5, A5, AS5, B5
   - C6, CS6, D6, DS6, E6, F6, FS6, G6, GS6, A6, AS6, B6
@@ -134,10 +100,13 @@ class ModulinoBuzzer(Modulino):
     If blocking is set to True, the function will wait until the tone is finished.
 
     Parameters:
-        frequency: The frequency of the tone in Hz
+        frequency: The frequency of the tone in Hz (freuqencies below 180 Hz are not supported)
         lenght_ms: The duration of the tone in milliseconds. If omitted, the tone will play indefinitely
         blocking: If set to True, the function will wait until the tone is finished
     """
+    if frequency < 180 and frequency != 0:
+      raise ValueError("Frequency must be greater than 180 Hz")
+    
     self.data[0:4] = frequency.to_bytes(4, 'little')
     self.data[4:8] = lenght_ms.to_bytes(4, 'little')
     self.write(self.data)
