@@ -128,7 +128,7 @@ class ModulinoPixels(Modulino):
     Sets the color of the given LED index to the given color.
 
     Parameters:
-        idx (int): The index of the LED.
+        idx (int): The index of the LED (0..7).
         rgb (ModulinoColor): The color of the LED.
         brightness (int): The brightness of the LED. It should be a value between 0 and 100.
     """
@@ -145,7 +145,7 @@ class ModulinoPixels(Modulino):
     Set the color of the given LED index to the given RGB values.
 
     Parameters:
-        idx (int): The index of the LED.
+        idx (int): The index of the LED (0..7).
         r (int): The red value of the color.
         g (int): The green value of the color.
         b (int): The blue value of the color.
@@ -158,7 +158,7 @@ class ModulinoPixels(Modulino):
     Turns off the LED at the given index.
 
     Parameters:
-        idx (int): The index of the LED.
+        idx (int): The index of the LED (0..7).
     """
     self.set_color(idx, ModulinoColor(0, 0, 0), 0)
 
@@ -176,9 +176,6 @@ class ModulinoPixels(Modulino):
   def clear_all(self) -> None:
     """
     Turns all the LEDs off.
-
-    Parameters:
-        idx (int): The index of the LED
     """
     self.data = bytearray([0xE0] * NUM_LEDS * 4)
 
