@@ -9,6 +9,7 @@ Initial author: Sebastian Romero (s.romero@arduino.cc)
 """
 
 from modulino import ModulinoButtons
+from time import sleep
 
 buttons = ModulinoButtons()
 
@@ -24,6 +25,13 @@ buttons.on_button_c_press = lambda : print("Button C pressed")
 buttons.on_button_c_long_press = lambda : print("Button C long press")
 buttons.on_button_c_release = lambda : print("Button C released")
 
+buttons.led_a.on()
+sleep(0.5)
+buttons.led_b.on()
+sleep(0.5)
+buttons.led_c.on()
+sleep(0.5)
+buttons.set_led_status(False, False, False) # Turn off all LEDs
 
 while True:
     buttons_state_changed = buttons.update()

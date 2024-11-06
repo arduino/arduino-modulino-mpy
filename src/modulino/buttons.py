@@ -2,6 +2,37 @@ from .modulino import Modulino
 from time import ticks_ms
 from micropython import const
 
+class ModulinoButtonsLED():
+  """
+  Class to interact with the LEDs of the Modulino Buttons.
+  """
+
+  def __init__(self, buttons):
+    self._value = 0
+    self._buttons = buttons
+
+  def on(self):
+    """ Turns the LED on. """
+    self.value = 1
+
+  def off(self):
+    """ Turns the LED off. """
+    self.value = 0
+
+  @property
+  def value(self):
+    """ Returns the value of the LED (1 for on, 0 for off). """
+    return self._value
+  
+  @value.setter
+  def value(self, value):
+    """
+    Sets the value of the LED (1 for on, 0 for off).
+    Calling this method will update the physical status of the LED immediately.
+    """
+    self._value = value
+    self._buttons._update_leds()
+
 class ModulinoButtons(Modulino):
   """
   Class to interact with the buttons of the Modulino Buttons.
@@ -35,7 +66,37 @@ class ModulinoButtons(Modulino):
     self._on_button_a_long_press = None
     self._on_button_b_long_press = None
     self._on_button_c_long_press = None
+
+    # LEDs
+    self._led_a = ModulinoButtonsLED(self)
+    self._led_b = ModulinoButtonsLED(self)
+    self._led_c = ModulinoButtonsLED(self)
   
+  @property
+  def led_a(self) -> ModulinoButtonsLED:
+    """ Returns the LED A object of the module. """
+    return self._led_a
+  
+  @property
+  def led_b(self) -> ModulinoButtonsLED:
+    """ Returns the LED B object of the module. """
+    return self._led_b
+  
+  @property
+  def led_c(self) -> ModulinoButtonsLED:
+    """ Returns the LED C object of the module. """
+    return self._led_c
+
+  def _update_leds(self):
+    """
+    Update the physical status of the button LEDs by writing the current values to the module.
+    """
+    data = bytearray(3)
+    data[0] = self._led_a.value
+    data[1] = self._led_b.value
+    data[2] = self._led_c.value
+    self.write(data)
+
   def set_led_status(self, a: bool, b: bool, c: bool) -> None:
     """
     Turn on or off the button LEDs according to the given status.
@@ -45,11 +106,10 @@ class ModulinoButtons(Modulino):
         b (bool): The status of the LED B.
         c (bool): The status of the LED C.
     """
-    data = bytearray(3)
-    data[0] = 1 if a else 0
-    data[1] = 1 if b else 0
-    data[2] = 1 if c else 0
-    self.write(data)
+    self._led_a._value = 1 if a else 0
+    self._led_b._value = 1 if b else 0
+    self._led_c._value = 1 if c else 0
+    self._update_leds()
 
   @property
   def long_press_duration(self) -> int:
