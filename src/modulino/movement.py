@@ -1,5 +1,9 @@
 from .modulino import Modulino
 from lsm6dsox import LSM6DSOX
+from collections import namedtuple
+
+MovementValues = namedtuple('MovementValues', ['x', 'y', 'z'])
+"""A named tuple to store the x, y, and z values of the movement sensors."""
 
 class ModulinoMovement(Modulino):
     """
@@ -23,17 +27,23 @@ class ModulinoMovement(Modulino):
         self.sensor = LSM6DSOX(self.i2c_bus, address=self.address)
 
     @property
-    def accelerometer(self) -> tuple[float, float, float]:
+    def accelerometer(self) -> MovementValues:
         """
         Returns:
-            tuple[float, float, float]: The acceleration values in the x, y, and z axes.        
+            MovementValues: The acceleration values in the x, y, and z axes.
+                            These values can be accessed as .x, .y, and .z properties
+                            or by using the index operator for tuple unpacking.
         """
-        return self.sensor.accel()
+        sensor_values = self.sensor.accel()
+        return MovementValues(sensor_values[0], sensor_values[1], sensor_values[2])
     
     @property
-    def gyro(self) -> tuple[float, float, float]:
+    def gyro(self) -> MovementValues:
         """
         Returns:
-            tuple[float, float, float]: The angular velocity values in the x, y, and z axes.
+            MovementValues: The gyroscope values in the x, y, and z axes.
+                            These values can be accessed as .x, .y, and .z properties
+                            or by using the index operator for tuple unpacking.
         """
-        return self.sensor.gyro()
+        sensor_values = self.sensor.gyro()
+        return MovementValues(sensor_values[0], sensor_values[1], sensor_values[2])

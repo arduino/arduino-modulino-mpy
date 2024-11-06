@@ -11,7 +11,10 @@ from time import sleep_ms
 movement = ModulinoMovement()
 
 while True:
-    print("🏃 Accelerometer: x:{:>8.3f} y:{:>8.3f} z:{:>8.3f}".format(*movement.accelerometer))
-    print("🌐 Gyroscope:     x:{:>8.3f} y:{:>8.3f} z:{:>8.3f}".format(*movement.gyro))
+    acc = movement.accelerometer
+    gyro = movement.gyro
+    
+    print(f"🏃 Accelerometer: x:{acc.x:>8.3f} y:{acc.y:>8.3f} z:{acc.z:>8.3f}")
+    print(f"🌐 Gyroscope:     x:{gyro.x:>8.3f} y:{gyro.y:>8.3f} z:{gyro.z:>8.3f}")
     print("")
     sleep_ms(100)
