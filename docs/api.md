@@ -96,6 +96,7 @@
     * [clear\_all](#modulino.pixels.ModulinoPixels.clear_all)
     * [show](#modulino.pixels.ModulinoPixels.show)
 * [movement](#modulino.movement)
+  * [MovementValues](#modulino.movement.MovementValues)
   * [ModulinoMovement](#modulino.movement.ModulinoMovement)
     * [\_\_init\_\_](#modulino.movement.ModulinoMovement.__init__)
     * [accelerometer](#modulino.movement.ModulinoMovement.accelerometer)
@@ -1188,7 +1189,7 @@ Sets the color of the given LED index to the given color.
 
 **Arguments**:
 
-- `idx` _int_ - The index of the LED.
+- `idx` _int_ - The index of the LED (0..7).
 - `rgb` _ModulinoColor_ - The color of the LED.
 - `brightness` _int_ - The brightness of the LED. It should be a value between 0 and 100.
 
@@ -1204,7 +1205,7 @@ Set the color of the given LED index to the given RGB values.
 
 **Arguments**:
 
-- `idx` _int_ - The index of the LED.
+- `idx` _int_ - The index of the LED (0..7).
 - `r` _int_ - The red value of the color.
 - `g` _int_ - The green value of the color.
 - `b` _int_ - The blue value of the color.
@@ -1222,7 +1223,7 @@ Turns off the LED at the given index.
 
 **Arguments**:
 
-- `idx` _int_ - The index of the LED.
+- `idx` _int_ - The index of the LED (0..7).
 
 <a id="modulino.pixels.ModulinoPixels.clear_range"></a>
 
@@ -1249,10 +1250,6 @@ def clear_all() -> None
 
 Turns all the LEDs off.
 
-**Arguments**:
-
-- `idx` _int_ - The index of the LED
-
 <a id="modulino.pixels.ModulinoPixels.show"></a>
 
 ### `show`
@@ -1263,6 +1260,12 @@ def show() -> None
 
 Applies the changes to the LEDs. This function needs to be called after any changes to the LEDs.
 Otherwise, the changes will not be visible.
+
+<a id="modulino.movement.MovementValues"></a>
+
+### `MovementValues`
+
+A named tuple to store the x, y, and z values of the movement sensors.
 
 <a id="modulino.movement.ModulinoMovement"></a>
 
@@ -1295,12 +1298,14 @@ Initializes the Modulino Movement.
 
 ```python
 @property
-def accelerometer() -> tuple[float, float, float]
+def accelerometer() -> MovementValues
 ```
 
 **Returns**:
 
-  tuple[float, float, float]: The acceleration values in the x, y, and z axes.
+- `MovementValues` - The acceleration values in the x, y, and z axes.
+  These values can be accessed as .x, .y, and .z properties
+  or by using the index operator for tuple unpacking.
 
 <a id="modulino.movement.ModulinoMovement.gyro"></a>
 
@@ -1308,12 +1313,14 @@ def accelerometer() -> tuple[float, float, float]
 
 ```python
 @property
-def gyro() -> tuple[float, float, float]
+def gyro() -> MovementValues
 ```
 
 **Returns**:
 
-  tuple[float, float, float]: The angular velocity values in the x, y, and z axes.
+- `MovementValues` - The gyroscope values in the x, y, and z axes.
+  These values can be accessed as .x, .y, and .z properties
+  or by using the index operator for tuple unpacking.
 
 <a id="modulino.thermo.Measurement"></a>
 
