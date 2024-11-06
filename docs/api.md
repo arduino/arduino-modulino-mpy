@@ -7,8 +7,16 @@
     * [tone](#modulino.buzzer.ModulinoBuzzer.tone)
     * [no\_tone](#modulino.buzzer.ModulinoBuzzer.no_tone)
 * [buttons](#modulino.buttons)
+  * [ModulinoButtonsLED](#modulino.buttons.ModulinoButtonsLED)
+    * [on](#modulino.buttons.ModulinoButtonsLED.on)
+    * [off](#modulino.buttons.ModulinoButtonsLED.off)
+    * [value](#modulino.buttons.ModulinoButtonsLED.value)
+    * [value](#modulino.buttons.ModulinoButtonsLED.value)
   * [ModulinoButtons](#modulino.buttons.ModulinoButtons)
     * [\_\_init\_\_](#modulino.buttons.ModulinoButtons.__init__)
+    * [led\_a](#modulino.buttons.ModulinoButtons.led_a)
+    * [led\_b](#modulino.buttons.ModulinoButtons.led_b)
+    * [led\_c](#modulino.buttons.ModulinoButtons.led_c)
     * [set\_led\_status](#modulino.buttons.ModulinoButtons.set_led_status)
     * [long\_press\_duration](#modulino.buttons.ModulinoButtons.long_press_duration)
     * [long\_press\_duration](#modulino.buttons.ModulinoButtons.long_press_duration)
@@ -35,12 +43,6 @@
     * [button\_a\_pressed](#modulino.buttons.ModulinoButtons.button_a_pressed)
     * [button\_b\_pressed](#modulino.buttons.ModulinoButtons.button_b_pressed)
     * [button\_c\_pressed](#modulino.buttons.ModulinoButtons.button_c_pressed)
-* [pressure](#modulino.pressure)
-  * [ModulinoPressure](#modulino.pressure.ModulinoPressure)
-    * [\_\_init\_\_](#modulino.pressure.ModulinoPressure.__init__)
-    * [pressure](#modulino.pressure.ModulinoPressure.pressure)
-    * [temperature](#modulino.pressure.ModulinoPressure.temperature)
-    * [altitude](#modulino.pressure.ModulinoPressure.altitude)
 * [modulino](#modulino.modulino)
   * [Modulino](#modulino.modulino.Modulino)
     * [default\_addresses](#modulino.modulino.Modulino.default_addresses)
@@ -126,10 +128,7 @@ Predefined notes are available in the NOTES dictionary e.g. ModulinoBuzzer.NOTES
 
 Dictionary with the notes and their corresponding frequencies.
 The supported notes are defined as follows:
-- B0
-- C1, CS1, D1, DS1, E1, F1, FS1, G1, GS1, A1, AS1, B1
-- C2, CS2, D2, DS2, E2, F2, FS2, G2, GS2, A2, AS2, B2
-- C3, CS3, D3, DS3, E3, F3, FS3, G3, GS3, A3, AS3, B3
+- FS3, G3, GS3, A3, AS3, B3
 - C4, CS4, D4, DS4, E4, F4, FS4, G4, GS4, A4, AS4, B4
 - C5, CS5, D5, DS5, E5, F5, FS5, G5, GS5, A5, AS5, B5
 - C6, CS6, D6, DS6, E6, F6, FS6, G6, GS6, A6, AS6, B6
@@ -167,7 +166,7 @@ If blocking is set to True, the function will wait until the tone is finished.
 
 **Arguments**:
 
-- `frequency` - The frequency of the tone in Hz
+- `frequency` - The frequency of the tone in Hz (freuqencies below 180 Hz are not supported)
 - `lenght_ms` - The duration of the tone in milliseconds. If omitted, the tone will play indefinitely
 - `blocking` - If set to True, the function will wait until the tone is finished
 
@@ -180,6 +179,59 @@ def no_tone() -> None
 ```
 
 Stops the current tone from playing.
+
+<a id="modulino.buttons.ModulinoButtonsLED"></a>
+
+## class `ModulinoButtonsLED`
+
+```python
+class ModulinoButtonsLED()
+```
+
+Class to interact with the LEDs of the Modulino Buttons.
+
+<a id="modulino.buttons.ModulinoButtonsLED.on"></a>
+
+### `on`
+
+```python
+def on()
+```
+
+Turns the LED on.
+
+<a id="modulino.buttons.ModulinoButtonsLED.off"></a>
+
+### `off`
+
+```python
+def off()
+```
+
+Turns the LED off.
+
+<a id="modulino.buttons.ModulinoButtonsLED.value"></a>
+
+### `value`
+
+```python
+@property
+def value()
+```
+
+Returns the value of the LED (1 for on, 0 for off).
+
+<a id="modulino.buttons.ModulinoButtonsLED.value"></a>
+
+### `value`
+
+```python
+@value.setter
+def value(value)
+```
+
+Sets the value of the LED (1 for on, 0 for off).
+Calling this method will update the physical status of the LED immediately.
 
 <a id="modulino.buttons.ModulinoButtons"></a>
 
@@ -205,6 +257,39 @@ Initializes the Modulino Buttons.
 
 - `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
 - `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
+
+<a id="modulino.buttons.ModulinoButtons.led_a"></a>
+
+### `led_a`
+
+```python
+@property
+def led_a() -> ModulinoButtonsLED
+```
+
+Returns the LED A object of the module.
+
+<a id="modulino.buttons.ModulinoButtons.led_b"></a>
+
+### `led_b`
+
+```python
+@property
+def led_b() -> ModulinoButtonsLED
+```
+
+Returns the LED B object of the module.
+
+<a id="modulino.buttons.ModulinoButtons.led_c"></a>
+
+### `led_c`
+
+```python
+@property
+def led_c() -> ModulinoButtonsLED
+```
+
+Returns the LED C object of the module.
 
 <a id="modulino.buttons.ModulinoButtons.set_led_status"></a>
 
@@ -505,70 +590,6 @@ def button_c_pressed() -> bool
 ```
 
 Returns True if button C is currently pressed.
-
-<a id="modulino.pressure.ModulinoPressure"></a>
-
-## class `ModulinoPressure`
-
-```python
-class ModulinoPressure(Modulino)
-```
-
-Class to interact with the pressure sensor of the Modulino Pressure.
-
-<a id="modulino.pressure.ModulinoPressure.__init__"></a>
-
-### `__init__`
-
-```python
-def __init__(i2c_bus: I2C = None, address: int = None) -> None
-```
-
-Initializes the Modulino Pressure.
-
-**Arguments**:
-
-- `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
-- `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
-
-<a id="modulino.pressure.ModulinoPressure.pressure"></a>
-
-### `pressure`
-
-```python
-@property
-def pressure() -> float
-```
-
-**Returns**:
-
-- `float` - The pressure in hectopascals.
-
-<a id="modulino.pressure.ModulinoPressure.temperature"></a>
-
-### `temperature`
-
-```python
-@property
-def temperature() -> float
-```
-
-**Returns**:
-
-- `float` - The temperature in degrees Celsius.
-
-<a id="modulino.pressure.ModulinoPressure.altitude"></a>
-
-### `altitude`
-
-```python
-@property
-def altitude() -> float
-```
-
-**Returns**:
-
-- `float` - The altitude in meters.
 
 <a id="modulino.modulino.Modulino"></a>
 
