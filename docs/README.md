@@ -31,6 +31,5 @@ The following scripts are examples of how to use the Modulinos with Python:
 and gyroscope values from the Modulino.
 - [pixels.py](../examples/pixels.py): This example shows how to use the ModulinoPixels class to control a set of pixels.
 - [pixels_thermo.py](../examples/pixels_thermo.py): This example shows how to use the ModulinoPixels and ModulinoThermo classes to display the temperature on a pixel strip.
-- [pressure.py](../examples/pressure.py): This example shows how to use the ModulinoPressure class to read the pressure, 
 temperature and altitude from the Modulino.
 - [thermo.py](../examples/thermo.py): This example shows how to use the ModulinoThermo class to read the temperature and humidity from the Modulino.
