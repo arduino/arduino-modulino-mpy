@@ -74,7 +74,7 @@ class ModulinoPixels(Modulino):
   def _mapi(self, x: float | int, in_min: float | int, in_max: float | int, out_min: float | int, out_max: float | int) -> int:
     return int(self._map(x, in_min, in_max, out_min, out_max)) 
   
-  def set_range_rgb(self, index_from: int, index_to: int, r: int, g: int, b: int, brightness: int = 100) -> None:
+  def set_range_rgb(self, index_from: int, index_to: int, r: int, g: int, b: int, brightness: int = 100) -> 'ModulinoPixels':
     """
     Sets the color of the LEDs in the given range to the given RGB values.
 
@@ -85,10 +85,14 @@ class ModulinoPixels(Modulino):
         g (int): The green value of the color.
         b (int): The blue value of the color.
         brightness (int): The brightness of the LED. It should be a value between 0 and 100.
+
+    Returns:
+        ModulinoPixels: The object itself. Allows for daily chaining of methods.
     """
     self.set_range_color(index_from, index_to, ModulinoColor(r, g, b), brightness)
+    return self
 
-  def set_range_color(self, index_from: int, index_to: int, color: ModulinoColor, brightness: int = 100) -> None:
+  def set_range_color(self, index_from: int, index_to: int, color: ModulinoColor, brightness: int = 100) -> 'ModulinoPixels':
     """
     Sets the color of the LEDs in the given range to the given color.
 
@@ -97,11 +101,15 @@ class ModulinoPixels(Modulino):
         index_to (int): The ending index (inclusive) of the range.
         color (ModulinoColor): The color of the LEDs.
         brightness (int): The brightness of the LED. It should be a value between 0 and 100.
+
+    Returns:
+        ModulinoPixels: The object itself. Allows for daily chaining of methods.
     """
     for i in range(index_from, index_to + 1):
       self.set_color(i, color, brightness)
+    return self
 
-  def set_all_rgb(self, r: int, g: int, b: int, brightness: int = 100) -> None:
+  def set_all_rgb(self, r: int, g: int, b: int, brightness: int = 100) -> 'ModulinoPixels':
     """
     Sets the color of all the LEDs to the given RGB values.
 
@@ -110,20 +118,28 @@ class ModulinoPixels(Modulino):
         g (int): The green value of the color.
         b (int): The blue value of the color.
         brightness (int): The brightness of the LED. It should be a value between 0 and 100.
+
+    Returns:
+        ModulinoPixels: The object itself. Allows for daily chaining of methods.
     """
     self.set_all_color(ModulinoColor(r, g, b), brightness)
+    return self
 
-  def set_all_color(self, color: ModulinoColor, brightness: int = 100) -> None:
+  def set_all_color(self, color: ModulinoColor, brightness: int = 100) -> 'ModulinoPixels':
     """
     Sets the color of all the LEDs to the given color.
 
     Parameters:
         color (ModulinoColor): The color of the LEDs.
         brightness (int): The brightness of the LED. It should be a value between 0 and 100.
+
+    Returns:
+        ModulinoPixels: The object itself. Allows for daily chaining of methods.
     """
     self.set_range_color(0, NUM_LEDS - 1, color, brightness)
+    return self
 
-  def set_color(self, idx: int, rgb: ModulinoColor, brightness: int = 100) -> None:
+  def set_color(self, idx: int, rgb: ModulinoColor, brightness: int = 100) -> 'ModulinoPixels':
     """
     Sets the color of the given LED index to the given color.
 
@@ -131,6 +147,9 @@ class ModulinoPixels(Modulino):
         idx (int): The index of the LED (0..7).
         rgb (ModulinoColor): The color of the LED.
         brightness (int): The brightness of the LED. It should be a value between 0 and 100.
+
+    Returns:
+        ModulinoPixels: The object itself. Allows for daily chaining of methods.
     """
     if idx < 0 or idx >= NUM_LEDS:
       raise ValueError(f"LED index out of range {idx} (Valid: 0..{NUM_LEDS - 1})")
@@ -139,8 +158,9 @@ class ModulinoPixels(Modulino):
     mapped_brightness = self._mapi(brightness, 0, 100, 0, 0x1f)
     color_data_bytes =  int(rgb) | mapped_brightness | 0xE0
     self.data[byte_index: byte_index+4] = color_data_bytes.to_bytes(4, 'little')
+    return self
 
-  def set_rgb(self, idx: int, r: int, g: int, b: int, brightness: int = 100) -> None:
+  def set_rgb(self, idx: int, r: int, g: int, b: int, brightness: int = 100) -> 'ModulinoPixels':
     """
     Set the color of the given LED index to the given RGB values.
 
@@ -150,34 +170,50 @@ class ModulinoPixels(Modulino):
         g (int): The green value of the color.
         b (int): The blue value of the color.
         brightness (int): The brightness of the LED. It should be a value between 0 and 100.
+
+    Returns:
+        ModulinoPixels: The object itself. Allows for daily chaining of methods.
     """
     self.set_color(idx, ModulinoColor(r, g, b), brightness)
+    return self
 
-  def clear(self, idx: int) -> None:
+  def clear(self, idx: int) -> 'ModulinoPixels':
     """
     Turns off the LED at the given index.
 
     Parameters:
         idx (int): The index of the LED (0..7).
+
+    Returns:
+        ModulinoPixels: The object itself. Allows for daily chaining of methods.
     """
     self.set_color(idx, ModulinoColor(0, 0, 0), 0)
+    return self
 
-  def clear_range(self, start: int, end: int) -> None:
+  def clear_range(self, start: int, end: int) -> 'ModulinoPixels':
     """
     Turns off the LEDs in the given range.
 
     Parameters:
         start (int): The starting index of the range.
         end (int): The ending index (inclusive) of the range.
+
+    Returns:
+        ModulinoPixels: The object itself. Allows for daily chaining of methods.
     """
     for i in range(start, end):
         self.clear(i)
+    return self
         
-  def clear_all(self) -> None:
+  def clear_all(self) -> 'ModulinoPixels':
     """
     Turns all the LEDs off.
+
+    Returns:
+        ModulinoPixels: The object itself. Allows for daily chaining of methods.
     """
     self.data = bytearray([0xE0] * NUM_LEDS * 4)
+    return self
 
   def show(self) -> None:
     """
