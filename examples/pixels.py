@@ -43,19 +43,31 @@ sleep(1)
 
 # Night Rider animation
 
+def set_glowing_led(index, r, g, b, brightness):
+    """
+    Set the color of the LED at the given index with its 
+    neighboring LEDs slightly dimmed to create a glowing effect.
+    """
+    pixels.clear_all()
+    pixels.set_rgb(index, r, g, b, brightness)
+
+    if index > 0:
+        pixels.set_rgb(index - 1, r, g, b, brightness // 8) # LED to the left
+    if index < 7:
+        pixels.set_rgb(index + 1, r, g, b, brightness // 8) # LED to the right
+    
+    pixels.show()
+
 for j in range(0, 3):
     for i in range(0, 8):
-        pixels.clear_all()
-        pixels.set_rgb(i, 255, 0, 0, 100)
-        pixels.show()
+        set_glowing_led(i, 255, 0, 0, 100)
         sleep(0.05)
 
     for i in range(7, -1, -1):
-        pixels.clear_all()
-        pixels.set_rgb(i, 255, 0, 0, 100)
-        pixels.show()
+        set_glowing_led(i, 255, 0, 0, 100)
         sleep(0.05)
 
 # Turn off all LEDs
-pixels.clear_all()    
-pixels.show()
+# Daisy chain the show() method to send the data to the LEDs
+# This works for all the methods that modify the LEDs' appearance.
+pixels.clear_all().show()
