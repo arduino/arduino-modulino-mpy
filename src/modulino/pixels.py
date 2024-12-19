@@ -65,7 +65,7 @@ class ModulinoPixels(Modulino):
         i2c_bus (I2C): The I2C bus to use. If not provided, the default I2C bus will be used.
         address (int): The I2C address of the module. If not provided, the default address will be used.
     """
-    super().__init__(i2c_bus, address, "LEDS")
+    super().__init__(i2c_bus, address, "Pixels")
     self.clear_all()
 
   def _map(self, x: float | int, in_min: float | int, in_max: float | int, out_min: float | int, out_max: float | int) -> float | int:

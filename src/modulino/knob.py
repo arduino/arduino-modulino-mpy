@@ -18,7 +18,7 @@ class ModulinoKnob(Modulino):
         address (int): The I2C address of the module. If not provided, the default address will be used.
     """
 
-    super().__init__(i2c_bus, address, "ENCODER")
+    super().__init__(i2c_bus, address, "Knob")
     self._pressed: bool = None
     self._encoder_value: int = None
     self._value_range: tuple[int, int] = None

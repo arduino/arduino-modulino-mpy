@@ -50,7 +50,7 @@ class ModulinoButtons(Modulino):
         address (int): The I2C address of the module. If not provided, the default address will be used.
     """
 
-    super().__init__(i2c_bus, address, "BUTTONS")
+    super().__init__(i2c_bus, address, "Buttons")
     self.long_press_duration = self.default_long_press_duration
 
     self._current_buttons_status = [None, None, None]

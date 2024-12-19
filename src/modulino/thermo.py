@@ -25,7 +25,7 @@ class ModulinoThermo(Modulino):
             i2c_bus (I2C): The I2C bus to use. If not provided, the default I2C bus will be used.
             address (int): The I2C address of the module. If not provided, the default address will be used.
         """
-        super().__init__(i2c_bus, address, "THERMO")
+        super().__init__(i2c_bus, address, "Thermo")
         self.sensor: hs3003.HS3003 = hs3003.HS3003(self.i2c_bus)
 
     @property
