@@ -13,7 +13,6 @@
     ],
     "deps": [
       ["lsm6dsox", "latest"],
-      ["lps22h", "latest"],
       ["github:jposada202020/MicroPython_HS3003", "master"]
   ],
     "version": "1.0.0"
