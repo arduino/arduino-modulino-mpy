@@ -44,6 +44,8 @@
     * [set\_all\_color](#modulino.pixels.ModulinoPixels.set_all_color)
     * [set\_color](#modulino.pixels.ModulinoPixels.set_color)
     * [set\_rgb](#modulino.pixels.ModulinoPixels.set_rgb)
+    * [set\_brightness](#modulino.pixels.ModulinoPixels.set_brightness)
+    * [set\_all\_brightness](#modulino.pixels.ModulinoPixels.set_all_brightness)
     * [clear](#modulino.pixels.ModulinoPixels.clear)
     * [clear\_range](#modulino.pixels.ModulinoPixels.clear_range)
     * [clear\_all](#modulino.pixels.ModulinoPixels.clear_all)
@@ -529,6 +531,7 @@ def __int__() -> int
 ```
 
 Return the 32-bit integer representation of the color.
+Used bits: 8 to 15 for blue, 16 to 23 for green, 24 to 31 for red.
 
 <a id="modulino.pixels.ModulinoPixels"></a>
 
@@ -582,7 +585,7 @@ Sets the color of the LEDs in the given range to the given RGB values.
 
 **Returns**:
 
-- `ModulinoPixels` - The object itself. Allows for daily chaining of methods.
+- `ModulinoPixels` - The object itself. Allows for daisy chaining of methods.
 
 <a id="modulino.pixels.ModulinoPixels.set_range_color"></a>
 
@@ -607,7 +610,7 @@ Sets the color of the LEDs in the given range to the given color.
 
 **Returns**:
 
-- `ModulinoPixels` - The object itself. Allows for daily chaining of methods.
+- `ModulinoPixels` - The object itself. Allows for daisy chaining of methods.
 
 <a id="modulino.pixels.ModulinoPixels.set_all_rgb"></a>
 
@@ -632,7 +635,7 @@ Sets the color of all the LEDs to the given RGB values.
 
 **Returns**:
 
-- `ModulinoPixels` - The object itself. Allows for daily chaining of methods.
+- `ModulinoPixels` - The object itself. Allows for daisy chaining of methods.
 
 <a id="modulino.pixels.ModulinoPixels.set_all_color"></a>
 
@@ -653,7 +656,7 @@ Sets the color of all the LEDs to the given color.
 
 **Returns**:
 
-- `ModulinoPixels` - The object itself. Allows for daily chaining of methods.
+- `ModulinoPixels` - The object itself. Allows for daisy chaining of methods.
 
 <a id="modulino.pixels.ModulinoPixels.set_color"></a>
 
@@ -676,7 +679,7 @@ Sets the color of the given LED index to the given color.
 
 **Returns**:
 
-- `ModulinoPixels` - The object itself. Allows for daily chaining of methods.
+- `ModulinoPixels` - The object itself. Allows for daisy chaining of methods.
 
 <a id="modulino.pixels.ModulinoPixels.set_rgb"></a>
 
@@ -703,7 +706,46 @@ Set the color of the given LED index to the given RGB values.
 
 **Returns**:
 
-- `ModulinoPixels` - The object itself. Allows for daily chaining of methods.
+- `ModulinoPixels` - The object itself. Allows for daisy chaining of methods.
+
+<a id="modulino.pixels.ModulinoPixels.set_brightness"></a>
+
+### `set_brightness`
+
+```python
+def set_brightness(idx: int, brightness: int) -> 'ModulinoPixels'
+```
+
+Sets the brightness of the given LED index.
+
+**Arguments**:
+
+- `idx` _int_ - The index of the LED (0..7).
+- `brightness` _int_ - The brightness of the LED. It should be a value between 0 and 100.
+  
+
+**Returns**:
+
+- `ModulinoPixels` - The object itself. Allows for daisy chaining of methods.
+
+<a id="modulino.pixels.ModulinoPixels.set_all_brightness"></a>
+
+### `set_all_brightness`
+
+```python
+def set_all_brightness(brightness: int) -> 'ModulinoPixels'
+```
+
+Sets the brightness of all the LEDs.
+
+**Arguments**:
+
+- `brightness` _int_ - The brightness of the LED. It should be a value between 0 and 100.
+  
+
+**Returns**:
+
+- `ModulinoPixels` - The object itself. Allows for daisy chaining of methods.
 
 <a id="modulino.pixels.ModulinoPixels.clear"></a>
 
@@ -722,7 +764,7 @@ Turns off the LED at the given index.
 
 **Returns**:
 
-- `ModulinoPixels` - The object itself. Allows for daily chaining of methods.
+- `ModulinoPixels` - The object itself. Allows for daisy chaining of methods.
 
 <a id="modulino.pixels.ModulinoPixels.clear_range"></a>
 
@@ -742,7 +784,7 @@ Turns off the LEDs in the given range.
 
 **Returns**:
 
-- `ModulinoPixels` - The object itself. Allows for daily chaining of methods.
+- `ModulinoPixels` - The object itself. Allows for daisy chaining of methods.
 
 <a id="modulino.pixels.ModulinoPixels.clear_all"></a>
 
@@ -756,7 +798,7 @@ Turns all the LEDs off.
 
 **Returns**:
 
-- `ModulinoPixels` - The object itself. Allows for daily chaining of methods.
+- `ModulinoPixels` - The object itself. Allows for daisy chaining of methods.
 
 <a id="modulino.pixels.ModulinoPixels.show"></a>
 
