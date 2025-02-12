@@ -37,7 +37,10 @@ class ModulinoColor:
     self.b = b
   
   def __int__(self) -> int:
-    """Return the 32-bit integer representation of the color."""
+    """
+    Return the 32-bit integer representation of the color.
+    Used bits: 8 to 15 for blue, 16 to 23 for green, 24 to 31 for red.
+    """
     return (self.b << 8 | self.g << 16 | self.r << 24)
 
 ModulinoColor.RED = ModulinoColor(255, 0, 0)
