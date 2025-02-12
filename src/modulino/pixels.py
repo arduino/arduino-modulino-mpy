@@ -180,6 +180,42 @@ class ModulinoPixels(Modulino):
     self.set_color(idx, ModulinoColor(r, g, b), brightness)
     return self
 
+  def set_brightness(self, idx: int, brightness: int) -> 'ModulinoPixels':
+    """
+    Sets the brightness of the given LED index.
+
+    Parameters:
+        idx (int): The index of the LED (0..7).
+        brightness (int): The brightness of the LED. It should be a value between 0 and 100.
+
+    Returns:
+        ModulinoPixels: The object itself. Allows for daisy chaining of methods.
+    """
+    if idx < 0 or idx >= NUM_LEDS:
+      raise ValueError(f"LED index out of range {idx} (Valid: 0..{NUM_LEDS - 1})")
+    
+    if brightness < 0 or brightness > 100:
+      raise ValueError(f"Brightness value {brightness} should be between 0 and 100")
+
+    byte_index = (idx * 4) # The brightness is stored in the first byte of the 4-byte data (little-endian)
+    mapped_brightness = self._mapi(brightness, 0, 100, 0, 0x1f) # Map to 0..31
+    self.data[byte_index] = mapped_brightness | 0xE0 # Fill bits 5..7 with 1
+    return self
+
+  def set_all_brightness(self, brightness: int) -> 'ModulinoPixels':
+    """
+    Sets the brightness of all the LEDs.
+
+    Parameters:
+        brightness (int): The brightness of the LED. It should be a value between 0 and 100.
+
+    Returns:
+        ModulinoPixels: The object itself. Allows for daisy chaining of methods.
+    """
+    for i in range(NUM_LEDS):
+      self.set_brightness(i, brightness)
+    return self
+
   def clear(self, idx: int) -> 'ModulinoPixels':
     """
     Turns off the LED at the given index.
