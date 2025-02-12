@@ -1,4 +1,6 @@
 from .modulino import Modulino
+from .helpers import map_value_int
+
 from micropython import const
 
 class ModulinoColor:
@@ -70,12 +72,6 @@ class ModulinoPixels(Modulino):
     """
     super().__init__(i2c_bus, address, "Pixels")
     self.clear_all()
-
-  def _map(self, x: float | int, in_min: float | int, in_max: float | int, out_min: float | int, out_max: float | int) -> float | int:
-    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
-  
-  def _mapi(self, x: float | int, in_min: float | int, in_max: float | int, out_min: float | int, out_max: float | int) -> int:
-    return int(self._map(x, in_min, in_max, out_min, out_max)) 
   
   def set_range_rgb(self, index_from: int, index_to: int, r: int, g: int, b: int, brightness: int = 100) -> 'ModulinoPixels':
     """
@@ -158,7 +154,7 @@ class ModulinoPixels(Modulino):
       raise ValueError(f"LED index out of range {idx} (Valid: 0..{NUM_LEDS - 1})")
 
     byte_index = idx * 4
-    mapped_brightness = self._mapi(brightness, 0, 100, 0, 0x1f)
+    mapped_brightness = map_value_int(brightness, 0, 100, 0, 0x1f)
     color_data_bytes =  int(rgb) | mapped_brightness | 0xE0
     self.data[byte_index: byte_index+4] = color_data_bytes.to_bytes(4, 'little')
     return self
@@ -198,7 +194,7 @@ class ModulinoPixels(Modulino):
       raise ValueError(f"Brightness value {brightness} should be between 0 and 100")
 
     byte_index = (idx * 4) # The brightness is stored in the first byte of the 4-byte data (little-endian)
-    mapped_brightness = self._mapi(brightness, 0, 100, 0, 0x1f) # Map to 0..31
+    mapped_brightness = map_value_int(brightness, 0, 100, 0, 0x1f) # Map to 0..31
     self.data[byte_index] = mapped_brightness | 0xE0 # Fill bits 5..7 with 1
     return self
 

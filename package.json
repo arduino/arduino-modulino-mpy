@@ -1,6 +1,7 @@
 {
     "urls": [
       ["modulino/__init__.py", "github:arduino/modulino-mpy/src/modulino/__init__.py"],
+      ["modulino/helpers.py", "github:arduino/modulino-mpy/src/modulino/helpers.py"],
       ["modulino/buttons.py", "github:arduino/modulino-mpy/src/modulino/buttons.py"],
       ["modulino/buzzer.py", "github:arduino/modulino-mpy/src/modulino/buzzer.py"],
       ["modulino/distance.py", "github:arduino/modulino-mpy/src/modulino/distance.py"],
