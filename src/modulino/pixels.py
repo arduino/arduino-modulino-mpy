@@ -87,7 +87,7 @@ class ModulinoPixels(Modulino):
         brightness (int): The brightness of the LED. It should be a value between 0 and 100.
 
     Returns:
-        ModulinoPixels: The object itself. Allows for daily chaining of methods.
+        ModulinoPixels: The object itself. Allows for daisy chaining of methods.
     """
     self.set_range_color(index_from, index_to, ModulinoColor(r, g, b), brightness)
     return self
@@ -103,7 +103,7 @@ class ModulinoPixels(Modulino):
         brightness (int): The brightness of the LED. It should be a value between 0 and 100.
 
     Returns:
-        ModulinoPixels: The object itself. Allows for daily chaining of methods.
+        ModulinoPixels: The object itself. Allows for daisy chaining of methods.
     """
     for i in range(index_from, index_to + 1):
       self.set_color(i, color, brightness)
@@ -120,7 +120,7 @@ class ModulinoPixels(Modulino):
         brightness (int): The brightness of the LED. It should be a value between 0 and 100.
 
     Returns:
-        ModulinoPixels: The object itself. Allows for daily chaining of methods.
+        ModulinoPixels: The object itself. Allows for daisy chaining of methods.
     """
     self.set_all_color(ModulinoColor(r, g, b), brightness)
     return self
@@ -134,7 +134,7 @@ class ModulinoPixels(Modulino):
         brightness (int): The brightness of the LED. It should be a value between 0 and 100.
 
     Returns:
-        ModulinoPixels: The object itself. Allows for daily chaining of methods.
+        ModulinoPixels: The object itself. Allows for daisy chaining of methods.
     """
     self.set_range_color(0, NUM_LEDS - 1, color, brightness)
     return self
@@ -149,7 +149,7 @@ class ModulinoPixels(Modulino):
         brightness (int): The brightness of the LED. It should be a value between 0 and 100.
 
     Returns:
-        ModulinoPixels: The object itself. Allows for daily chaining of methods.
+        ModulinoPixels: The object itself. Allows for daisy chaining of methods.
     """
     if idx < 0 or idx >= NUM_LEDS:
       raise ValueError(f"LED index out of range {idx} (Valid: 0..{NUM_LEDS - 1})")
@@ -172,7 +172,7 @@ class ModulinoPixels(Modulino):
         brightness (int): The brightness of the LED. It should be a value between 0 and 100.
 
     Returns:
-        ModulinoPixels: The object itself. Allows for daily chaining of methods.
+        ModulinoPixels: The object itself. Allows for daisy chaining of methods.
     """
     self.set_color(idx, ModulinoColor(r, g, b), brightness)
     return self
@@ -185,7 +185,7 @@ class ModulinoPixels(Modulino):
         idx (int): The index of the LED (0..7).
 
     Returns:
-        ModulinoPixels: The object itself. Allows for daily chaining of methods.
+        ModulinoPixels: The object itself. Allows for daisy chaining of methods.
     """
     self.set_color(idx, ModulinoColor(0, 0, 0), 0)
     return self
@@ -199,7 +199,7 @@ class ModulinoPixels(Modulino):
         end (int): The ending index (inclusive) of the range.
 
     Returns:
-        ModulinoPixels: The object itself. Allows for daily chaining of methods.
+        ModulinoPixels: The object itself. Allows for daisy chaining of methods.
     """
     for i in range(start, end):
         self.clear(i)
@@ -210,7 +210,7 @@ class ModulinoPixels(Modulino):
     Turns all the LEDs off.
 
     Returns:
-        ModulinoPixels: The object itself. Allows for daily chaining of methods.
+        ModulinoPixels: The object itself. Allows for daisy chaining of methods.
     """
     self.data = bytearray([0xE0] * NUM_LEDS * 4)
     return self
