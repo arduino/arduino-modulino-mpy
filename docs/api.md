@@ -1,5 +1,8 @@
 # Summary
 
+* [helpers](#modulino.helpers)
+  * [map\_value](#modulino.helpers.map_value)
+  * [map\_value\_int](#modulino.helpers.map_value_int)
 * [movement](#modulino.movement)
   * [MovementValues](#modulino.movement.MovementValues)
   * [ModulinoMovement](#modulino.movement.ModulinoMovement)
@@ -112,6 +115,54 @@
     * [measurements](#modulino.thermo.ModulinoThermo.measurements)
     * [relative\_humidity](#modulino.thermo.ModulinoThermo.relative_humidity)
     * [temperature](#modulino.thermo.ModulinoThermo.temperature)
+
+<a id="modulino.helpers.map_value"></a>
+
+### `map_value`
+
+```python
+def map_value(x: float | int, in_min: float | int, in_max: float | int,
+              out_min: float | int, out_max: float | int) -> float | int
+```
+
+Maps a value from one range to another.
+
+**Arguments**:
+
+- `x` - The value to map.
+- `in_min` - The minimum value of the input range.
+- `in_max` - The maximum value of the input range.
+- `out_min` - The minimum value of the output range.
+- `out_max` - The maximum value of the output range.
+  
+
+**Returns**:
+
+  The mapped value as a float or int depending on the input.
+
+<a id="modulino.helpers.map_value_int"></a>
+
+### `map_value_int`
+
+```python
+def map_value_int(x: float | int, in_min: float | int, in_max: float | int,
+                  out_min: float | int, out_max: float | int) -> int
+```
+
+Maps a value from one range to another and returns an integer.
+
+**Arguments**:
+
+- `x` - The value to map.
+- `in_min` - The minimum value of the input range.
+- `in_max` - The maximum value of the input range.
+- `out_min` - The minimum value of the output range.
+- `out_max` - The maximum value of the output range.
+  
+
+**Returns**:
+
+  The mapped value as an integer.
 
 <a id="modulino.movement.MovementValues"></a>
 
