@@ -5,9 +5,11 @@ import time
 from micropython import const
 
 BOOTLOADER_I2C_ADDRESS = const(0x64)
+ACK = const(0x79)
+BUSY = const(0x76)
 
 # Define I2C pins and initialize I2C
-i2c = I2C(0, freq=100000)
+i2c = I2C(0, freq=100000, timeout=50000 * 2)
 
 def send_reset(address):
     """
@@ -23,64 +25,66 @@ def send_reset(address):
     try:
         print(f"Sending reset command to address {hex(address)}")
         i2c.writeto(address, buffer, True)
-    except OSError as e:
-        pass
-
-    time.sleep(0.25)
-    devices = i2c.scan()
-
-    if address in devices:
         return False
-    elif BOOTLOADER_I2C_ADDRESS in devices:
+    except OSError as e:
+        # pass
+        time.sleep(0.25)
         return True
 
-def execute_command(opcode, command_buffer, command_length, response_buffer, response_length, verbose=True):
+    # time.sleep(0.25)
+    # devices = i2c.scan()
+
+    # if address in devices:
+    #     return False
+    # elif BOOTLOADER_I2C_ADDRESS in devices:
+    #     return True
+
+def execute_command(opcode, command_data, response_length, verbose=True):
     """
     Execute an I2C command on the device.
 
     :param opcode: The command opcode.
     :param command_buffer: The buffer containing the command data.
-    :param command_length: The length of the command data.
-    :param response_buffer: The buffer to store the response data.
     :param response_length: The expected length of the response data.
     :param verbose: Whether to print debug information.
     :return: The number of response bytes read, or -1 if an error occurred.
     """
     if verbose:
-        print("Executing command")
+        print(f"Executing command {hex(opcode)}")
 
-    cmd = bytes([opcode, 0xFF ^ opcode])
-    i2c.writeto(100, cmd)
-    if command_length > 0:
-        i2c.writeto(100, command_buffer)
-    
-    time.sleep(0.1)
-    ack = i2c.readfrom(100, 1)[0]
-    if ack != 0x79:
-        print(f"Error first ack: {hex(ack)}")
-        return -1
-    
-    if command_length > 0:
-        ack = i2c.readfrom(100, 1)[0]
-        if ack != 0x79:
-            while ack == 0x76:
-                time.sleep(0.1)
-                ack = i2c.readfrom(100, 1)[0]
-            if ack != 0x79:
-                print(f"Error second ack: {hex(ack)}")
-                return -1
-    
-    if response_length > 0:
-        data = i2c.readfrom(100, response_length + 1)
-        for i in range(response_length):
-            response_buffer[i] = data[i + 1]
-        
-        ack = i2c.readfrom(100, 1)[0]
-        if ack != 0x79:
-            print(f"Error: {hex(ack)}")
-            return -1
-    
-    return response_length
+    cmd = bytes([opcode, 0xFF ^ opcode]) # Send command code and complement (XOR = 0x00)
+    i2c.writeto(BOOTLOADER_I2C_ADDRESS, cmd, True)
+
+    if command_data is not None:
+        res = i2c.readfrom(BOOTLOADER_I2C_ADDRESS, 1)[0]
+        if res != ACK:
+            print(f"Error first ack: {hex(res)}")
+            return None
+        i2c.writeto(BOOTLOADER_I2C_ADDRESS, command_data, True)
+
+    res = i2c.readfrom(BOOTLOADER_I2C_ADDRESS, 1)[0]
+    if res != ACK:
+        while res == BUSY:
+            time.sleep(0.1)
+            res = i2c.readfrom(BOOTLOADER_I2C_ADDRESS, 1)[0]
+            print("Retry")
+        if res != ACK:
+            print(f"Error second ack: {hex(res)}")
+            return None
+
+    if response_length == 0:
+        return None
+
+    data = i2c.readfrom(BOOTLOADER_I2C_ADDRESS, response_length)
+    amount_of_bytes = data[0] + 1
+    print(f"Retrieved {amount_of_bytes} bytes")
+
+    res = i2c.readfrom(BOOTLOADER_I2C_ADDRESS, 1)[0]
+    if res != ACK:
+        print(f"Error: {hex(res)}")
+        return None
+
+    return data[1 : amount_of_bytes + 1]
 
 def flash_firmware(firmware, length, verbose=True):
     """
@@ -93,13 +97,14 @@ def flash_firmware(firmware, length, verbose=True):
     """
     if verbose:
         print("Flashing firmware")
-    
-    response_buffer = bytearray(255)
-    if execute_command(0, None, 0, response_buffer, 20, verbose) < 0:
+    data = execute_command(0, None, 20, verbose)
+    if len(data) == 0:
         print("Failed :(")
         return False
-    for byte in response_buffer:
+    for byte in data:
         print(hex(byte))
+
+    return True # Debug. Remove when done
 
     if verbose:
         print("Getting device ID")
@@ -215,7 +220,7 @@ def select_file(bin_files):
         choice = int(input("Select the file to flash (number): "))
         return bin_files[choice - 1]
 
-def scan_i2c_devices():
+def select_i2c_device():
     """
     Scan the I2C bus for devices and prompt the user to select one.
 
@@ -240,9 +245,9 @@ def setup():
         print("No .bin files found in the root directory.")
         return
 
-    bin_file = select_file(bin_files)
+    bin_file = "node_base.bin" # select_file(bin_files)
 
-    device_address = scan_i2c_devices()
+    device_address = 30 # select_i2c_device()
     print(f"Resetting device at address {hex(device_address)}")
     if send_reset(device_address):
         print("Device reset successfully")
@@ -261,4 +266,4 @@ def setup():
         print("FAIL")
 
 # Start the setup
-# setup()
+setup()
