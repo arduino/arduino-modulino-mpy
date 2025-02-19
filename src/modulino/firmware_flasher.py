@@ -8,6 +8,10 @@ BOOTLOADER_I2C_ADDRESS = const(0x64)
 ACK = const(0x79)
 BUSY = const(0x76)
 
+CMD_GET = const(0x00) # Gets the version and the allowed commands
+CMD_GET_VERSION = const(0x01) # Gets the protocol version
+CMD_GET_ID = const(0x02) # Get chip ID
+
 # Define I2C pins and initialize I2C
 i2c = I2C(0, freq=100000, timeout=50000 * 2)
 
@@ -39,7 +43,24 @@ def send_reset(address):
     # elif BOOTLOADER_I2C_ADDRESS in devices:
     #     return True
 
-def execute_command(opcode, command_data, response_length, verbose=True):
+def wait_for_ack():
+    """
+    Wait for an acknowledgment from the I2C device.
+
+    :return: True if an acknowledgment was received, otherwise False.
+    """
+    res = i2c.readfrom(BOOTLOADER_I2C_ADDRESS, 1)[0]
+    if res != ACK:
+        while res == BUSY:
+            time.sleep(0.1)
+            res = i2c.readfrom(BOOTLOADER_I2C_ADDRESS, 1)[0]
+            print("Waiting for device to be finish processing")
+        if res != ACK:
+            print(f"Error processing command: {hex(res)}")
+            return False
+    return True
+
+def execute_command(opcode, command_data, response_length = 0, verbose=True):
     """
     Execute an I2C command on the device.
 
@@ -54,22 +75,14 @@ def execute_command(opcode, command_data, response_length, verbose=True):
 
     cmd = bytes([opcode, 0xFF ^ opcode]) # Send command code and complement (XOR = 0x00)
     i2c.writeto(BOOTLOADER_I2C_ADDRESS, cmd, True)
+    if not wait_for_ack():
+        print(f"Command not acknowledged: {hex(opcode)}")
+        return None
 
     if command_data is not None:
-        res = i2c.readfrom(BOOTLOADER_I2C_ADDRESS, 1)[0]
-        if res != ACK:
-            print(f"Error first ack: {hex(res)}")
-            return None
         i2c.writeto(BOOTLOADER_I2C_ADDRESS, command_data, True)
-
-    res = i2c.readfrom(BOOTLOADER_I2C_ADDRESS, 1)[0]
-    if res != ACK:
-        while res == BUSY:
-            time.sleep(0.1)
-            res = i2c.readfrom(BOOTLOADER_I2C_ADDRESS, 1)[0]
-            print("Retry")
-        if res != ACK:
-            print(f"Error second ack: {hex(res)}")
+        if not wait_for_ack():
+            print("Command failed")
             return None
 
     if response_length == 0:
@@ -79,9 +92,8 @@ def execute_command(opcode, command_data, response_length, verbose=True):
     amount_of_bytes = data[0] + 1
     print(f"Retrieved {amount_of_bytes} bytes")
 
-    res = i2c.readfrom(BOOTLOADER_I2C_ADDRESS, 1)[0]
-    if res != ACK:
-        print(f"Error: {hex(res)}")
+    if not wait_for_ack():
+        print("Failed completing command")
         return None
 
     return data[1 : amount_of_bytes + 1]
@@ -95,24 +107,25 @@ def flash_firmware(firmware, length, verbose=True):
     :param verbose: Whether to print debug information.
     :return: True if the flashing was successful, otherwise False.
     """
-    if verbose:
-        print("Flashing firmware")
-    data = execute_command(0, None, 20, verbose)
-    if len(data) == 0:
+    data = execute_command(CMD_GET, None, 20, verbose)
+    if data is None:
         print("Failed :(")
         return False
-    for byte in data:
+    
+    print(f"Bootloader version: {hex(data[0])}")
+    print("Supported commands:")
+    for byte in data[1:]:
         print(hex(byte))
 
-    return True # Debug. Remove when done
-
-    if verbose:
-        print("Getting device ID")
-    if execute_command(2, None, 0, response_buffer, 3, verbose) < 0:
+    data = execute_command(CMD_GET_ID, None, 3, verbose)
+    if data is None:
         print("Failed to get device ID")
         return False
-    for byte in response_buffer:
-        print(hex(byte))
+    
+    chip_id = (data[0] << 8) | data[1] # Chip ID: Byte 1 = MSB, Byte 2 = LSB
+    print(f"Chip ID: {chip_id}")
+
+    return True # Debug. Remove when done
 
     if verbose:
         print("Mass erase")
