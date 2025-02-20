@@ -1,3 +1,16 @@
+"""
+This script is a firmware updater for the Modulino devices. 
+
+It uses the I2C bootloader to flash the firmware to the device. 
+The script finds all .bin files in the root directory and prompts the user to select a file to flash. 
+It then scans the I2C bus for devices and prompts the user to select a device to flash.
+You must either know the I2C address of the device to be flashed or make sure that only one device is connected. 
+The script sends a reset command to the device, erases the memory, and writes the firmware to the device in chunks. 
+Finally, it starts the new firmware on the device.
+
+Initial author: Sebastian Romero (s.romero@arduino.cc)
+"""
+
 import os
 import sys
 from machine import I2C, Pin
@@ -34,7 +47,7 @@ def send_reset(address):
     try:
         print(f"🔄 Resetting device at address {hex(address)}")
         i2c.writeto(address, buffer, True)
-        print("✅ Reset command sent successfully")
+        print("📤 Reset command sent")
         time.sleep(0.25) # Wait for the device to reset
         return True
     except OSError as e:
@@ -204,7 +217,7 @@ def progress_bar(current, total, bar_length=40):
     :param bar_length: The length of the progress bar in characters.
     """
     percent = float(current) / total
-    arrow = '-' * int(round(percent * bar_length))
+    arrow = '=' * int(round(percent * bar_length))
     spaces = ' ' * (bar_length - len(arrow))
     sys.stdout.write(f"\rProgress: [{arrow}{spaces}] {int(round(percent * 100))}%")
     if current == total:
@@ -225,20 +238,24 @@ def select_file(bin_files):
     :param bin_files: A list of .bin file names.
     :return: The selected .bin file name.
     """
+    if len(bin_files) == 0:
+        print("❌ No .bin files found in the root directory.")
+        return None
+
     if len(bin_files) == 1:
-        confirm = input(f"👀 Found one bin file: {bin_files[0]}. Do you want to flash it? (yes/no) ")
+        confirm = input(f"📄 Found one biary file: {bin_files[0]}. Do you want to flash it? (yes/no) ")
         if confirm.lower() == 'yes':
             return bin_files[0]
         else:
             return None
-    else:
-        print("👀 Found bin files:")
-        for index, file in enumerate(bin_files):
-            print(f"{index + 1}. {file}")
-        choice = int(input("Select the file to flash (number): "))
-        if choice < 1 or choice > len(bin_files):
-            return None
-        return bin_files[choice - 1]
+    
+    print("📄 Found binary files:")
+    for index, file in enumerate(bin_files):
+        print(f"{index + 1}. {file}")
+    choice = int(input("Select the file to flash (number): "))
+    if choice < 1 or choice > len(bin_files):
+        return None
+    return bin_files[choice - 1]
 
 def select_i2c_device():
     """
@@ -247,7 +264,19 @@ def select_i2c_device():
     :return: The selected I2C device address.
     """
     devices = i2c.scan()
-    print("👀 I2C devices found:")
+
+    if len(devices) == 0:
+        print("❌ No I2C devices found")
+        return None
+
+    if len(devices) == 1:
+        confirm = input(f"🔌 Found one I2C device at address {hex(devices[0])}. Do you want to flash it? (yes/no) ")
+        if confirm.lower() == 'yes':
+            return devices[0]
+        else:
+            return None
+
+    print("🔌 I2C devices found:")
     for index, device in enumerate(devices):
         print(f"{index + 1}. Address: {hex(device)}")
     choice = int(input("Select the I2C device to flash (number): "))
