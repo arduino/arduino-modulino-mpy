@@ -12,9 +12,10 @@ CMD_GET = const(0x00) # Gets the version and the allowed commands
 CMD_GET_LENGTH_V12 = const(20) # Length of the response data
 CMD_GET_VERSION = const(0x01) # Gets the protocol version
 CMD_GET_ID = const(0x02) # Get chip ID
-CMD_ERASE = const(0x44) # Erase memory
+CMD_ERASE_NO_STRETCH = const(0x45) # Erase memory. Returns busy state while operation is ongoing
 CMD_GO = const(0x21) # Jumps to user application code located in the internal flash memory
 CMD_WRITE_NO_STRETCH = const(0x32) # Writes up to 256 bytes to the memory, starting from an address specified
+
 CHUNK_SIZE = const(128) # Size of the memory chunk to write
 
 # Define I2C pins and initialize I2C
@@ -132,7 +133,7 @@ def flash_firmware(firmware_path, verbose=False):
 
     print("🗑️ Erasing memory...")
     erase_params = bytearray([0xFF, 0xFF, 0x0]) # Mass erase flash
-    execute_command(CMD_ERASE, erase_params, 0, verbose)
+    execute_command(CMD_ERASE_NO_STRETCH, erase_params, 0, verbose)
 
     with open(firmware_path, 'rb') as file:
         firmware_data = file.read()
@@ -156,7 +157,7 @@ def flash_firmware(firmware_path, verbose=False):
 
     print("🏃 Starting firmware")
     go_params = bytearray([0x8, 0x00, 0x00, 0x00, 0x8])
-    #execute_command(CMD_GO, go_params, 0, verbose) # Jump to the application
+    execute_command(CMD_GO, go_params, 0, verbose) # Jump to the application
 
     return True
 
