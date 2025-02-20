@@ -229,11 +229,15 @@ def select_file(bin_files):
         confirm = input(f"👀 Found one bin file: {bin_files[0]}. Do you want to flash it? (yes/no) ")
         if confirm.lower() == 'yes':
             return bin_files[0]
+        else:
+            return None
     else:
         print("👀 Found bin files:")
         for index, file in enumerate(bin_files):
             print(f"{index + 1}. {file}")
         choice = int(input("Select the file to flash (number): "))
+        if choice < 1 or choice > len(bin_files):
+            return None
         return bin_files[choice - 1]
 
 def select_i2c_device():
@@ -247,6 +251,8 @@ def select_i2c_device():
     for index, device in enumerate(devices):
         print(f"{index + 1}. Address: {hex(device)}")
     choice = int(input("Select the I2C device to flash (number): "))
+    if choice < 1 or choice > len(devices):
+        return None
     return devices[choice - 1]
 
 def run():
@@ -260,9 +266,16 @@ def run():
         print("❌ No .bin files found in the root directory.")
         return
 
-    bin_file = "node_base.bin" # select_file(bin_files)
+    bin_file = select_file(bin_files)
+    if bin_file is None:
+        print("❌ No file selected")
+        return
 
-    device_address = 30 # select_i2c_device()    
+    device_address = select_i2c_device() 
+    if device_address is None:
+        print("❌ No device selected")
+        return
+
     if send_reset(device_address):
         print("✅ Device reset successfully")
     else:
