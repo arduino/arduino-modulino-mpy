@@ -12,7 +12,8 @@ from time import sleep
 from modulino import Modulino
 
 print()
-devices = Modulino.available_devices()
+bus = None # Change this to the I2C bus you are using on 3rd party host boards
+devices = Modulino.available_devices(bus)
 
 if len(devices) == 0:
     print("No devices found on the bus. Try resetting the board.")
