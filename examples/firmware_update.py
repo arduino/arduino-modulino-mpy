@@ -97,29 +97,6 @@ def flash_firmware(device : Modulino, firmware_path, verbose=False):
     :return: True if the flashing was successful, otherwise False.
     """
     bus = device.i2c_bus
-    data = execute_command(bus, CMD_GET_VERSION, None, 1, verbose)
-    if data is None:
-        print("❌ Failed to get protocol version")
-        return False
-    print(f"ℹ️ Protocol version: {data[0] & 0xF}.{data[0] >> 4}")
-
-    data = execute_command(bus, CMD_GET, None, CMD_GET_LENGTH_V12, verbose)
-    if data is None:
-        print("❌ Failed to get command list")
-        return False
-    
-    print(f"ℹ️ Bootloader version: {(data[1] & 0xF)}.{data[1] >> 4}")
-    print("👀 Supported commands:")
-    print(", ".join([hex(byte) for byte in data[2:]]))
-
-    data = execute_command(bus, CMD_GET_ID, None, 3, verbose)
-    if data is None:
-        print("❌ Failed to get device ID")
-        return False
-    
-    chip_id = (data[0] << 8) | data[1] # Chip ID: Byte 1 = MSB, Byte 2 = LSB
-    print(f"ℹ️ Chip ID: {chip_id}")
-
     print("🗑️ Erasing memory...")
     erase_params = bytearray([0xFF, 0xFF, 0x0]) # Mass erase flash
     execute_command(bus, CMD_ERASE_NO_STRETCH, erase_params, 0, verbose)
@@ -263,6 +240,37 @@ def select_device(bus : I2C) -> Modulino:
         return None
     return devices[choice - 1]
 
+def print_device_info(device : Modulino):
+    """
+    Print information about the selected device.
+
+    :param device: The Modulino device.
+    """
+
+    bus = device.i2c_bus
+    data = execute_command(bus, CMD_GET_VERSION, None, 1)
+    if data is None:
+        print("❌ Failed to get protocol version")
+        return False
+    print(f"ℹ️ Protocol version: {data[0] & 0xF}.{data[0] >> 4}")
+
+    data = execute_command(bus, CMD_GET, None, CMD_GET_LENGTH_V12)
+    if data is None:
+        print("❌ Failed to get command list")
+        return False
+    
+    print(f"ℹ️ Bootloader version: {(data[1] & 0xF)}.{data[1] >> 4}")
+    print("👀 Supported commands:")
+    print(", ".join([hex(byte) for byte in data[2:]]))
+
+    data = execute_command(bus, CMD_GET_ID, None, 3)
+    if data is None:
+        print("❌ Failed to get device ID")
+        return False
+    
+    chip_id = (data[0] << 8) | data[1] # Chip ID: Byte 1 = MSB, Byte 2 = LSB
+    print(f"ℹ️ Chip ID: {chip_id}")
+
 def run(bus: I2C):
     """
     Initialize the flashing process.
@@ -295,6 +303,8 @@ def run(bus: I2C):
 
     print(f"🕵️ Flashing {bin_file} to device at address {hex(BOOTLOADER_I2C_ADDRESS)}")
     
+    print_device_info(device)
+
     if flash_firmware(device, bin_file):
         print("✅ Firmware flashed successfully")
     else:
