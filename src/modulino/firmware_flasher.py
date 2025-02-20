@@ -132,7 +132,7 @@ def flash_firmware(firmware_path, verbose=False):
 
     print("🗑️ Erasing memory...")
     erase_params = bytearray([0xFF, 0xFF, 0x0]) # Mass erase flash
-    #execute_command(CMD_ERASE, erase_params, 0, verbose)
+    execute_command(CMD_ERASE, erase_params, 0, verbose)
 
     with open(firmware_path, 'rb') as file:
         firmware_data = file.read()
@@ -248,9 +248,9 @@ def select_i2c_device():
     choice = int(input("Select the I2C device to flash (number): "))
     return devices[choice - 1]
 
-def setup():
+def run():
     """
-    Setup function to initialize the flashing process.
+    Initialize the flashing process.
     Finds .bin files, scans for I2C devices, and flashes the selected firmware.
     """
 
@@ -275,5 +275,5 @@ def setup():
     else:
         print("❌ Failed to flash firmware")
 
-# Start the setup
-setup()
+if __name__ == "__main__":
+    run()
