@@ -99,7 +99,7 @@ def execute_command(opcode, command_data, response_length = 0, verbose=True):
 
     return data[1 : amount_of_bytes + 1]
 
-def flash_firmware(firmware, verbose=True):
+def flash_firmware(firmware_path, verbose=True):
     """
     Flash the firmware to the I2C device.
 
@@ -129,13 +129,16 @@ def flash_firmware(firmware, verbose=True):
     return True # Debug. Remove when done
 
     print("Erasing memory...")
-    erase_buffer = bytearray([0xFF, 0xFF, 0x0]) # Mass erase flash
-    execute_command(CMD_ERASE, erase_buffer, 0, verbose)
+    erase_params = bytearray([0xFF, 0xFF, 0x0]) # Mass erase flash
+    execute_command(CMD_ERASE, erase_params, 0, verbose)
 
-    for i in range(0, len(firmware), 128):
+    with open(firmware_path, 'rb') as file:
+        firmware_data = file.read()
+
+    for i in range(0, len(firmware_data), 128):
         progress_bar(i, length)
         write_buffer = bytearray([8, 0, i // 256, i % 256])
-        if write_firmware_page(write_buffer, 5, firmware[i:i + 128], 128, verbose) < 0:
+        if write_firmware_page(write_buffer, 5, firmware_data[i:i + 128], 128, verbose) < 0:
             print(f"Failed to write page {hex(i)}")
             return False
         time.sleep(0.01)
@@ -266,10 +269,7 @@ def setup():
 
     print(f"Flashing {bin_file} to device at address {hex(BOOTLOADER_I2C_ADDRESS)}")
     
-    with open(bin_file, 'rb') as file:
-        firmware = file.read()
-    
-    if flash_firmware(firmware):
+    if flash_firmware(bin_file):
         print("Firmware flashed successfully")
     else:
         print("Failed to flash firmware")
