@@ -128,7 +128,7 @@ def flash_firmware(device : Modulino, firmware_path, verbose=False):
         firmware_data = file.read()
     total_bytes = len(firmware_data)
 
-    print(f"🔥 Flashing {total_bytes} bytes of firmware")
+    print(f"🔥 Writing {total_bytes} bytes")
     for i in range(0, total_bytes, CHUNK_SIZE):
         progress_bar(i, total_bytes)
         start_address = bytearray([8, 0, i // 256, i % 256]) # 4-byte address: byte 1 = MSB, byte 4 = LSB
@@ -144,7 +144,7 @@ def flash_firmware(device : Modulino, firmware_path, verbose=False):
 
     progress_bar(total_bytes, total_bytes)  # Complete the progress bar
 
-    print("🏃 Starting firmware")
+    print("🏃 Launching new firmware")
     go_params = bytearray([0x8, 0x00, 0x00, 0x00, 0x8])
     execute_command(bus, CMD_GO, go_params, 0, verbose) # Jump to the application
 
