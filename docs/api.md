@@ -20,6 +20,7 @@
     * [pin\_strap\_address](#modulino.modulino.Modulino.pin_strap_address)
     * [device\_type](#modulino.modulino.Modulino.device_type)
     * [change\_address](#modulino.modulino.Modulino.change_address)
+    * [enter\_bootloader](#modulino.modulino.Modulino.enter_bootloader)
     * [read](#modulino.modulino.Modulino.read)
     * [write](#modulino.modulino.Modulino.write)
     * [has\_default\_address](#modulino.modulino.Modulino.has_default_address)
@@ -352,6 +353,21 @@ def change_address(new_address: int)
 Sets the address of the i2c device to the given value.
 This is only supported on Modulinos that have a microcontroller.
 
+<a id="modulino.modulino.Modulino.enter_bootloader"></a>
+
+### `enter_bootloader`
+
+```python
+def enter_bootloader()
+```
+
+Enters the I2C bootloader of the device.
+This is only supported on Modulinos that have a microcontroller.
+
+**Returns**:
+
+- `bool` - True if the device entered bootloader mode, False otherwise.
+
 <a id="modulino.modulino.Modulino.read"></a>
 
 ### `read`
@@ -404,10 +420,15 @@ or if a custom one was set.
 
 ```python
 @staticmethod
-def available_devices() -> list[Modulino]
+def available_devices(bus: I2C = None) -> list[Modulino]
 ```
 
 Finds all devices on the i2c bus and returns them as a list of Modulino objects.
+
+**Arguments**:
+
+- `bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
+  
 
 **Returns**:
 
