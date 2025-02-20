@@ -11,9 +11,12 @@ BUSY = const(0x76)
 CMD_GET = const(0x00) # Gets the version and the allowed commands
 CMD_GET_VERSION = const(0x01) # Gets the protocol version
 CMD_GET_ID = const(0x02) # Get chip ID
+CMD_ERASE = const(0x44) # Erase memory
+CMD_GO = const(0x21) # Jumps to user application code located in the internal flash memory
+CMD_WRITE = const(0x32) # Write memory
 
 # Define I2C pins and initialize I2C
-i2c = I2C(0, freq=100000, timeout=50000 * 2)
+i2c = I2C(0, freq=100000)
 
 def send_reset(address):
     """
@@ -23,25 +26,23 @@ def send_reset(address):
     :return: 0 if the reset command was sent successfully, otherwise -1.
     """
     buffer = b'DIE'
-    # Pad buffer to 40 bytes
-    buffer += b'\x00' * (40 - len(buffer))
+    buffer += b'\x00' * (8 - len(buffer)) # Pad buffer to 8 bytes
 
     try:
         print(f"Sending reset command to address {hex(address)}")
         i2c.writeto(address, buffer, True)
-        return False
-    except OSError as e:
-        # pass
-        time.sleep(0.25)
+        print("Reset command sent successfully")
+        time.sleep(0.25) # Wait for the device to reset
         return True
-
-    # time.sleep(0.25)
-    # devices = i2c.scan()
-
-    # if address in devices:
-    #     return False
-    # elif BOOTLOADER_I2C_ADDRESS in devices:
-    #     return True
+    except OSError as e:
+        # ENODEV can be thrown if either the device reset while writing out the buffer or if the device
+        # was already in bootloader mode in which case there is no device at the original address
+        if e.errno == 19:
+            time.sleep(0.25) # Wait for the device to reset
+            return True
+        else:
+            print(f"Error sending reset command: {e}")
+            return False
 
 def wait_for_ack():
     """
@@ -98,7 +99,7 @@ def execute_command(opcode, command_data, response_length = 0, verbose=True):
 
     return data[1 : amount_of_bytes + 1]
 
-def flash_firmware(firmware, length, verbose=True):
+def flash_firmware(firmware, verbose=True):
     """
     Flash the firmware to the I2C device.
 
@@ -127,17 +128,14 @@ def flash_firmware(firmware, length, verbose=True):
 
     return True # Debug. Remove when done
 
-    if verbose:
-        print("Mass erase")
-    erase_buffer = bytearray([0xFF, 0xFF, 0x0])
-    if execute_command(0x44, erase_buffer, 3, None, 0, verbose) < 0:
-        print("Failed to mass erase")
-        return False
+    print("Erasing memory...")
+    erase_buffer = bytearray([0xFF, 0xFF, 0x0]) # Mass erase flash
+    execute_command(CMD_ERASE, erase_buffer, 0, verbose)
 
-    for i in range(0, length, 128):
+    for i in range(0, len(firmware), 128):
         progress_bar(i, length)
         write_buffer = bytearray([8, 0, i // 256, i % 256])
-        if write_firmware_page(0x32, write_buffer, 5, firmware[i:i + 128], 128, verbose) < 0:
+        if write_firmware_page(write_buffer, 5, firmware[i:i + 128], 128, verbose) < 0:
             print(f"Failed to write page {hex(i)}")
             return False
         time.sleep(0.01)
@@ -145,14 +143,12 @@ def flash_firmware(firmware, length, verbose=True):
     progress_bar(length, length)  # Complete the progress bar
 
     print("Starting firmware")
-    jump_buffer = bytearray([0x8, 0x00, 0x00, 0x00, 0x8])
-    if execute_command(0x21, jump_buffer, 5, None, 0, verbose) < 0:
-        print("Failed to start firmware")
-        return False
+    go_params = bytearray([0x8, 0x00, 0x00, 0x00, 0x8])
+    execute_command(CMD_GO, go_params, 0, verbose) # Jump to the application
 
     return True
 
-def write_firmware_page(opcode, command_buffer, command_length, firmware_buffer, firmware_length, verbose=True):
+def write_firmware_page(command_buffer, command_length, firmware_buffer, firmware_length, verbose=True):
     """
     Write a page of the firmware to the I2C device.
 
@@ -164,7 +160,7 @@ def write_firmware_page(opcode, command_buffer, command_length, firmware_buffer,
     :param verbose: Whether to print debug information.
     :return: The number of bytes written, or -1 if an error occurred.
     """
-    cmd = bytes([opcode, 0xFF ^ opcode])
+    cmd = bytes([CMD_WRITE, 0xFF ^ CMD_WRITE])
     i2c.writeto(100, cmd)
     
     if command_length > 0:
@@ -273,10 +269,10 @@ def setup():
     with open(bin_file, 'rb') as file:
         firmware = file.read()
     
-    if flash_firmware(firmware, len(firmware)):
-        print("PASS")
+    if flash_firmware(firmware):
+        print("Firmware flashed successfully")
     else:
-        print("FAIL")
+        print("Failed to flash firmware")
 
 # Start the setup
 setup()
