@@ -91,7 +91,7 @@ def execute_command(opcode, command_data, response_length = 0, verbose=True):
 
     data = i2c.readfrom(BOOTLOADER_I2C_ADDRESS, response_length)
     amount_of_bytes = data[0] + 1
-    print(f"Retrieved {amount_of_bytes} bytes")
+    print(f"Retrieved {amount_of_bytes} bytes") # TODO: Remove this line
 
     if not wait_for_ack():
         print("Failed completing command")
@@ -126,28 +126,28 @@ def flash_firmware(firmware_path, verbose=True):
     chip_id = (data[0] << 8) | data[1] # Chip ID: Byte 1 = MSB, Byte 2 = LSB
     print(f"Chip ID: {chip_id}")
 
-    return True # Debug. Remove when done
-
     print("Erasing memory...")
     erase_params = bytearray([0xFF, 0xFF, 0x0]) # Mass erase flash
-    execute_command(CMD_ERASE, erase_params, 0, verbose)
+    #execute_command(CMD_ERASE, erase_params, 0, verbose)
 
     with open(firmware_path, 'rb') as file:
         firmware_data = file.read()
+    total_bytes = len(firmware_data)
 
-    for i in range(0, len(firmware_data), 128):
-        progress_bar(i, length)
+    print(f"Flashing {total_bytes} bytes of firmware")
+    for i in range(0, total_bytes, 128):
+        progress_bar(i, total_bytes)
         write_buffer = bytearray([8, 0, i // 256, i % 256])
-        if write_firmware_page(write_buffer, 5, firmware_data[i:i + 128], 128, verbose) < 0:
-            print(f"Failed to write page {hex(i)}")
-            return False
+        # if write_firmware_page(write_buffer, 5, firmware_data[i:i + 128], 128, verbose) < 0:
+        #     print(f"Failed to write page {hex(i)}")
+        #     return False
         time.sleep(0.01)
 
-    progress_bar(length, length)  # Complete the progress bar
+    progress_bar(total_bytes, total_bytes)  # Complete the progress bar
 
     print("Starting firmware")
     go_params = bytearray([0x8, 0x00, 0x00, 0x00, 0x8])
-    execute_command(CMD_GO, go_params, 0, verbose) # Jump to the application
+    #execute_command(CMD_GO, go_params, 0, verbose) # Jump to the application
 
     return True
 
@@ -201,10 +201,11 @@ def progress_bar(current, total, bar_length=40):
     :param bar_length: The length of the progress bar in characters.
     """
     percent = float(current) / total
-    arrow = '-' * int(round(percent * bar_length) - 1) + '>'
+    arrow = '-' * int(round(percent * bar_length))
     spaces = ' ' * (bar_length - len(arrow))
     sys.stdout.write(f"\rProgress: [{arrow}{spaces}] {int(round(percent * 100))}%")
-    sys.stdout.flush()
+    if current == total:
+        sys.stdout.write('\n')
 
 def find_bin_files():
     """
