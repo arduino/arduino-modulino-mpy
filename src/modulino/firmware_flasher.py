@@ -9,6 +9,7 @@ ACK = const(0x79)
 BUSY = const(0x76)
 
 CMD_GET = const(0x00) # Gets the version and the allowed commands
+CMD_GET_LENGTH_V12 = const(20) # Length of the response data
 CMD_GET_VERSION = const(0x01) # Gets the protocol version
 CMD_GET_ID = const(0x02) # Get chip ID
 CMD_ERASE = const(0x44) # Erase memory
@@ -61,15 +62,15 @@ def wait_for_ack():
             return False
     return True
 
-def execute_command(opcode, command_data, response_length = 0, verbose=False):
+def execute_command(opcode, command_params, response_length = 0, verbose=False):
     """
     Execute an I2C command on the device.
 
     :param opcode: The command opcode.
-    :param command_buffer: The buffer containing the command data.
-    :param response_length: The expected length of the response data.
+    :param command_params: The buffer containing the command parameters.
+    :param response_length: The expected length of the response data frame.
     :param verbose: Whether to print debug information.
-    :return: The number of response bytes read, or -1 if an error occurred.
+    :return: The number of response bytes read, or None if an error occurred.
     """
     if verbose:
         print(f"🕵️ Executing command {hex(opcode)}")
@@ -80,8 +81,8 @@ def execute_command(opcode, command_data, response_length = 0, verbose=False):
         print(f"❌ Command not acknowledged: {hex(opcode)}")
         return None
 
-    if command_data is not None:
-        i2c.writeto(BOOTLOADER_I2C_ADDRESS, command_data, True)
+    if command_params is not None:
+        i2c.writeto(BOOTLOADER_I2C_ADDRESS, command_params, True)
         if not wait_for_ack():
             print("❌ Command failed")
             return None
@@ -90,16 +91,12 @@ def execute_command(opcode, command_data, response_length = 0, verbose=False):
         return None
 
     data = i2c.readfrom(BOOTLOADER_I2C_ADDRESS, response_length)
-    amount_of_bytes = data[0] + 1
-
-    if verbose:
-        print(f"📦 Received {amount_of_bytes} bytes")
 
     if not wait_for_ack():
         print("❌ Failed completing command")
         return None
 
-    return data[1 : amount_of_bytes + 1]
+    return data
 
 def flash_firmware(firmware_path, verbose=False):
     """
@@ -110,14 +107,20 @@ def flash_firmware(firmware_path, verbose=False):
     :param verbose: Whether to print debug information.
     :return: True if the flashing was successful, otherwise False.
     """
-    data = execute_command(CMD_GET, None, 20, verbose)
+    data = execute_command(CMD_GET_VERSION, None, 1, verbose)
+    if data is None:
+        print("❌ Failed to get protocol version")
+        return False
+    print(f"ℹ️ Protocol version: {data[0] & 0xF}.{data[0] >> 4}")
+
+    data = execute_command(CMD_GET, None, CMD_GET_LENGTH_V12, verbose)
     if data is None:
         print("❌ Failed to get command list")
         return False
     
-    print(f"ℹ️ Bootloader version: {hex(data[0])}")
+    print(f"ℹ️ Bootloader version: {(data[1] & 0xF)}.{data[1] >> 4}")
     print("👀 Supported commands:")
-    print(", ".join([hex(byte) for byte in data[1:]]))
+    print(", ".join([hex(byte) for byte in data[2:]]))
 
     data = execute_command(CMD_GET_ID, None, 3, verbose)
     if data is None:
@@ -161,10 +164,9 @@ def write_firmware_page(command_params, firmware_data):
     """
     Write a page of the firmware to the I2C device.
 
-    :param command_params: The buffer containing the command data.
+    :param command_params: The buffer containing the command parameters.
     :param firmware_data: The buffer containing the firmware data.
-    :param verbose: Whether to print debug information.
-    :return: The number of bytes written, or -1 if an error occurred.
+    :return: True if the page was written successfully, otherwise False.
     """
     cmd = bytes([CMD_WRITE_NO_STRETCH, 0xFF ^ CMD_WRITE_NO_STRETCH])
     i2c.writeto(BOOTLOADER_I2C_ADDRESS, cmd)
