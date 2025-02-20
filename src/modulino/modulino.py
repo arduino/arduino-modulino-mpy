@@ -250,6 +250,24 @@ class Modulino:
 
     self.address = new_address
 
+  def enter_bootloader(self):
+    """
+    Enters the I2C bootloader of the device.
+    This is only supported on Modulinos that have a microcontroller.
+
+    Returns:
+      bool: True if the device entered bootloader mode, False otherwise.
+    """
+    buffer = b'DIE'
+    buffer += b'\x00' * (8 - len(buffer)) # Pad buffer to 8 bytes
+    try:
+        self.i2c_bus.writeto(self.address, buffer, True)
+        sleep(0.25) # Wait for the device to reset
+        return True
+    except OSError as e:
+      # ENODEV (e.errno == 19) can be thrown if either the device reset while writing out the buffer
+      return False
+
   def read(self, amount_of_bytes: int) -> bytes | None:
     """
     Reads the given amount of bytes from the i2c device and returns the data.
@@ -293,14 +311,18 @@ class Modulino:
     return self.address in self.default_addresses
 
   @staticmethod
-  def available_devices() -> list[Modulino]:
+  def available_devices(bus: I2C = None) -> list[Modulino]:
     """
     Finds all devices on the i2c bus and returns them as a list of Modulino objects.
+
+    Parameters:
+      bus (I2C): The I2C bus to use. If not provided, the default I2C bus will be used.
 
     Returns:
       list: A list of Modulino objects.
     """
-    bus = _I2CHelper.get_interface()
+    if bus is None:
+      bus = _I2CHelper.get_interface()
     device_addresses = bus.scan()
     devices = []
     for address in device_addresses:
