@@ -15,3 +15,4 @@ from .movement import ModulinoMovement
 from .distance import ModulinoDistance
 from .joystick import ModulinoJoystick
 from .latch_relay import ModulinoLatchRelay
+from .vibra import ModulinoVibra, PowerLevel
