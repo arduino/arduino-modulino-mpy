@@ -20,7 +20,8 @@ PINSTRAP_ADDRESS_MAP = {
   0x7C: "Buttons",
   0x76: "Knob",
   0x74: "Knob",
-  0x6C: "Pixels"
+  0x6C: "Pixels",
+  0x58: "Joystick"
 }
 
 class _I2CHelper:
