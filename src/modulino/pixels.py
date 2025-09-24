@@ -249,6 +249,30 @@ class ModulinoPixels(Modulino):
     """
     self.data = bytearray([0xE0] * NUM_LEDS * 4)
     return self
+  
+  def __setitem__(self, idx: int, color: tuple | ModulinoColor) -> None:
+    """
+    Sets the color of the given LED index to the given color.
+    This allows to use the object like an array, e.g. pixels[0] = (255, 0, 0, 50)
+
+    Parameters:
+        idx (int): The index of the LED (0..7).
+        color (tuple | ModulinoColor): A tuple of three/four integers representing the RGB values (0-255) plus optional brightness (0-100). 
+          Alternatively, a ModulinoColor object can be provided. 
+          If None, the LED will be turned off.        
+    """
+    if color is None:
+      self.clear(idx)
+      return
+
+    if isinstance(color, ModulinoColor):
+      self.set_color(idx, color)
+      return
+
+    if not isinstance(color, tuple) or len(color) < 3:
+      raise ValueError("Color must be a tuple of three or four integers representing the RGBA values.")
+    brightness = 100 if len(color) == 3 else color[3]
+    self.set_rgb(idx, color[0], color[1], color[2], brightness)    
 
   def show(self) -> None:
     """
