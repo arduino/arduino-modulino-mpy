@@ -1,3 +1,6 @@
+# Alternative:
+# https://github.com/ml-tooling/lazydocs
+
 name: Render Documentation
 
 on:
