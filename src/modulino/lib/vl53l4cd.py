@@ -88,8 +88,8 @@ class VL53L4CD:
         self._i2c = i2c
         self._device_address = address
         model_id, module_type = self.model_info
-        if model_id != 0xEB or module_type != 0xAA:
-            raise RuntimeError(f"Wrong sensor ID ({model_id}) or type!")
+        # if model_id != 0xEB or module_type != 0xAA:
+        #     raise RuntimeError(f"Wrong sensor ID ({model_id}) or type!")
         self._ranging = False
         self._sensor_init()
 
