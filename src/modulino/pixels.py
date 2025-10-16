@@ -12,7 +12,7 @@ class ModulinoColor:
   - BLUE
   - YELLOW
   - CYAN
-  - VIOLET
+  - MAGENTA
   - WHITE
 
   They can be accessed e.g. as ModulinoColor.RED
@@ -50,7 +50,7 @@ ModulinoColor.GREEN = ModulinoColor(0, 255, 0)
 ModulinoColor.BLUE = ModulinoColor(0, 0, 255)
 ModulinoColor.YELLOW = ModulinoColor(255, 255, 0)
 ModulinoColor.CYAN = ModulinoColor(0, 255, 255)
-ModulinoColor.VIOLET = ModulinoColor(255, 0, 255)
+ModulinoColor.MAGENTA = ModulinoColor(255, 0, 255)
 ModulinoColor.WHITE = ModulinoColor(255, 255, 255)
 
 NUM_LEDS = const(8)
