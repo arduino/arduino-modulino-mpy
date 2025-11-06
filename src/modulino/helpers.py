@@ -29,3 +29,17 @@ def map_value_int(x: float | int, in_min: float | int, in_max: float | int, out_
         The mapped value as an integer.
     """
     return int(map_value(x, in_min, in_max, out_min, out_max))
+
+def constrain(value: float | int, min_value: float | int, max_value: float | int) -> float | int:
+    """
+    Constrains a value to be within a specified range.
+
+    Args:
+        value: The value to constrain.
+        min_value: The minimum allowable value.
+        max_value: The maximum allowable value.
+
+    Returns:
+        The constrained value.
+    """
+    return max(min_value, min(value, max_value))
