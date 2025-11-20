@@ -17,6 +17,20 @@ When using this library on a non-Arduino board, the I2C bus must be initialized 
 Usually the available I2C buses are predefined and can be accessed by their number, e.g. I2C(0).
 If not, the pins for SDA and SCL must be specified. An example on how to do this can be found [here](../examples/third_party_board.py).
 
+## 🕹️🕹️ Using multiple Modulinos of the same type
+
+When using multiple Modulinos of the same type, you can create separate instances for each one by specifying different I2C addresses. For that to work, make sure to change their I2C address to a unique one by running the `change_address.py` script in the examples folder. This only works for Modulino models that support changing the I2C address (e.g., ModulinoButtons, ModulinoBuzzer, ModulinoKnob, ModulinoPixels).
+
+```python
+from modulino import ModulinoButtons
+
+buttons1 = ModulinoButtons(address=0x10)
+buttons2 = ModulinoButtons(address=0x11)
+
+print("Button A on Modulino 1 is pressed:", buttons1.button_a_pressed)
+print("Button A on Modulino 2 is pressed:", buttons2.button_a_pressed)
+```
+
 ## 👀 Examples
 
 The following scripts are examples of how to use the Modulinos with Python:
