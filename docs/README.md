@@ -14,12 +14,20 @@ Once the desired object is obtained you can call functions and query properties 
 ## ℹ️ Using 3rd Party Boards
 
 When using this library on a non-Arduino board, the I2C bus must be initialized manually.
-Usually the available I2C buses are predefined and can be accessed by their number, e.g. I2C(0).
+Usually the available I2C buses are predefined and can be accessed by their number, e.g.:
+
+```python
+from machine import I2C
+from modulino import ModulinoPixels
+
+pixels = ModulinoPixels(I2C(0))
+```
+
 If not, the pins for SDA and SCL must be specified. An example on how to do this can be found [here](../examples/third_party_board.py).
 
 ## 🕹️🕹️ Using multiple Modulinos of the same type
 
-When using multiple Modulinos of the same type, you can create separate instances for each one by specifying different I2C addresses. For that to work, make sure to change their I2C address to a unique one by running the `change_address.py` script in the examples folder. This only works for Modulino models that support changing the I2C address (e.g., ModulinoButtons, ModulinoBuzzer, ModulinoKnob, ModulinoPixels).
+When using multiple Modulinos of the same type, you can create separate instances for each one by specifying different I2C addresses. For that to work, make sure to change their I2C address to a unique one by running the `change_address.py` script which can be found [here](../examples/change_address.py). This only works for Modulino models that support changing the I2C address (e.g., ModulinoButtons, ModulinoBuzzer, ModulinoKnob, ModulinoPixels).
 
 ```python
 from modulino import ModulinoButtons
