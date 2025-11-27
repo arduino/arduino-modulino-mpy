@@ -183,7 +183,7 @@ class Modulino:
     if len(default_addresses) == 0:
       return None
 
-    devices_on_bus = self.i2c_bus.scan()
+    devices_on_bus = Modulino.scan(self.i2c_bus)
     for addr in default_addresses:
       if addr in devices_on_bus:
         return addr
@@ -207,7 +207,7 @@ class Modulino:
     """
     if not bool(self):
       return False
-    return self.address in self.i2c_bus.scan()
+    return self.address in Modulino.scan(self.i2c_bus)
 
   @property
   def pin_strap_address(self) -> int | None:
@@ -315,6 +315,18 @@ class Modulino:
     return self.address in self.default_addresses
 
   @staticmethod
+  def scan(bus: I2C) -> list[int]:
+    addresses = bytearray() # Use 8bit data type
+    # Skip general call address (0x00)
+    for address in range(1,128):
+        try:
+            bus.writeto(address, b'')
+            addresses.append(address)
+        except OSError:
+            pass
+    return list(addresses)
+
+  @staticmethod
   def available_devices(bus: I2C = None) -> list[Modulino]:
     """
     Finds all devices on the i2c bus and returns them as a list of Modulino objects.
@@ -327,7 +339,7 @@ class Modulino:
     """
     if bus is None:
       bus = _I2CHelper.get_interface()
-    device_addresses = bus.scan()
+    device_addresses = Modulino.scan(bus)
     devices = []
     for address in device_addresses:
       if address == _BOOTLOADER_ADDRESS:
