@@ -37,6 +37,10 @@ if new_address < 0 or new_address > 127:
     print("Invalid address. Address must be between 0 and 127")
     exit(1)
 
+if new_address == 100:
+    print("The address 0x64 is reserved for bootloader mode. Please choose a different address.")
+    exit(1)
+
 print(f"Changing address of device at {hex(selected_device.address)} to {hex(new_address)}...")
 selected_device.change_address(new_address)
 sleep(1) # Give the device time to reset
