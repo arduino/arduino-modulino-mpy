@@ -133,7 +133,7 @@ class Modulino:
   This class variable needs to be overridden in derived classes.
   """
 
-  def __init__(self, i2c_bus: I2C = None, address: int = None, name: str = None):
+  def __init__(self, i2c_bus: I2C = None, address: int = None, name: str = None, check_connection: bool = True) -> None:
     """
     Initializes the Modulino object with the given i2c bus and address.
     If the address is not provided, the device will try to auto discover it.
@@ -145,6 +145,7 @@ class Modulino:
       i2c_bus (I2C): The I2C bus to use. If not provided, the default I2C bus will be used.
       address (int): The address of the device. If not provided, the device will try to auto discover it.
       name (str): The name of the device.
+      check_connection (bool): Whether to check if the device is connected to the bus.
     """
 
     if i2c_bus is None:
@@ -168,7 +169,7 @@ class Modulino:
 
       if self.address is None:
         raise RuntimeError(f"Couldn't find the {self.name} device on the bus. Try resetting the board.")
-    elif not self.connected:
+    elif check_connection and not self.connected:
       raise RuntimeError(f"Couldn't find a {self.name} device with address {hex(self.address)} on the bus. Try resetting the board.")
 
   def discover(self, default_addresses: list[int]) -> int | None:
@@ -183,11 +184,9 @@ class Modulino:
     if len(default_addresses) == 0:
       return None
 
-    devices_on_bus = Modulino.scan(self.i2c_bus)
-    for addr in default_addresses:
-      if addr in devices_on_bus:
-        return addr
-
+    devices_on_bus = Modulino.scan(self.i2c_bus, default_addresses)
+    if len(devices_on_bus) > 0:
+      return devices_on_bus[0]
     return None
 
   def __bool__(self) -> bool:
@@ -207,7 +206,12 @@ class Modulino:
     """
     if not bool(self):
       return False
-    return self.address in Modulino.scan(self.i2c_bus)
+    
+    try:
+        self.i2c_bus.writeto(self.address, b'')
+        return True
+    except OSError:
+        return False
 
   @property
   def pin_strap_address(self) -> int | None:
@@ -315,10 +319,12 @@ class Modulino:
     return self.address in self.default_addresses
 
   @staticmethod
-  def scan(bus: I2C) -> list[int]:
+  def scan(bus: I2C, target_addresses = None) -> list[int]:
     addresses = bytearray() # Use 8bit data type
-    # Skip general call address (0x00)
-    for address in range(1,128):
+    # General call address (0x00) is skipped in default range
+    candidates = target_addresses if target_addresses is not None else range(1,128)
+
+    for address in candidates:
         try:
             bus.writeto(address, b'')
             addresses.append(address)
@@ -345,7 +351,7 @@ class Modulino:
       if address == _BOOTLOADER_ADDRESS:
         # Skip bootloader address
         continue
-      device = Modulino(i2c_bus=bus, address=address)
+      device = Modulino(i2c_bus=bus, address=address, check_connection=False)
       devices.append(device)
     return devices
 
