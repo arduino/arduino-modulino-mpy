@@ -25,6 +25,8 @@ PINSTRAP_ADDRESS_MAP = {
   0x4: "Latch Relay"
 }
 
+_BOOTLOADER_ADDRESS = const(0x64)
+
 class _I2CHelper:
   """
   A helper class for interacting with I2C devices on supported boards.
@@ -267,7 +269,7 @@ class Modulino:
         sleep(0.25) # Wait for the device to reset
         return True
     except OSError as e:
-      # ENODEV (e.errno == 19) can be thrown if either the device reset while writing out the buffer
+      # ENODEV (e.errno == 19) can be thrown if the device resets while writing out the buffer
       return False
 
   def read(self, amount_of_bytes: int) -> bytes | None:
@@ -328,6 +330,9 @@ class Modulino:
     device_addresses = bus.scan()
     devices = []
     for address in device_addresses:
+      if address == _BOOTLOADER_ADDRESS:
+        # Skip bootloader address
+        continue
       device = Modulino(i2c_bus=bus, address=address)
       devices.append(device)
     return devices
