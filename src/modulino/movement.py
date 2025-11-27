@@ -57,3 +57,15 @@ class ModulinoMovement(Modulino):
         """
         sensor_values = self.sensor.gyro()
         return MovementValues(sensor_values[0], sensor_values[1], sensor_values[2])
+    
+    @property
+    def gyro(self) -> MovementValues:
+        """
+        Alias for angular_velocity property.
+
+        Returns:
+            MovementValues: The gyroscope values in the x, y, and z axes.
+                            These values can be accessed as .x, .y, and .z properties
+                            or by using the index operator for tuple unpacking.
+        """
+        return self.angular_velocity
