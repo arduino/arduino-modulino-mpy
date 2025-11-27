@@ -23,7 +23,8 @@ def main():
     print("The following devices were found on the bus:")
 
     for index, device in enumerate(devices):
-        print(f"{index + 1}) {device.device_type} at {hex(device.address)}")
+        dev_type = device.device_type if device.device_type is not None else "Unknown Device"
+        print(f"{index + 1}) {dev_type} at {hex(device.address)}")
 
     choice_is_valid = False
     while not choice_is_valid:
