@@ -54,6 +54,11 @@
     * [clear\_all](#modulino.pixels.ModulinoPixels.clear_all)
     * [\_\_setitem\_\_](#modulino.pixels.ModulinoPixels.__setitem__)
     * [show](#modulino.pixels.ModulinoPixels.show)
+* [vibro](#modulino.vibro)
+  * [ModulinoVibro](#modulino.vibro.ModulinoVibro)
+    * [\_\_init\_\_](#modulino.vibro.ModulinoVibro.__init__)
+    * [on](#modulino.vibro.ModulinoVibro.on)
+    * [off](#modulino.vibro.ModulinoVibro.off)
 * [joystick](#modulino.joystick)
   * [ModulinoJoystick](#modulino.joystick.ModulinoJoystick)
     * [default\_long\_press\_duration](#modulino.joystick.ModulinoJoystick.default_long_press_duration)
@@ -933,6 +938,58 @@ def show() -> None
 
 Applies the changes to the LEDs. This function needs to be called after any changes to the LEDs.
 Otherwise, the changes will not be visible.
+
+<a id="modulino.vibro.ModulinoVibro"></a>
+
+## class `ModulinoVibro`
+
+```python
+class ModulinoVibro(Modulino)
+```
+
+Class to operate the vibration motor of the Modulino Vibro.
+
+<a id="modulino.vibro.ModulinoVibro.__init__"></a>
+
+### `__init__`
+
+```python
+def __init__(i2c_bus=None, address=None)
+```
+
+Initializes the Modulino Vibro.
+
+**Arguments**:
+
+- `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
+- `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
+
+<a id="modulino.vibro.ModulinoVibro.on"></a>
+
+### `on`
+
+```python
+def on(lenght_ms: int = 0xFFFF,
+       power=PowerLevel.MEDIUM,
+       blocking: bool = False) -> None
+```
+
+Vibrates the motor for the specified duration and power level.
+
+**Arguments**:
+
+- `lenght_ms` - The duration of the vibration in milliseconds. If omitted, it defaults to 65535 ms (maximum duration).
+- `blocking` - If set to True, the function will wait until the vibration is finished.
+
+<a id="modulino.vibro.ModulinoVibro.off"></a>
+
+### `off`
+
+```python
+def off() -> None
+```
+
+Stops the motor from vibrating.
 
 <a id="modulino.joystick.ModulinoJoystick"></a>
 
