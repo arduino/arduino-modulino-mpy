@@ -118,6 +118,7 @@
 * [helpers](#modulino.helpers)
   * [map\_value](#modulino.helpers.map_value)
   * [map\_value\_int](#modulino.helpers.map_value_int)
+  * [constrain](#modulino.helpers.constrain)
 * [buzzer](#modulino.buzzer)
   * [ModulinoBuzzer](#modulino.buzzer.ModulinoBuzzer)
     * [NOTES](#modulino.buzzer.ModulinoBuzzer.NOTES)
@@ -128,7 +129,9 @@
   * [MovementValues](#modulino.movement.MovementValues)
   * [ModulinoMovement](#modulino.movement.ModulinoMovement)
     * [\_\_init\_\_](#modulino.movement.ModulinoMovement.__init__)
-    * [accelerometer](#modulino.movement.ModulinoMovement.accelerometer)
+    * [acceleration](#modulino.movement.ModulinoMovement.acceleration)
+    * [acceleration\_magnitude](#modulino.movement.ModulinoMovement.acceleration_magnitude)
+    * [angular\_velocity](#modulino.movement.ModulinoMovement.angular_velocity)
     * [gyro](#modulino.movement.ModulinoMovement.gyro)
 * [thermo](#modulino.thermo)
   * [Measurement](#modulino.thermo.Measurement)
@@ -389,7 +392,10 @@ This class variable needs to be overridden in derived classes.
 ### `__init__`
 
 ```python
-def __init__(i2c_bus: I2C = None, address: int = None, name: str = None)
+def __init__(i2c_bus: I2C = None,
+             address: int = None,
+             name: str = None,
+             check_connection: bool = True) -> None
 ```
 
 Initializes the Modulino object with the given i2c bus and address.
@@ -403,6 +409,7 @@ If no bus is provided, the default bus will be used if available.
 - `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
 - `address` _int_ - The address of the device. If not provided, the device will try to auto discover it.
 - `name` _str_ - The name of the device.
+- `check_connection` _bool_ - Whether to check if the device is connected to the bus.
 
 <a id="modulino.modulino.Modulino.discover"></a>
 
@@ -1646,6 +1653,28 @@ Maps a value from one range to another and returns an integer.
 
   The mapped value as an integer.
 
+<a id="modulino.helpers.constrain"></a>
+
+### `constrain`
+
+```python
+def constrain(value: float | int, min_value: float | int,
+              max_value: float | int) -> float | int
+```
+
+Constrains a value to be within a specified range.
+
+**Arguments**:
+
+- `value` - The value to constrain.
+- `min_value` - The minimum allowable value.
+- `max_value` - The maximum allowable value.
+  
+
+**Returns**:
+
+  The constrained value.
+
 <a id="modulino.buzzer.ModulinoBuzzer"></a>
 
 ## class `ModulinoBuzzer`
@@ -1746,18 +1775,47 @@ Initializes the Modulino Movement.
 - `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
 - `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
 
-<a id="modulino.movement.ModulinoMovement.accelerometer"></a>
+<a id="modulino.movement.ModulinoMovement.acceleration"></a>
 
-### `accelerometer`
+### `acceleration`
 
 ```python
 @property
-def accelerometer() -> MovementValues
+def acceleration() -> MovementValues
 ```
 
 **Returns**:
 
 - `MovementValues` - The acceleration values in the x, y, and z axes.
+  These values can be accessed as .x, .y, and .z properties
+  or by using the index operator for tuple unpacking.
+
+<a id="modulino.movement.ModulinoMovement.acceleration_magnitude"></a>
+
+### `acceleration_magnitude`
+
+```python
+@property
+def acceleration_magnitude() -> float
+```
+
+**Returns**:
+
+- `float` - The magnitude of the acceleration vector in g.
+  When the Modulino is at rest (on planet earth), this value should be approximately 1.0g due to gravity.
+
+<a id="modulino.movement.ModulinoMovement.angular_velocity"></a>
+
+### `angular_velocity`
+
+```python
+@property
+def angular_velocity() -> MovementValues
+```
+
+**Returns**:
+
+- `MovementValues` - The gyroscope values in the x, y, and z axes.
   These values can be accessed as .x, .y, and .z properties
   or by using the index operator for tuple unpacking.
 
@@ -1769,6 +1827,8 @@ def accelerometer() -> MovementValues
 @property
 def gyro() -> MovementValues
 ```
+
+Alias for angular_velocity property.
 
 **Returns**:
 
