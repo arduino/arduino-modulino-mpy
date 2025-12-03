@@ -1,14 +1,14 @@
 """
-This example demonstrates how to use the ModulinoVibra class to control a vibration motor.
+This example demonstrates how to use the ModulinoVibro class to control a vibration motor.
 It cycles through different vibration patterns with varying power levels and durations.
 
 Initial author: Sebastian Romero (s.romero@arduino.cc)
 """
 
-from modulino import ModulinoVibra, PowerLevel
+from modulino import ModulinoVibro, PowerLevel
 from time import sleep
 
-vibra = ModulinoVibra()
+vibro = ModulinoVibro()
 
 pattern = [
     (500, PowerLevel.GENTLE),
@@ -20,5 +20,5 @@ pattern = [
 ]
 
 for duration, power in pattern:
-    vibra.on(duration, power, blocking=True)
+    vibro.on(duration, power, blocking=True)
     sleep(0.5)  # Pause between vibrations

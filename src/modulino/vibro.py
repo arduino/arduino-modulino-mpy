@@ -10,22 +10,22 @@ class PowerLevel:
   POWERFUL = 65
   MAXIMUM = 75
 
-class ModulinoVibra(Modulino):
+class ModulinoVibro(Modulino):
   """
-  Class to operate the vibration motor of the Modulino Vibra.
+  Class to operate the vibration motor of the Modulino Vibro.
   """
 
   default_addresses = [0x70]
 
   def __init__(self, i2c_bus=None, address=None):
     """
-    Initializes the Modulino Vibra.
+    Initializes the Modulino Vibro.
 
     Parameters:
         i2c_bus (I2C): The I2C bus to use. If not provided, the default I2C bus will be used.
         address (int): The I2C address of the module. If not provided, the default address will be used.
     """
-    super().__init__(i2c_bus, address, "Vibra")
+    super().__init__(i2c_bus, address, "Vibro")
     self.data = bytearray(12)
     self.frequency = 1000  # Default frequency in Hz
     self.off()
