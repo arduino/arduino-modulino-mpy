@@ -1,3 +1,4 @@
+from time import sleep_ms, ticks_ms, ticks_diff
 from .modulino import Modulino
 from .lib.vl53l4cd import VL53L4CD
 
@@ -25,16 +26,19 @@ class ModulinoDistance(Modulino):
         self.sensor.start_ranging()
 
     @property
-    def _distance_raw(self) -> int | None:
+    def _distance_raw(self, timeout = 1000) -> int | None:
         """
         Reads the raw distance value from the sensor and clears the interrupt.
 
         Returns:
             int: The distance in centimeters.
         """
-        try:            
+        try:
+            start = ticks_ms()
             while not self.sensor.data_ready:
-                pass
+                if ticks_diff(ticks_ms(), start) > timeout:
+                    raise OSError("Timeout waiting for sensor data")
+                sleep_ms(1)
             self.sensor.clear_interrupt()
             sensor_value = self.sensor.distance
             return sensor_value
