@@ -22,7 +22,8 @@ PINSTRAP_ADDRESS_MAP = {
   0x74: "Knob",
   0x6C: "Pixels",
   0x58: "Joystick",
-  0x4: "Latch Relay"
+  0x4: "Latch Relay",
+  0x70: "Vibro"
 }
 
 _BOOTLOADER_ADDRESS = const(0x64)
