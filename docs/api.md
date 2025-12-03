@@ -109,6 +109,12 @@
     * [button\_a\_pressed](#modulino.buttons.ModulinoButtons.button_a_pressed)
     * [button\_b\_pressed](#modulino.buttons.ModulinoButtons.button_b_pressed)
     * [button\_c\_pressed](#modulino.buttons.ModulinoButtons.button_c_pressed)
+* [latch\_relay](#modulino.latch_relay)
+  * [ModulinoLatchRelay](#modulino.latch_relay.ModulinoLatchRelay)
+    * [\_\_init\_\_](#modulino.latch_relay.ModulinoLatchRelay.__init__)
+    * [on](#modulino.latch_relay.ModulinoLatchRelay.on)
+    * [off](#modulino.latch_relay.ModulinoLatchRelay.off)
+    * [is\_on](#modulino.latch_relay.ModulinoLatchRelay.is_on)
 * [helpers](#modulino.helpers)
   * [map\_value](#modulino.helpers.map_value)
   * [map\_value\_int](#modulino.helpers.map_value_int)
@@ -1535,6 +1541,62 @@ def button_c_pressed() -> bool
 ```
 
 Returns True if button C is currently pressed.
+
+<a id="modulino.latch_relay.ModulinoLatchRelay"></a>
+
+## class `ModulinoLatchRelay`
+
+```python
+class ModulinoLatchRelay(Modulino)
+```
+
+Class to control the relay module of the Modulino.
+
+<a id="modulino.latch_relay.ModulinoLatchRelay.__init__"></a>
+
+### `__init__`
+
+```python
+def __init__(i2c_bus=None, address=None)
+```
+
+Initializes the Modulino Buzzer.
+
+**Arguments**:
+
+- `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
+- `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
+
+<a id="modulino.latch_relay.ModulinoLatchRelay.on"></a>
+
+### `on`
+
+```python
+def on() -> None
+```
+
+Turns on the relay.
+
+<a id="modulino.latch_relay.ModulinoLatchRelay.off"></a>
+
+### `off`
+
+```python
+def off() -> None
+```
+
+Turns off the relay.
+
+<a id="modulino.latch_relay.ModulinoLatchRelay.is_on"></a>
+
+### `is_on`
+
+```python
+@property
+def is_on() -> bool
+```
+
+Checks if the relay is currently on.
 
 <a id="modulino.helpers.map_value"></a>
 
