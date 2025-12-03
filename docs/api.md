@@ -54,6 +54,24 @@
     * [clear\_all](#modulino.pixels.ModulinoPixels.clear_all)
     * [\_\_setitem\_\_](#modulino.pixels.ModulinoPixels.__setitem__)
     * [show](#modulino.pixels.ModulinoPixels.show)
+* [joystick](#modulino.joystick)
+  * [ModulinoJoystick](#modulino.joystick.ModulinoJoystick)
+    * [default\_long\_press\_duration](#modulino.joystick.ModulinoJoystick.default_long_press_duration)
+    * [\_\_init\_\_](#modulino.joystick.ModulinoJoystick.__init__)
+    * [update](#modulino.joystick.ModulinoJoystick.update)
+    * [button\_pressed](#modulino.joystick.ModulinoJoystick.button_pressed)
+    * [x](#modulino.joystick.ModulinoJoystick.x)
+    * [y](#modulino.joystick.ModulinoJoystick.y)
+    * [deadzone\_threshold](#modulino.joystick.ModulinoJoystick.deadzone_threshold)
+    * [deadzone\_threshold](#modulino.joystick.ModulinoJoystick.deadzone_threshold)
+    * [on\_button\_press](#modulino.joystick.ModulinoJoystick.on_button_press)
+    * [on\_button\_press](#modulino.joystick.ModulinoJoystick.on_button_press)
+    * [on\_button\_release](#modulino.joystick.ModulinoJoystick.on_button_release)
+    * [on\_button\_release](#modulino.joystick.ModulinoJoystick.on_button_release)
+    * [on\_button\_long\_press](#modulino.joystick.ModulinoJoystick.on_button_long_press)
+    * [on\_button\_long\_press](#modulino.joystick.ModulinoJoystick.on_button_long_press)
+    * [long\_press\_duration](#modulino.joystick.ModulinoJoystick.long_press_duration)
+    * [long\_press\_duration](#modulino.joystick.ModulinoJoystick.long_press_duration)
 * [buttons](#modulino.buttons)
   * [ModulinoButtonsLED](#modulino.buttons.ModulinoButtonsLED)
     * [on](#modulino.buttons.ModulinoButtonsLED.on)
@@ -902,6 +920,210 @@ def show() -> None
 
 Applies the changes to the LEDs. This function needs to be called after any changes to the LEDs.
 Otherwise, the changes will not be visible.
+
+<a id="modulino.joystick.ModulinoJoystick"></a>
+
+## class `ModulinoJoystick`
+
+```python
+class ModulinoJoystick(Modulino)
+```
+
+Class to operate the Modulino Joystick module.
+
+<a id="modulino.joystick.ModulinoJoystick.default_long_press_duration"></a>
+
+### `default_long_press_duration`
+
+milliseconds
+
+<a id="modulino.joystick.ModulinoJoystick.__init__"></a>
+
+### `__init__`
+
+```python
+def __init__(i2c_bus=None, address=None)
+```
+
+Initializes the Modulino Joystick module.
+
+**Arguments**:
+
+- `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
+- `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
+
+<a id="modulino.joystick.ModulinoJoystick.update"></a>
+
+### `update`
+
+```python
+def update()
+```
+
+Updates the joystick state by reading the current position and button state.
+
+<a id="modulino.joystick.ModulinoJoystick.button_pressed"></a>
+
+### `button_pressed`
+
+```python
+@property
+def button_pressed()
+```
+
+Returns True if the joystick button is pressed, False otherwise.
+
+<a id="modulino.joystick.ModulinoJoystick.x"></a>
+
+### `x`
+
+```python
+@property
+def x() -> int
+```
+
+Returns the x-coordinate of the joystick position.
+
+<a id="modulino.joystick.ModulinoJoystick.y"></a>
+
+### `y`
+
+```python
+@property
+def y() -> int
+```
+
+Returns the y-coordinate of the joystick position.
+
+<a id="modulino.joystick.ModulinoJoystick.deadzone_threshold"></a>
+
+### `deadzone_threshold`
+
+```python
+@property
+def deadzone_threshold() -> int
+```
+
+Returns the deadzone threshold for joystick movement.
+
+<a id="modulino.joystick.ModulinoJoystick.deadzone_threshold"></a>
+
+### `deadzone_threshold`
+
+```python
+@deadzone_threshold.setter
+def deadzone_threshold(value: int)
+```
+
+Sets the deadzone threshold for joystick movement.
+
+**Arguments**:
+
+- `value` _int_ - The new deadzone threshold.
+
+<a id="modulino.joystick.ModulinoJoystick.on_button_press"></a>
+
+### `on_button_press`
+
+```python
+@property
+def on_button_press()
+```
+
+Callback function to be called when the joystick button is pressed.
+
+<a id="modulino.joystick.ModulinoJoystick.on_button_press"></a>
+
+### `on_button_press`
+
+```python
+@on_button_press.setter
+def on_button_press(callback)
+```
+
+Sets the callback function to be called when the joystick button is pressed.
+
+**Arguments**:
+
+- `callback` _callable_ - The function to call when the button is pressed.
+
+<a id="modulino.joystick.ModulinoJoystick.on_button_release"></a>
+
+### `on_button_release`
+
+```python
+@property
+def on_button_release()
+```
+
+Callback function to be called when the joystick button is released.
+
+<a id="modulino.joystick.ModulinoJoystick.on_button_release"></a>
+
+### `on_button_release`
+
+```python
+@on_button_release.setter
+def on_button_release(callback)
+```
+
+Sets the callback function to be called when the joystick button is released.
+
+**Arguments**:
+
+- `callback` _callable_ - The function to call when the button is released.
+
+<a id="modulino.joystick.ModulinoJoystick.on_button_long_press"></a>
+
+### `on_button_long_press`
+
+```python
+@property
+def on_button_long_press()
+```
+
+Callback function to be called when the joystick button is long-pressed.
+
+<a id="modulino.joystick.ModulinoJoystick.on_button_long_press"></a>
+
+### `on_button_long_press`
+
+```python
+@on_button_long_press.setter
+def on_button_long_press(callback)
+```
+
+Sets the callback function to be called when the joystick button is long-pressed.
+
+**Arguments**:
+
+- `callback` _callable_ - The function to call when the button is long-pressed.
+
+<a id="modulino.joystick.ModulinoJoystick.long_press_duration"></a>
+
+### `long_press_duration`
+
+```python
+@property
+def long_press_duration() -> int
+```
+
+Returns the duration in milliseconds for a long press.
+
+<a id="modulino.joystick.ModulinoJoystick.long_press_duration"></a>
+
+### `long_press_duration`
+
+```python
+@long_press_duration.setter
+def long_press_duration(duration: int)
+```
+
+Sets the duration in milliseconds for a long press.
+
+**Arguments**:
+
+- `duration` _int_ - The new long press duration in milliseconds.
 
 <a id="modulino.buttons.ModulinoButtonsLED"></a>
 
