@@ -11,7 +11,8 @@
       ["modulino/movement.py", "github:arduino/modulino-mpy/src/modulino/movement.py"],
       ["modulino/pixels.py", "github:arduino/modulino-mpy/src/modulino/pixels.py"],
       ["modulino/thermo.py", "github:arduino/modulino-mpy/src/modulino/thermo.py"],
-      ["modulino/joystick.py", "github:arduino/modulino-mpy/src/modulino/joystick.py"]
+      ["modulino/joystick.py", "github:arduino/modulino-mpy/src/modulino/joystick.py"],
+      ["modulino/latch_relay.py", "github:arduino/modulino-mpy/src/modulino/latch_relay.py"]
     ],
     "deps": [
       ["lsm6dsox", "latest"],

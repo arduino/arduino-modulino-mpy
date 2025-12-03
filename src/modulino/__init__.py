@@ -14,3 +14,4 @@ from .knob import ModulinoKnob
 from .movement import ModulinoMovement
 from .distance import ModulinoDistance
 from .joystick import ModulinoJoystick
+from .latch_relay import ModulinoLatchRelay
