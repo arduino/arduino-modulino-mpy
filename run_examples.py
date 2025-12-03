@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # This script will list the examples in the examples folder and run the selected example using mpremote.
 # The user can select the example using the arrow keys.
 # To run the script, use the following command:

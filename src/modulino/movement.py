@@ -27,7 +27,7 @@ class ModulinoMovement(Modulino):
         self.sensor = LSM6DSOX(self.i2c_bus, address=self.address)
 
     @property
-    def accelerometer(self) -> MovementValues:
+    def acceleration(self) -> MovementValues:
         """
         Returns:
             MovementValues: The acceleration values in the x, y, and z axes.
@@ -38,7 +38,17 @@ class ModulinoMovement(Modulino):
         return MovementValues(sensor_values[0], sensor_values[1], sensor_values[2])
     
     @property
-    def gyro(self) -> MovementValues:
+    def acceleration_magnitude(self) -> float:
+        """
+        Returns:
+            float: The magnitude of the acceleration vector in g.
+                   When the Modulino is at rest (on planet earth), this value should be approximately 1.0g due to gravity.
+        """
+        x, y, z = self.accelerometer
+        return (x**2 + y**2 + z**2) ** 0.5
+
+    @property
+    def angular_velocity(self) -> MovementValues:
         """
         Returns:
             MovementValues: The gyroscope values in the x, y, and z axes.
@@ -47,3 +57,15 @@ class ModulinoMovement(Modulino):
         """
         sensor_values = self.sensor.gyro()
         return MovementValues(sensor_values[0], sensor_values[1], sensor_values[2])
+    
+    @property
+    def gyro(self) -> MovementValues:
+        """
+        Alias for angular_velocity property.
+
+        Returns:
+            MovementValues: The gyroscope values in the x, y, and z axes.
+                            These values can be accessed as .x, .y, and .z properties
+                            or by using the index operator for tuple unpacking.
+        """
+        return self.angular_velocity
