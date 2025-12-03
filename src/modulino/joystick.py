@@ -43,7 +43,7 @@ class ModulinoJoystick(Modulino):
         """
         return abs(x_new - x_old) > threshold or abs(y_new - y_old) > threshold
 
-    def normalize_coordinates(self, x, y):
+    def _normalize_coordinates(self, x, y):
         """
         Applies deadzone logic to joystick coordinates and maps them to a range centered around 0.
 
@@ -72,7 +72,7 @@ class ModulinoJoystick(Modulino):
 
         x = new_state[0]
         y = new_state[1]                
-        x, y = self.normalize_coordinates(x, y)
+        x, y = self._normalize_coordinates(x, y)
         x_y_changed = self._values_changed(x, self._x, y, self._y)
         
         if x_y_changed:
