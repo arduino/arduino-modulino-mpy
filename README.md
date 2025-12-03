@@ -15,6 +15,9 @@ Supports the following Modulinos:
 - 🏃‍♂️ **Modulino Movement**: Measure acceleration and positioning.
 - 🎛️ **Modulino Knob**: A rotating knob with a button.
 - 🌡️ **Modulino Thermo**: Read surrounding temperature and humidity.
+- ⚡️ **Modulino Latch Relay**: Control a latching relay to switch devices on and off.
+- 🕹️ **Modulino Joystick**: Read X/Y axis and button state from a joystick Modulino.
+- 📳 **Modulino Vibro**: Control a vibration motor.
 
 ## 📖 Documentation
 For more information on the features of this library and how to use them please read the documentation [here](./docs/).
