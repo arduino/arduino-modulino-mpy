@@ -236,7 +236,7 @@ class ModulinoPixels(Modulino):
     Returns:
         ModulinoPixels: The object itself. Allows for daisy chaining of methods.
     """
-    for i in range(start, end):
+    for i in range(start, end + 1):
         self.clear(i)
     return self
         
