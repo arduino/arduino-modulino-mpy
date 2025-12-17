@@ -277,24 +277,15 @@ class Modulino:
       # ENODEV (e.errno == 19) can be thrown if the device resets while writing out the buffer
       return False
 
-  def read(self, amount_of_bytes: int) -> bytes | None:
+  def read(self, read_buffer: bytearray) -> None:
     """
-    Reads the given amount of bytes from the i2c device and returns the data.
-    It skips the first byte which is the pinstrap address.
-
-    Returns:
-      bytes | None: The data read from the device.
+    Reads the given amount of bytes from the i2c device defined by the length of the read_buffer.
     """
 
     if self.address is None:
-      return None
+      raise RuntimeError("I2C address is not set.")
 
-    data = self.i2c_bus.readfrom(self.address, amount_of_bytes + 1, True)
-    if len(data) < amount_of_bytes + 1:
-      return None  # Something went wrong in the data transmission
-
-    # data[0] is always the pinstrap address
-    return data[1:]
+    self.i2c_bus.readfrom_into(self.address, read_buffer, True)
 
   def write(self, data_buffer: bytearray) -> bool:
     """
