@@ -62,8 +62,8 @@ class _I2CHelper:
     interface, scl_pin_number, sda_pin_number = _I2CHelper.extract_i2c_info(i2c_bus)
 
     # Detach pins from I2C and configure them as GPIO outputs in open-drain mode
-    scl_pin = Pin(scl_pin_number, Pin.OUT, Pin.OPEN_DRAIN)
-    sda_pin = Pin(sda_pin_number, Pin.OUT, Pin.OPEN_DRAIN)
+    scl_pin = Pin(scl_pin_number, Pin.OPEN_DRAIN)
+    sda_pin = Pin(sda_pin_number, Pin.OPEN_DRAIN)
 
     # Set both lines high initially
     scl_pin.value(1)
