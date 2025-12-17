@@ -25,7 +25,6 @@ class ModulinoDistance(Modulino):
         self.sensor.inter_measurement = 0
         self.sensor.start_ranging()
 
-    @property
     def _distance_raw(self, timeout = 1000) -> int | None:
         """
         Reads the raw distance value from the sensor and clears the interrupt.
@@ -40,8 +39,7 @@ class ModulinoDistance(Modulino):
                     raise OSError("Timeout waiting for sensor data")
                 sleep_ms(1)
             self.sensor.clear_interrupt()
-            sensor_value = self.sensor.distance
-            return sensor_value
+            return self.sensor.distance
         except OSError:
             # Catch timeout errors
             return None
@@ -52,8 +50,11 @@ class ModulinoDistance(Modulino):
         Returns:
             int: The distance in centimeters.
         """
-        while True:
-            raw_distance = self._distance_raw
-            # Filter out invalid readings
-            if not raw_distance is None and raw_distance > 0:
-                return raw_distance
+        raw_distance = self._distance_raw()
+
+        # Retry once if the reading is invalid
+        if raw_distance <= 0:
+            raw_distance = self._distance_raw()
+        
+        # Filter out invalid readings
+        return raw_distance if raw_distance > 0 else None
