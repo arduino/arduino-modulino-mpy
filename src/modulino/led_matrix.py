@@ -34,6 +34,38 @@ class ModulinoLEDMatrix(Modulino):
         
         self._fb_dirty = False
 
+    def set_frame(self, data: bytes | bytearray):
+        """
+        Sets the LED matrix frame from a bytes or bytearray object.
+
+        Parameters:
+            data (bytes | bytearray): The data representing the LED matrix frame.
+                                      It should be a sequence of 96 bits, each byte representing a pixel.
+        """
+        expected_size = self._width * self._height // 8
+        if len(data) != expected_size:
+            raise ValueError(f"Data length must be {expected_size} bytes")
+        
+        self._raw_buffer = data
+
+    def set_frame_from_ascii(self, ascii_art: str, fill_char: str = '#'):
+        """
+        Sets the LED matrix frame from an ASCII art string.
+
+        Parameters:
+            ascii_art (str): The ASCII art string representing the LED matrix.
+            fill_char (str): The character that represents a lit pixel. Default is '#'.
+        """
+        self._fb_dirty = True
+        lines = map(str.strip, ascii_art.splitlines()) # Split and remove leading/trailing whitespace  
+        lines = [line for line in lines if line] # Remove empty lines
+        
+        for y, line in enumerate(lines):
+            for x, char in enumerate(line):
+                if x < self._width and y < self._height:
+                    self._framebuf.pixel(x, y, 1 if char == fill_char else 0)
+        return self
+
     def fill(self, value: bool):
         """
         Fills the entire LED matrix with the specified value.
@@ -200,14 +232,14 @@ class ModulinoLEDMatrix(Modulino):
         Sends the current buffer to the LED matrix to update the display.
         """
         if self._fb_dirty:
-            self.pack_buffer(self._framebuf_buffer, self._raw_buffer, self._width, self._height)
+            self._pack_buffer(self._framebuf_buffer, self._raw_buffer, self._width, self._height)
             self._fb_dirty = False
         self.write(self._raw_buffer)
         self._fb_dirty = False
         self._raw_dirty = False
 
     @micropython.native
-    def pack_buffer(self, source, dest, width: int, height: int):
+    def _pack_buffer(self, source, dest, width: int, height: int):
         # 1. Calculate layouts
         src_stride = (width + 7) // 8 # bytes per row in source
         full_bytes = width // 8 # bytes per row fully used
@@ -261,16 +293,3 @@ class ModulinoLEDMatrix(Modulino):
         # 4. Flush any lingering bits
         if bits_stored > 0:
             dest[dest_idx] = buffer & 0xFF
-
-
-if __name__ == "__main__":
-    from time import sleep_ms
-
-    led_matrix = ModulinoLEDMatrix()
-    led_matrix.clear().show()
-
-    for y in range(8):
-        for x in range(12):
-            led_matrix.set_pixel(x, y, True)
-            led_matrix.show()
-            sleep_ms(100)
