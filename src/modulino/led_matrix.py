@@ -77,6 +77,21 @@ class ModulinoLEDMatrix(Modulino):
         self._framebuf.fill(1 if value else 0)
         return self
 
+    def get_pixel(self, x, y) -> bool:
+        """
+        Gets the state of a specific pixel in the LED matrix.
+
+        Parameters:
+            x (int): The x-coordinate of the pixel (0-11).
+            y (int): The y-coordinate of the pixel (0-7).
+        Returns:
+            bool: True if the pixel is on, False if it is off.
+        """
+        if not (0 <= x < 12 and 0 <= y < 8):
+            raise ValueError("Pixel coordinates out of bounds")
+
+        return bool(self._framebuf.pixel(x, y))
+
     def set_pixel(self, x, y, value = True):
         """
         Sets the state of a specific pixel in the LED matrix.
