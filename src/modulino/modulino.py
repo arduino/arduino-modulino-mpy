@@ -15,6 +15,7 @@ DEVICE_I2C_INTERFACES = {
   "Generic ESP32S3 module": I2CInterface("hw", 0, None, None),
 }
 
+# 8-bit pin strap addresses
 PINSTRAP_ADDRESS_MAP = {
   0x3C: "Buzzer",
   0x7C: "Buttons",
@@ -23,7 +24,8 @@ PINSTRAP_ADDRESS_MAP = {
   0x6C: "Pixels",
   0x58: "Joystick",
   0x4: "Latch Relay",
-  0x70: "Vibro"
+  0x70: "Vibro",
+  0x72: "LED Matrix"
 }
 
 _BOOTLOADER_ADDRESS = const(0x64)
@@ -131,6 +133,13 @@ class Modulino:
   """
   Determines if the default addresses need to be converted from 8-bit to 7-bit.
   Addresses of modulinos without native I2C modules need to be converted.
+  This class variable needs to be overridden in derived classes.
+  """
+
+  receive_buffer_size: int = None
+  """
+  The size of the receive buffer for the device.
+  This is required to calculate the padding for the DIE command.
   This class variable needs to be overridden in derived classes.
   """
 
@@ -267,12 +276,19 @@ class Modulino:
     Returns:
       bool: True if the device entered bootloader mode, False otherwise.
     """
+    if self.receive_buffer_size is None:
+      raise RuntimeError("The receive_buffer_size property must be set in the derived class.")
+    
     buffer = b'DIE'
-    buffer += b'\x00' * (8 - len(buffer)) # Pad buffer to 8 bytes
+    # Pad buffer. The amount of sent bytes must be equal to what the Modulino firmware expects.
+    # Otherwise it won't process the data.
+    # If more than the expected amount is sent, the write command
+    # raises an ENODEV error because the device resets while writing.    
+    buffer += b'\x00' * (self.receive_buffer_size - len(buffer))
     try:
-        self.i2c_bus.writeto(self.address, buffer, True)
-        sleep(0.25) # Wait for the device to reset
-        return True
+      self.i2c_bus.writeto(self.address, buffer, True)
+      sleep(0.25) # Wait for the device to reset
+      return True
     except OSError as e:
       # ENODEV (e.errno == 19) can be thrown if the device resets while writing out the buffer
       return False

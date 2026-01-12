@@ -81,6 +81,7 @@ class ModulinoBuzzer(Modulino):
   """
 
   default_addresses = [0x3C]
+  receive_buffer_size: int = 8
 
   def __init__(self, i2c_bus=None, address=None):
     """

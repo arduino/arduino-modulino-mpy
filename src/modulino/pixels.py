@@ -61,6 +61,7 @@ class ModulinoPixels(Modulino):
   """
 
   default_addresses = [0x6C]
+  receive_buffer_size: int = NUM_LEDS * 4
 
   def __init__(self, i2c_bus = None, address=None):
     """

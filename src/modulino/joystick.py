@@ -9,6 +9,7 @@ class ModulinoJoystick(Modulino):
 
     default_addresses = [0x58]
     default_long_press_duration = const(1000)  # milliseconds
+    receive_buffer_size: int = 3
 
     def __init__(self, i2c_bus=None, address=None):
         """

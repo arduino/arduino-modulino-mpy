@@ -7,6 +7,8 @@ class ModulinoButtonsLED():
   Class to interact with the LEDs of the Modulino Buttons.
   """
 
+  receive_buffer_size: int = 3
+
   def __init__(self, buttons):
     self._value = 0
     self._buttons = buttons

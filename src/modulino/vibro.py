@@ -16,6 +16,7 @@ class ModulinoVibro(Modulino):
   """
 
   default_addresses = [0x70]
+  receive_buffer_size: int = 12
 
   def __init__(self, i2c_bus=None, address=None):
     """

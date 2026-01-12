@@ -6,6 +6,7 @@ class ModulinoLatchRelay(Modulino):
   """
 
   default_addresses = [0x4]
+  receive_buffer_size: int = 3
 
   def __init__(self, i2c_bus=None, address=None):
     """
