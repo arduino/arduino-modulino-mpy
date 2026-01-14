@@ -6,6 +6,7 @@ __maintainer__ = "Arduino"
 # Import core classes and/or functions to expose them at the package level
 from .helpers import map_value, map_value_int, constrain
 from .modulino import Modulino
+from .device_manager import DeviceManager
 from .pixels import ModulinoPixels, ModulinoColor
 from .thermo import ModulinoThermo
 from .buzzer import ModulinoBuzzer
