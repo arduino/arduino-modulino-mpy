@@ -21,6 +21,7 @@ class ModulinoKnob(Modulino):
     """
 
     super().__init__(i2c_bus, address, "Knob")
+    self._read_buffer = bytearray(4) # 3 bytes for encoder value + pressed status + 1 byte for pinstrap address
     self._pressed: bool = None
     self._encoder_value: int = None
     self._value_range: tuple[int, int] = None
@@ -102,7 +103,8 @@ class ModulinoKnob(Modulino):
     Adjusts the value to the range if it is set.
     Converts the encoder value to a signed 16-bit integer.
     """
-    data: bytes = self.read(3)
+    self.read(self._read_buffer)
+    data: bytes = self._read_buffer[1:] # Skip pinstrap address
     self._pressed = data[2] != 0
     self._encoder_value = int.from_bytes(data[0:2], 'little', True)
 

@@ -44,7 +44,7 @@ class ModulinoMovement(Modulino):
             float: The magnitude of the acceleration vector in g.
                    When the Modulino is at rest (on planet earth), this value should be approximately 1.0g due to gravity.
         """
-        x, y, z = self.accelerometer
+        x, y, z = self.acceleration
         return (x**2 + y**2 + z**2) ** 0.5
 
     @property

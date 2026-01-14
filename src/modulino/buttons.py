@@ -53,6 +53,7 @@ class ModulinoButtons(Modulino):
     """
 
     super().__init__(i2c_bus, address, "Buttons")
+    self._read_buffer = bytearray(4) # 3 bytes for buttons status + 1 byte for pinstrap address
     self.long_press_duration = self.default_long_press_duration
 
     self._current_buttons_status = [None, None, None]
@@ -263,7 +264,8 @@ class ModulinoButtons(Modulino):
     Returns:
       bool: True if any of the buttons has changed its state.
     """
-    new_status = self.read(3)
+    self.read(self._read_buffer)
+    new_status = self._read_buffer[1:] # Skip pinstrap address
     button_states_changed = new_status != self._current_buttons_status
     previous_status = self._current_buttons_status
     current_timestamp = ticks_ms()

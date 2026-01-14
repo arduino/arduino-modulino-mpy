@@ -21,6 +21,7 @@ class ModulinoJoystick(Modulino):
             address (int): The I2C address of the module. If not provided, the default address will be used.
         """
         super().__init__(i2c_bus, address, "Joystick")
+        self._read_buffer = bytearray(4)  # 2 bytes for x,y + 1 byte for button state + 1 byte for pinstrap address
         self._state = [0, 0, 0]  # x, y, button state
         self._x = 0
         self._y = 0
@@ -66,7 +67,8 @@ class ModulinoJoystick(Modulino):
         """
         Updates the joystick state by reading the current position and button state.
         """
-        new_state = self.read(3)
+        self.read(self._read_buffer)
+        new_state = self._read_buffer[1:] # Skip pinstrap address
         previous_state = self._state
         self._state = new_state
         current_timestamp = ticks_ms()        
