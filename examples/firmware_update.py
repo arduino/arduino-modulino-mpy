@@ -16,7 +16,7 @@ import sys
 import time
 from micropython import const
 from machine import I2C
-from modulino import Modulino
+from modulino import Modulino, DeviceManager
 
 BOOTLOADER_I2C_ADDRESS = const(0x64)
 ACK = const(0x79)
@@ -218,7 +218,8 @@ def select_device(bus : I2C) -> Modulino:
     :param bus: The I2C bus to scan.
     :return: The selected Modulino device.
     """
-    devices = Modulino.available_devices(bus)
+    device_manager = DeviceManager(i2c_bus=bus)
+    devices = device_manager.available_devices()
 
     if len(devices) == 0:
         print("❌ No devices found")
@@ -226,7 +227,7 @@ def select_device(bus : I2C) -> Modulino:
 
     if len(devices) == 1:
         device = devices[0]
-        confirm = input(f"🔌 Found {device.device_type} at address {hex(device.address)}. Do you want to update this device? (yes/no) ")
+        confirm = input(f"🔌 Found {device.name} at address {hex(device.address)}. Do you want to update this device? (yes/no) ")
         if confirm.lower() == 'yes':
             return devices[0]
         else:
@@ -234,7 +235,7 @@ def select_device(bus : I2C) -> Modulino:
 
     print("🔌 Devices found:")
     for index, device in enumerate(devices):
-        print(f"{index + 1}) {device.device_type} at {hex(device.address)}")
+        print(f"{index + 1}) {device.name} at {hex(device.address)}")
     choice = int(input("Select the device to flash (number): "))
     if choice < 1 or choice > len(devices):
         return None
