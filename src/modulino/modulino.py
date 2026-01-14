@@ -15,9 +15,6 @@ DEVICE_I2C_INTERFACES = {
   "Generic ESP32S3 module": I2CInterface("hw", 0, None, None),
 }
 
-
-_BOOTLOADER_ADDRESS = const(0x64)
-
 class _I2CHelper:
   """
   A helper class for interacting with I2C devices on supported boards.
@@ -335,29 +332,6 @@ class Modulino:
         except OSError:
             pass
     return list(addresses)
-
-  @staticmethod
-  def available_devices(bus: I2C = None) -> list[Modulino]:
-    """
-    Finds all devices on the i2c bus and returns them as a list of Modulino objects.
-
-    Parameters:
-      bus (I2C): The I2C bus to use. If not provided, the default I2C bus will be used.
-
-    Returns:
-      list: A list of Modulino objects.
-    """
-    if bus is None:
-      bus = _I2CHelper.get_interface()
-    device_addresses = Modulino.scan(bus)
-    devices = []
-    for address in device_addresses:
-      if address == _BOOTLOADER_ADDRESS:
-        # Skip bootloader address
-        continue
-      device = Modulino(i2c_bus=bus, address=address, check_connection=False)
-      devices.append(device)
-    return devices
 
   @staticmethod
   def reset_bus(i2c_bus: I2C) -> I2C:
