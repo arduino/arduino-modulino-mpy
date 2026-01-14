@@ -5,6 +5,7 @@ class ModulinoKnob(Modulino):
   Class to interact with the rotary encoder of the Modulinio Knob.
   """
   
+  name = "Knob"
   # This module can have one of two default addresses
   # This is for a use case where two encoders are bundled together in a package
   default_addresses = [0x74, 0x76]

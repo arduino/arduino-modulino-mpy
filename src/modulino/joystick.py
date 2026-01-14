@@ -7,6 +7,7 @@ class ModulinoJoystick(Modulino):
     Class to operate the Modulino Joystick module.
     """
 
+    name = "Joystick"
     default_addresses = [0x58]
     default_long_press_duration = const(1000)  # milliseconds
     receive_buffer_size: int = 3

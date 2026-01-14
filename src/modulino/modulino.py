@@ -15,18 +15,6 @@ DEVICE_I2C_INTERFACES = {
   "Generic ESP32S3 module": I2CInterface("hw", 0, None, None),
 }
 
-# 8-bit pin strap addresses
-PINSTRAP_ADDRESS_MAP = {
-  0x3C: "Buzzer",
-  0x7C: "Buttons",
-  0x76: "Knob",
-  0x74: "Knob",
-  0x6C: "Pixels",
-  0x58: "Joystick",
-  0x4: "Latch Relay",
-  0x70: "Vibro",
-  0x72: "LED Matrix"
-}
 
 _BOOTLOADER_ADDRESS = const(0x64)
 
@@ -143,6 +131,12 @@ class Modulino:
   This class variable needs to be overridden in derived classes.
   """
 
+  name: str = None
+  """
+  The name of the modulino.
+  This property should be overridden in derived classes.
+  """
+
   def __init__(self, i2c_bus: I2C = None, address: int = None, name: str = None, check_connection: bool = True) -> None:
     """
     Initializes the Modulino object with the given i2c bus and address.
@@ -241,13 +235,6 @@ class Modulino:
     data = self.i2c_bus.readfrom(self.address, 1, True)
     # The first byte is always the pinstrap address
     return data[0]
-
-  @property
-  def device_type(self) -> str | None:
-    """
-    Returns the type of the modulino based on the pinstrap address as a string.
-    """
-    return PINSTRAP_ADDRESS_MAP.get(self.pin_strap_address, None)
 
   def change_address(self, new_address: int):
     """

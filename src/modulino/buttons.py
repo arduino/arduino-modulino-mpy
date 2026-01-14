@@ -39,7 +39,7 @@ class ModulinoButtons(Modulino):
   """
   Class to interact with the buttons of the Modulino Buttons.
   """
-
+  name = "Buttons"
   default_addresses = [0x7C]
   default_long_press_duration = const(1000)
 

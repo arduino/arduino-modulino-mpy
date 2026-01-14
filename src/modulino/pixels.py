@@ -60,6 +60,7 @@ class ModulinoPixels(Modulino):
   Class to interact with the LEDs of the Modulino Pixels.
   """
 
+  name = "Pixels"
   default_addresses = [0x6C]
   receive_buffer_size: int = NUM_LEDS * 4
 

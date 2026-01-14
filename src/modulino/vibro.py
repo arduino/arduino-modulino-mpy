@@ -15,6 +15,7 @@ class ModulinoVibro(Modulino):
   Class to operate the vibration motor of the Modulino Vibro.
   """
 
+  name = "Vibro"
   default_addresses = [0x70]
   receive_buffer_size: int = 12
 

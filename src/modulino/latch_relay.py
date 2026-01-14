@@ -5,6 +5,7 @@ class ModulinoLatchRelay(Modulino):
   Class to control the relay module of the Modulino.
   """
 
+  name = "Latch Relay"
   default_addresses = [0x4]
   receive_buffer_size: int = 3
 
