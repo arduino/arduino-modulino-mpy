@@ -1,6 +1,6 @@
 import micropython
 from modulino import Modulino
-from framebuf import FrameBuffer, MONO_HMSB
+from framebuf import FrameBuffer, MONO_VLSB
 
 
 class ModulinoLEDMatrix(Modulino):
@@ -8,6 +8,8 @@ class ModulinoLEDMatrix(Modulino):
     Class to control the LED Matrix module of the Modulino.
     """
 
+    name = "LED Matrix"
+    receive_buffer_size: int = 12
     default_addresses = [0x72]
 
     def __init__(self, i2c_bus=None, address=None):
@@ -23,14 +25,13 @@ class ModulinoLEDMatrix(Modulino):
         self._height = 8
         
         # 1. Internal Working Buffer (Standard padded)
-        # 12 pixels wide -> requires 2 bytes per row -> 16 bytes total
-        _stride_bytes = (self._width + 7) // 8  # bytes per row inside FrameBuffer (2 bytes for 12px)
-        self._framebuf_buffer = bytearray(_stride_bytes * self._height)  # 16 bytes padded layout
-        self._framebuf = FrameBuffer(self._framebuf_buffer, self._width, self._height, MONO_HMSB)
+        # Requires 1 byte per column -> 12 bytes total
+        self._framebuf_buffer = bytearray(self._width * self._height // 8)  # 12
+        self._framebuf = FrameBuffer(self._framebuf_buffer, self._width, self._height, MONO_VLSB)
         
         # 2. Hardware Output Buffer (Compact)
-        total_bytes = ((self._width * self._height) + 7) // 8
-        self._raw_buffer = bytearray(total_bytes)  # 12 bytes packed layout
+        # total_bytes = ((self._width * self._height) + 7) // 8
+        # self._raw_buffer = bytearray(total_bytes)  # 12 bytes packed layout
         
         self._fb_dirty = False
 
@@ -247,9 +248,9 @@ class ModulinoLEDMatrix(Modulino):
         Sends the current buffer to the LED matrix to update the display.
         """
         if self._fb_dirty:
-            self._pack_buffer(self._framebuf_buffer, self._raw_buffer, self._width, self._height)
+            # self._pack_buffer(self._framebuf_buffer, self._raw_buffer, self._width, self._height)
             self._fb_dirty = False
-        self.write(self._raw_buffer)
+        self.write(self._framebuf_buffer)
         self._fb_dirty = False
         self._raw_dirty = False
 
