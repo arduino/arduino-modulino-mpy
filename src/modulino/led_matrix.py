@@ -1,6 +1,6 @@
 import micropython
 from modulino import Modulino
-from framebuf import FrameBuffer, MONO_VLSB
+from framebuf import FrameBuffer, GS4_HMSB
 
 
 class ModulinoLEDMatrix(Modulino):
@@ -9,7 +9,7 @@ class ModulinoLEDMatrix(Modulino):
     """
 
     name = "LED Matrix"
-    receive_buffer_size: int = 12
+    receive_buffer_size: int = 48
     default_addresses = [0x72]
 
     def __init__(self, i2c_bus=None, address=None):
@@ -25,9 +25,9 @@ class ModulinoLEDMatrix(Modulino):
         self._height = 8
         
         # 1. Internal Working Buffer (Standard padded)
-        # Requires 1 byte per column -> 12 bytes total
-        self._framebuf_buffer = bytearray(self._width * self._height // 8)  # 12
-        self._framebuf = FrameBuffer(self._framebuf_buffer, self._width, self._height, MONO_VLSB)
+        # Requires 4 bits per pixel
+        self._framebuf_buffer = bytearray(self._width * self._height // 2)  # 48 bytes
+        self._framebuf = FrameBuffer(self._framebuf_buffer, self._width, self._height, GS4_HMSB)
         
         # 2. Hardware Output Buffer (Compact)
         # total_bytes = ((self._width * self._height) + 7) // 8
@@ -67,7 +67,7 @@ class ModulinoLEDMatrix(Modulino):
                     self._framebuf.pixel(x, y, 1 if char == fill_char else 0)
         return self
 
-    def fill(self, value: bool):
+    def fill(self, value: int = 15):
         """
         Fills the entire LED matrix with the specified value.
 
@@ -75,7 +75,7 @@ class ModulinoLEDMatrix(Modulino):
             value (bool): True to turn all pixels on, False to turn them off.
         """
         self._fb_dirty = True
-        self._framebuf.fill(1 if value else 0)
+        self._framebuf.fill(value)
         return self
 
     def get_pixel(self, x, y) -> bool:
@@ -93,7 +93,7 @@ class ModulinoLEDMatrix(Modulino):
 
         return bool(self._framebuf.pixel(x, y))
 
-    def set_pixel(self, x, y, value = True):
+    def set_pixel(self, x, y, value = 15):
         """
         Sets the state of a specific pixel in the LED matrix.
 
@@ -106,10 +106,10 @@ class ModulinoLEDMatrix(Modulino):
             raise ValueError("Pixel coordinates out of bounds")
 
         self._fb_dirty = True
-        self._framebuf.pixel(x, y, 1 if value else 0)
+        self._framebuf.pixel(x, y, value)
         return self
 
-    def hline(self, x, y, length, value = True):
+    def hline(self, x, y, length, value = 15):
         """
         Draws a horizontal line on the LED matrix.
 
@@ -120,10 +120,10 @@ class ModulinoLEDMatrix(Modulino):
             value (bool): True to turn the pixels on, False to turn them off.
         """
         self._fb_dirty = True
-        self._framebuf.hline(x, y, length, 1 if value else 0)
+        self._framebuf.hline(x, y, length, value)
         return self
     
-    def vline(self, x, y, length, value = True):
+    def vline(self, x, y, length, value = 15):
         """
         Draws a vertical line on the LED matrix.
 
@@ -134,10 +134,10 @@ class ModulinoLEDMatrix(Modulino):
             value (bool): True to turn the pixels on, False to turn them off.
         """
         self._fb_dirty = True
-        self._framebuf.vline(x, y, length, 1 if value else 0)
+        self._framebuf.vline(x, y, length, value)
         return self
 
-    def line(self, x1, y1, x2, y2, value = True):
+    def line(self, x1, y1, x2, y2, value = 15):
         """
         Draws a line on the LED matrix from (x1, y1) to (x2, y2).
 
@@ -149,10 +149,10 @@ class ModulinoLEDMatrix(Modulino):
             value (bool): True to turn the pixels on, False to turn them off.
         """
         self._fb_dirty = True
-        self._framebuf.line(x1, y1, x2, y2, 1 if value else 0)
+        self._framebuf.line(x1, y1, x2, y2, value)
         return self
 
-    def rect(self, x, y, width, height, value = True):
+    def rect(self, x, y, width, height, value = 15):
         """
         Draws a rectangle on the LED matrix.
 
@@ -164,10 +164,10 @@ class ModulinoLEDMatrix(Modulino):
             value (bool): True to turn the pixels on, False to turn them off.
         """
         self._fb_dirty = True
-        self._framebuf.rect(x, y, width, height, 1 if value else 0)
+        self._framebuf.rect(x, y, width, height, value)
         return self
     
-    def ellipse(self, x, y, width, height, value = True):
+    def ellipse(self, x, y, width, height, value = 15):
         """
         Draws an ellipse on the LED matrix.
 
@@ -179,10 +179,10 @@ class ModulinoLEDMatrix(Modulino):
             value (bool): True to turn the pixels on, False to turn them off.
         """
         self._fb_dirty = True
-        self._framebuf.ellipse(x, y, width, height, 1 if value else 0)
+        self._framebuf.ellipse(x, y, width, height, value)
         return self
     
-    def poly(self, x, y, points, value = True, fill = False):
+    def poly(self, x, y, points, value = 15, fill = False):
         """
         Draws a polygon on the LED matrix.
 
@@ -194,10 +194,10 @@ class ModulinoLEDMatrix(Modulino):
             fill (bool): True to fill the polygon, False for outline only.
         """
         self._fb_dirty = True
-        self._framebuf.poly(x, y, points, 1 if value else 0, fill)
+        self._framebuf.poly(x, y, points, value, fill)
         return self
 
-    def text(self, x, y, string, value = True):
+    def text(self, x, y, string, value = 15):
         """
         Draws text on the LED matrix.
 
@@ -208,7 +208,7 @@ class ModulinoLEDMatrix(Modulino):
             value (bool): True to turn the pixels on, False to turn them off.
         """
         self._fb_dirty = True
-        self._framebuf.text(string, x, y, 1 if value else 0)
+        self._framebuf.text(string, x, y, value)
         return self
     
     def scroll(self, dx, dy):
@@ -243,6 +243,19 @@ class ModulinoLEDMatrix(Modulino):
         self.fill(False)
         return self
 
+    def _print_buffer(self):
+        for p in range(96):
+            # Print each pixel in decimal format, odd indexes are high nibbles
+            index = p // 2
+            brightness = None
+            
+            if p % 2 == 0:
+                brightness = self._framebuf_buffer[index] & 0x0F
+            else:
+                brightness = (self._framebuf_buffer[index] >> 4) & 0x0F
+                
+            print(f"Index {p}: Byte {index} Brightness {brightness}")
+
     def show(self):
         """
         Sends the current buffer to the LED matrix to update the display.
@@ -250,6 +263,8 @@ class ModulinoLEDMatrix(Modulino):
         if self._fb_dirty:
             # self._pack_buffer(self._framebuf_buffer, self._raw_buffer, self._width, self._height)
             self._fb_dirty = False
+
+        # self._print_buffer()
         self.write(self._framebuf_buffer)
         self._fb_dirty = False
         self._raw_dirty = False
