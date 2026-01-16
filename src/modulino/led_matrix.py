@@ -34,6 +34,9 @@ class ModulinoLEDMatrix(Modulino):
         # self._raw_buffer = bytearray(total_bytes)  # 12 bytes packed layout
         
         self._fb_dirty = False
+        buffer = b'GS4'
+        buffer += b'\x00' * (12 - len(buffer))
+        self.i2c_bus.writeto(self.address, buffer)  # Initialize display
 
     def set_frame(self, data: bytes | bytearray):
         """
