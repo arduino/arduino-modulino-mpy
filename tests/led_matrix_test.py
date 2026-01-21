@@ -43,4 +43,5 @@ led_matrix.text(2,0,"A").show()
 sleep_ms(2000)
 led_matrix.clear()
 
+led_matrix.use_grayscale = True
 fade_pattern(led_matrix)

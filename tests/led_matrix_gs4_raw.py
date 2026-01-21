@@ -4,6 +4,12 @@ from time import sleep_ms
 bus = I2C(0)
 dev_addr = 0x39
 
+# After boot the LED matrix is in monochrome mode
+# We need to switch it to GS4 (4-bit grayscale) mode
+buffer = b'GS4'
+buffer += b'\x00' * (12 - len(buffer))
+bus.writeto(dev_addr, buffer)
+
 pixel_data = bytearray(48)
 # Each pixels is represented by 4-bits (nibble) for grayscale (0-15)
 # Therefore, 16 pixels can be stored in 8 bytes
