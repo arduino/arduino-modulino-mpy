@@ -1,7 +1,9 @@
-import micropython
+from micropython import const
 from modulino import Modulino
-from framebuf import FrameBuffer, GS4_HMSB
+from framebuf import FrameBuffer, GS4_HMSB, MONO_VLSB
 
+_MONOCHROME = const(b'MON')
+_GRAYSCALE = const(b'GS4')
 
 class ModulinoLEDMatrix(Modulino):
     """
@@ -12,7 +14,7 @@ class ModulinoLEDMatrix(Modulino):
     receive_buffer_size: int = 48
     default_addresses = [0x72]
 
-    def __init__(self, i2c_bus=None, address=None):
+    def __init__(self, i2c_bus=None, address=None, use_grayscale: bool = False):
         """
         Initializes the Modulino LED Matrix.
 
@@ -23,20 +25,59 @@ class ModulinoLEDMatrix(Modulino):
         super().__init__(i2c_bus, address, "LED Matrix")
         self._width = 12
         self._height = 8
+
+        self._read_buffer = bytearray(4)  # 1 byte for pinstrap address, 3 bytes for mode
+        self._display_mode = None
+        self._framebuf_buffer = None
+        self._framebuf = None
+        self._shadow_buffer = None
+        self._default_color = 1
+        self.use_grayscale = use_grayscale
+
+    def _read_mode(self) -> bytes:
+        """
+        Reads the current display mode from the LED matrix.
+
+        Returns:
+            bytes: The current display mode ('MON' for Monochrome, 'GS4' for Grayscale).
+        """
+        self.read(self._read_buffer)
+        return self._read_buffer[1:4] # Skip pinstrap address
+
+    @property
+    def use_grayscale(self) -> bool:
+        return self._display_mode == _GRAYSCALE
+
+    @use_grayscale.setter
+    def use_grayscale(self, value: bool) -> None:
+        if value and self._display_mode == _GRAYSCALE:
+            return
+        if not value and self._display_mode == _MONOCHROME:
+            return
+     
+        new_mode = _GRAYSCALE if value else _MONOCHROME
+        current_mode = self._read_mode()
+        expected_bytes = 48 if current_mode == _GRAYSCALE else 12
+        buffer = new_mode
+        buffer += b'\x00' * (expected_bytes - len(buffer)) # Pad to expected size
         
-        # 1. Internal Working Buffer (Standard padded)
-        # Requires 4 bits per pixel
-        self._framebuf_buffer = bytearray(self._width * self._height // 2)  # 48 bytes
-        self._framebuf = FrameBuffer(self._framebuf_buffer, self._width, self._height, GS4_HMSB)
-        
-        # 2. Hardware Output Buffer (Compact)
-        # total_bytes = ((self._width * self._height) + 7) // 8
-        # self._raw_buffer = bytearray(total_bytes)  # 12 bytes packed layout
-        
-        self._fb_dirty = False
-        buffer = b'GS4'
-        buffer += b'\x00' * (12 - len(buffer))
-        self.i2c_bus.writeto(self.address, buffer)  # Initialize display
+        if self.write(buffer):
+            self._display_mode = new_mode
+            if new_mode == _MONOCHROME:
+                buffer_size = self._width * self._height // 8  # 12 bytes
+                framebuf_format = MONO_VLSB
+                self._default_color = 1
+            else:
+                buffer_size = self._width * self._height // 2  # 48 bytes
+                framebuf_format = GS4_HMSB
+                self._default_color = 15
+
+            self._framebuf_buffer = bytearray(buffer_size)
+            self._shadow_buffer = bytearray(buffer_size)
+            self._framebuf = FrameBuffer(self._framebuf_buffer, self._width, self._height, framebuf_format)
+
+    def _normalize_color(self, color: int | None) -> int:
+        return self._default_color if color is None else color
 
     def set_frame(self, data: bytes | bytearray):
         """
@@ -52,33 +93,34 @@ class ModulinoLEDMatrix(Modulino):
         
         self._raw_buffer = data
 
-    def set_frame_from_ascii(self, ascii_art: str, fill_char: str = '#'):
+    def set_frame_from_ascii(self, ascii_art: str, fill_char: str = '#', color: int = None):
         """
         Sets the LED matrix frame from an ASCII art string.
 
         Parameters:
             ascii_art (str): The ASCII art string representing the LED matrix.
             fill_char (str): The character that represents a lit pixel. Default is '#'.
+            color (int): The color to set the filled pixels to. For grayscale, this can be 0-15. For monochrome, use 0 or 1.
         """
-        self._fb_dirty = True
+        color = self._normalize_color(color)
         lines = map(str.strip, ascii_art.splitlines()) # Split and remove leading/trailing whitespace  
         lines = [line for line in lines if line] # Remove empty lines
         
         for y, line in enumerate(lines):
             for x, char in enumerate(line):
                 if x < self._width and y < self._height:
-                    self._framebuf.pixel(x, y, 1 if char == fill_char else 0)
+                    self._framebuf.pixel(x, y, color if char == fill_char else 0)
         return self
 
-    def fill(self, value: int = 15):
+    def fill(self, color: int = None):
         """
         Fills the entire LED matrix with the specified value.
 
         Parameters:
-            value (bool): True to turn all pixels on, False to turn them off.
+            color (int): The color to fill the matrix with. For grayscale, this can be 0-15. For monochrome, use 0 or 1.
         """
-        self._fb_dirty = True
-        self._framebuf.fill(value)
+        color = self._normalize_color(color)
+        self._framebuf.fill(color)
         return self
 
     def get_pixel(self, x, y) -> bool:
@@ -96,23 +138,23 @@ class ModulinoLEDMatrix(Modulino):
 
         return bool(self._framebuf.pixel(x, y))
 
-    def set_pixel(self, x, y, value = 15):
+    def set_pixel(self, x, y, color = None):
         """
         Sets the state of a specific pixel in the LED matrix.
 
         Parameters:
             x (int): The x-coordinate of the pixel (0-11).
             y (int): The y-coordinate of the pixel (0-7).
-            value (bool): True to turn the pixel on, False to turn it off.
+            color (int): The color to set the pixel to. For grayscale, this can be 0-15. For monochrome, use 0 or 1.
         """
         if not (0 <= x < 12 and 0 <= y < 8):
             raise ValueError("Pixel coordinates out of bounds")
 
-        self._fb_dirty = True
-        self._framebuf.pixel(x, y, value)
+        color = self._normalize_color(color)
+        self._framebuf.pixel(x, y, color)
         return self
 
-    def hline(self, x, y, length, value = 15):
+    def hline(self, x, y, length, color = None):
         """
         Draws a horizontal line on the LED matrix.
 
@@ -120,13 +162,13 @@ class ModulinoLEDMatrix(Modulino):
             x (int): The starting x-coordinate of the line (0-11).
             y (int): The y-coordinate of the line (0-7).
             length (int): The length of the line.
-            value (bool): True to turn the pixels on, False to turn them off.
+            color (int): The color to set the line to. For grayscale, this can be 0-15. For monochrome, use 0 or 1.
         """
-        self._fb_dirty = True
-        self._framebuf.hline(x, y, length, value)
+        color = self._normalize_color(color)
+        self._framebuf.hline(x, y, length, color)
         return self
     
-    def vline(self, x, y, length, value = 15):
+    def vline(self, x, y, length, color = None):
         """
         Draws a vertical line on the LED matrix.
 
@@ -134,13 +176,13 @@ class ModulinoLEDMatrix(Modulino):
             x (int): The x-coordinate of the line (0-11).
             y (int): The starting y-coordinate of the line (0-7).
             length (int): The length of the line.
-            value (bool): True to turn the pixels on, False to turn them off.
+            color (int): The color to set the line to. For grayscale, this can be 0-15. For monochrome, use 0 or 1.
         """
-        self._fb_dirty = True
-        self._framebuf.vline(x, y, length, value)
+        color = self._normalize_color(color)
+        self._framebuf.vline(x, y, length, color)
         return self
 
-    def line(self, x1, y1, x2, y2, value = 15):
+    def line(self, x1, y1, x2, y2, color = None):
         """
         Draws a line on the LED matrix from (x1, y1) to (x2, y2).
 
@@ -149,13 +191,13 @@ class ModulinoLEDMatrix(Modulino):
             y1 (int): The starting y-coordinate of the line (0-7).
             x2 (int): The ending x-coordinate of the line (0-11).
             y2 (int): The ending y-coordinate of the line (0-7).
-            value (bool): True to turn the pixels on, False to turn them off.
+            color (int): The color to set the line to. For grayscale, this can be 0-15. For monochrome, use 0 or 1.
         """
-        self._fb_dirty = True
-        self._framebuf.line(x1, y1, x2, y2, value)
+        color = self._normalize_color(color)
+        self._framebuf.line(x1, y1, x2, y2, color)
         return self
 
-    def rect(self, x, y, width, height, value = 15):
+    def rect(self, x, y, width, height, color = None):
         """
         Draws a rectangle on the LED matrix.
 
@@ -164,13 +206,13 @@ class ModulinoLEDMatrix(Modulino):
             y (int): The y-coordinate of the top-left corner of the rectangle (0-7).
             width (int): The width of the rectangle.
             height (int): The height of the rectangle.
-            value (bool): True to turn the pixels on, False to turn them off.
+            color (int): The color to set the rectangle to. For grayscale, this can be 0-15. For monochrome, use 0 or 1.
         """
-        self._fb_dirty = True
-        self._framebuf.rect(x, y, width, height, value)
+        color = self._normalize_color(color)
+        self._framebuf.rect(x, y, width, height, color)
         return self
     
-    def ellipse(self, x, y, width, height, value = 15):
+    def ellipse(self, x, y, width, height, color = None):
         """
         Draws an ellipse on the LED matrix.
 
@@ -179,13 +221,13 @@ class ModulinoLEDMatrix(Modulino):
             y (int): The y-coordinate of the bounding box's top-left corner (0-7).
             width (int): The width of the bounding box.
             height (int): The height of the bounding box.
-            value (bool): True to turn the pixels on, False to turn them off.
+            color (int): The color to set the ellipse to. For grayscale, this can be 0-15. For monochrome, use 0 or 1.
         """
-        self._fb_dirty = True
-        self._framebuf.ellipse(x, y, width, height, value)
+        color = self._normalize_color(color)
+        self._framebuf.ellipse(x, y, width, height, color)
         return self
     
-    def poly(self, x, y, points, value = 15, fill = False):
+    def poly(self, x, y, points, color = None, fill = False):
         """
         Draws a polygon on the LED matrix.
 
@@ -193,14 +235,14 @@ class ModulinoLEDMatrix(Modulino):
             x (int): The x-coordinate of the polygon's origin (0-11).
             y (int): The y-coordinate of the polygon's origin (0-7).
             points (list of tuples): A list of (x, y) tuples defining the polygon's vertices.
-            value (bool): True to turn the pixels on, False to turn them off.
+            color (int): The color to set the polygon to. For grayscale, this can be 0-15. For monochrome, use 0 or 1.
             fill (bool): True to fill the polygon, False for outline only.
         """
-        self._fb_dirty = True
-        self._framebuf.poly(x, y, points, value, fill)
+        color = self._normalize_color(color)
+        self._framebuf.poly(x, y, points, color, fill)
         return self
 
-    def text(self, x, y, string, value = 15):
+    def text(self, x, y, string, color = None):
         """
         Draws text on the LED matrix.
 
@@ -208,10 +250,10 @@ class ModulinoLEDMatrix(Modulino):
             x (int): The x-coordinate of the text's starting position (0-11).
             y (int): The y-coordinate of the text's starting position (0-7).
             string (str): The text string to draw.
-            value (bool): True to turn the pixels on, False to turn them off.
+            color (int): The color to set the text to. For grayscale, this can be 0-15. For monochrome, use 0 or 1.
         """
-        self._fb_dirty = True
-        self._framebuf.text(string, x, y, value)
+        color = self._normalize_color(color)
+        self._framebuf.text(string, x, y, color)
         return self
     
     def scroll(self, dx, dy):
@@ -222,7 +264,6 @@ class ModulinoLEDMatrix(Modulino):
             dx (int): The amount to scroll in the x-direction.
             dy (int): The amount to scroll in the y-direction.
         """
-        self._fb_dirty = True
         self._framebuf.scroll(dx, dy)
         return self
     
@@ -235,7 +276,6 @@ class ModulinoLEDMatrix(Modulino):
             x (int): The x-coordinate on the LED matrix to blit to (0-11).
             y (int): The y-coordinate on the LED matrix to blit to (0-7).
         """
-        self._fb_dirty = True
         self._framebuf.blit(buffer, x, y)
         return self
 
@@ -246,84 +286,15 @@ class ModulinoLEDMatrix(Modulino):
         self.fill(False)
         return self
 
-    def _print_buffer(self):
-        for p in range(96):
-            # Print each pixel in decimal format, odd indexes are high nibbles
-            index = p // 2
-            brightness = None
-            
-            if p % 2 == 0:
-                brightness = self._framebuf_buffer[index] & 0x0F
-            else:
-                brightness = (self._framebuf_buffer[index] >> 4) & 0x0F
-                
-            print(f"Index {p}: Byte {index} Brightness {brightness}")
-
     def show(self):
         """
         Sends the current buffer to the LED matrix to update the display.
         """
-        if self._fb_dirty:
-            # self._pack_buffer(self._framebuf_buffer, self._raw_buffer, self._width, self._height)
-            self._fb_dirty = False
+        if self._shadow_buffer is not None and self._framebuf_buffer == self._shadow_buffer:
+            return self
 
-        # self._print_buffer()
         self.write(self._framebuf_buffer)
-        self._fb_dirty = False
-        self._raw_dirty = False
-
-    @micropython.native
-    def _pack_buffer(self, source, dest, width: int, height: int):
-        # 1. Calculate layouts
-        src_stride = (width + 7) // 8 # bytes per row in source
-        full_bytes = width // 8 # bytes per row fully used
-        remainder_bits = width % 8 # remaining bits in last byte per row
-        
-        # 2. Setup Bit Accumulator
-        buffer = 0       # Holds bits waiting to be written
-        bits_stored = 0  # Count of bits currently in 'buffer'
-        dest_idx = 0     # Where we are writing in 'dest'
-        
-        # 3. Iterate over every row
-        for y in range(height):
-            row_start = y * src_stride
-            
-            # --- A. Process the Full Bytes (8 pixels) ---
-            for i in range(full_bytes):
-                b = source[row_start + i]
-                
-                # LSB PACKING LOGIC:
-                # We put the NEW bits at the TOP of the buffer (shifted left)
-                # keeping the OLD bits at the BOTTOM (right).
-                buffer = buffer | (b << bits_stored)
-                bits_stored += 8
-                
-                # Flush 8-bit chunks
-                while bits_stored >= 8:
-                    dest[dest_idx] = buffer & 0xFF
-                    buffer = buffer >> 8  # Shift used bits out
-                    bits_stored -= 8
-                    dest_idx += 1
-            
-            # --- B. Process the Partial Byte ---
-            if remainder_bits > 0:
-                b = source[row_start + full_bytes]
-                
-                # Mask to keep only the valid bits (e.g., 00001111)
-                mask = (1 << remainder_bits) - 1
-                b = b & mask
-                
-                # Add to accumulator (at the top)
-                buffer = buffer | (b << bits_stored)
-                bits_stored += remainder_bits
-                
-                # Flush if full
-                while bits_stored >= 8:
-                    dest[dest_idx] = buffer & 0xFF
-                    buffer = buffer >> 8
-                    bits_stored -= 8
-                    dest_idx += 1
-                    
-        # 4. Flush any lingering bits
-        if bits_stored > 0:
-            dest[dest_idx] = buffer & 0xFF
+        if self._shadow_buffer is not None:
+            self._shadow_buffer[:] = self._framebuf_buffer
+        return self
+    
