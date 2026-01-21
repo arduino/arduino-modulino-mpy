@@ -21,6 +21,12 @@ class DeviceManager:
         self._init_address_to_class_map()
 
     def _init_address_to_class_map(self):
+        """
+        Initializes the mapping of I2C addresses to Modulino device classes.
+        Note that Modulinos with an MCU (custom firmware) expose a different 7-bit address
+        derived from their pinstrap / default address. Consequently,
+        this map can only be used to lookup devices without an MCU.
+        """
         modules = self._modulino_modules()
 
         for module in modules:
@@ -79,7 +85,9 @@ class DeviceManager:
         if address in self._address_to_class_map:
             return self._address_to_class_map[address]
         
-        # Get pinstrap address from device that may have a custom address
+        # Get pinstrap address from device, because all modulinos with an MCU
+        # expose a 7-bit address that is different from their pinstrap address.
+        # Also, they may have changed their default address to a custom one.
         dev = Modulino(i2c_bus=self.i2c_bus, address=address, check_connection=False)
         pinstrap_address = dev.pin_strap_address
         
