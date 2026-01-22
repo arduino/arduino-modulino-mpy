@@ -89,11 +89,11 @@ class ModulinoLEDMatrix(Modulino):
             data (bytes | bytearray): The data representing the LED matrix frame.
                                       It should be a sequence of 96 bits, each byte representing a pixel.
         """
-        expected_size = self._width * self._height // 8
-        if len(data) != expected_size:
-            raise ValueError(f"Data length must be {expected_size} bytes")
+        if len(data) != self.send_buffer_size:
+            raise ValueError(f"Data length must be {self.send_buffer_size} bytes")
         
-        self._raw_buffer = data
+        self._framebuf_buffer[:] = data
+        return self
 
     def set_frame_from_ascii(self, ascii_art: str, fill_char: str = '#', color: int = None):
         """
