@@ -1,5 +1,9 @@
 """
 Convert a video file into a ZIP archive of grayscale PNG frames with optional contrast adjustment, resizing, and cropping.
+
+Requires OpenCV. Install via:
+  pip install opencv-python
+
 Example usage:
   python convert_video.py input_video.mp4 output_frames.zip --contrast 1.5 --resize 12 --crop "100,50,640,480"
 """
@@ -17,6 +21,49 @@ except ImportError:
     print("Error: 'opencv-python' is not installed. Please install it using:")
     print("  pip install opencv-python")
     sys.exit(1)
+
+def apply_crop(image, crop):
+    """
+    Crop the image based on the provided (x, y, w, h) tuple.
+    Clamps the crop region to ensure it stays within image bounds.
+    """
+    x, y, w, h = crop
+    img_h, img_w = image.shape
+    
+    # Clamp crop region to image bounds
+    x = max(0, min(x, img_w - 1))
+    y = max(0, min(y, img_h - 1))
+    w = max(1, min(w, img_w - x))
+    h = max(1, min(h, img_h - y))
+    
+    return image[y:y+h, x:x+w]
+
+def apply_contrast(image, contrast):
+    """
+    Apply centered contrast adjustment (around 127).
+    """
+    beta = 127 * (1.0 - contrast)
+    return cv2.convertScaleAbs(image, alpha=contrast, beta=beta)
+
+def apply_resize(image, resize_dim):
+    """
+    Resize the image so its maximum dimension matches resize_dim,
+    preserving aspect ratio.
+    """
+    h, w = image.shape[:2]
+    
+    if w >= h: # Landscape or Square
+        new_w = resize_dim
+        new_h = int(h * (resize_dim / w))
+    else: # Portrait
+        new_h = resize_dim
+        new_w = int(w * (resize_dim / h))
+    
+    # Ensure dimensions are at least 1x1
+    new_w = max(1, new_w)
+    new_h = max(1, new_h)
+    
+    return cv2.resize(image, (new_w, new_h), interpolation=cv2.INTER_AREA)
 
 def video_to_zip(video_path: str, zip_path: str, contrast: float = 1.0, resize_dim: Optional[int] = None, crop: Optional[Tuple[int, int, int, int]] = None):
     """
@@ -53,41 +100,17 @@ def video_to_zip(video_path: str, zip_path: str, contrast: float = 1.0, resize_d
                 # Convert to grayscale
                 gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
                 
-                # Crop if requested (before resize)
+                # Crop if requested
                 if crop:
-                    x, y, w, h = crop
-                    # Ensure crop bounds are valid
-                    img_h, img_w = gray.shape
-                    
-                    # Clamp crop region to image bounds
-                    x = max(0, min(x, img_w - 1))
-                    y = max(0, min(y, img_h - 1))
-                    w = max(1, min(w, img_w - x))
-                    h = max(1, min(h, img_h - y))
-                    
-                    gray = gray[y:y+h, x:x+w]
+                    gray = apply_crop(gray, crop)
 
-                # Apply contrast (centered around 127)
+                # Apply contrast
                 if contrast != 1.0:
-                    beta = 127 * (1.0 - contrast)
-                    gray = cv2.convertScaleAbs(gray, alpha=contrast, beta=beta)
+                    gray = apply_contrast(gray, contrast)
                 
                 # Resize keeping aspect ratio
                 if resize_dim:
-                    h, w = gray.shape[:2]
-                    
-                    if w >= h: # Landscape or Square
-                        new_w = resize_dim
-                        new_h = int(h * (resize_dim / w))
-                    else: # Portrait
-                        new_h = resize_dim
-                        new_w = int(w * (resize_dim / h))
-                    
-                    # Ensure dimensions are at least 1x1
-                    new_w = max(1, new_w)
-                    new_h = max(1, new_h)
-                    
-                    gray = cv2.resize(gray, (new_w, new_h), interpolation=cv2.INTER_AREA)
+                    gray = apply_resize(gray, resize_dim)
 
                 # Encode frame to PNG in memory
                 success, buffer = cv2.imencode(".png", gray)

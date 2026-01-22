@@ -7,7 +7,7 @@ Initial author: Sebastian Romero (s.romero@arduino.cc)
 """
 
 from modulino import ModulinoLEDMatrix
-from time import sleep_ms, time
+from time import sleep_ms
 
 led_matrix = ModulinoLEDMatrix(use_grayscale=True)
 led_matrix.clear().show()
@@ -284,7 +284,7 @@ frames = [
     b'\x00\x00\x00\x00\x00\x00\x00\x02\x44\x21\x00\x00\x00\x02\x8d\xfe\x93\x00\x00\x00\x27\xbc\xee\x81\x00\x01\x6d\xff\xc6\x20\x00\x02\x45\x43\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
 ]
 
-frame_display_delay_ms = 5 # Time to display each frame in milliseconds
+frame_display_delay_ms = 5 # Time to load each frame in milliseconds
 target_fps = 25 # The frames per second matching the original animation speed
 frame_delay = max(1, int(1000 / target_fps) - frame_display_delay_ms) # Delay to achieve target FPS
 

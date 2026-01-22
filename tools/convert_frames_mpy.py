@@ -1,3 +1,10 @@
+"""
+Convert images (individual files or inside a zip) to Modulino MPY frames (Python list of byte arrays).
+Optionally rotate images to adjust for orientation.
+
+Example usage:
+  python convert_frames_mpy.py images.zip --rotate -90 > animation.py
+"""
 import argparse
 import sys
 import zipfile
