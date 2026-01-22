@@ -1,3 +1,8 @@
+"""
+This test script demonstrates various patterns on the Modulino LED matrix
+to check for ghosting effects. Those are best visible when filling the matrix
+column by column or when displaying a text character.
+"""
 from modulino import ModulinoLEDMatrix
 from time import sleep_ms
 

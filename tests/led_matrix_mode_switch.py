@@ -1,3 +1,6 @@
+"""
+Script for testing the mode switching of the LED matrix.
+"""
 from machine import I2C
 from time import sleep_ms
 
@@ -14,7 +17,7 @@ print(dat)
 sleep_ms(500)
 
 dat = bus.readfrom(dev_addr, 4)
-# Should still be 'GS4'
+# Should still be 'GS4' (first byte is pin strap address)
 if dat[1:4] == b'GS4':
     print("PASS: Device responded correctly.")
 else:

@@ -12,7 +12,7 @@ from time import sleep_ms
 led_matrix = ModulinoLEDMatrix(use_grayscale=True)
 led_matrix.clear().show()
 
-def fade_pattern(matrix: ModulinoLEDMatrix):
+def gradient_pattern(matrix: ModulinoLEDMatrix):
     # Set each row of 12 pixels to increasing brightness
     for row in range(8):
         for col in range(12):
@@ -21,7 +21,15 @@ def fade_pattern(matrix: ModulinoLEDMatrix):
     matrix.show()
 
 def raining_code(matrix: ModulinoLEDMatrix, steps: int = 300, spawn_chance: int = 35, delay_ms: int = 70):
-    """Play a brief Matrix-style rain animation with a grayscale trail."""
+    """
+    Play a brief Matrix-style rain animation with a grayscale trail.
+    
+    Args:
+        matrix: The ModulinoLEDMatrix instance to use.
+        steps: Number of animation steps to perform.
+        spawn_chance: Chance (0-100) of spawning a new drop each step.
+        delay_ms: Delay in milliseconds between each animation step. This controls speed.
+    """
     from random import getrandbits
 
     def _randint(n: int) -> int:
@@ -60,8 +68,8 @@ def raining_code(matrix: ModulinoLEDMatrix, steps: int = 300, spawn_chance: int 
         sleep_ms(delay_ms)
 
 
-fade_pattern(led_matrix)
+gradient_pattern(led_matrix)
 sleep_ms(2000)
-led_matrix.clear()
+led_matrix.clear().show()
 
 raining_code(led_matrix)

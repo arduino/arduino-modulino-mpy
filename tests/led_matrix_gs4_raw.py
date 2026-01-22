@@ -1,3 +1,8 @@
+"""
+Test script for controlling an LED matrix in 4-bit grayscale (GS4) mode
+using raw bytearray data.
+"""
+
 from machine import I2C
 from time import sleep_ms
 
