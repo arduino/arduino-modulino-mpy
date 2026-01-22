@@ -59,10 +59,7 @@ class ModulinoPixels(Modulino):
   """
   Class to interact with the LEDs of the Modulino Pixels.
   """
-
-  name = "Pixels"
   default_addresses = [0x6C]
-  receive_buffer_size: int = NUM_LEDS * 4
 
   def __init__(self, i2c_bus = None, address=None):
     """
@@ -74,6 +71,10 @@ class ModulinoPixels(Modulino):
     """
     super().__init__(i2c_bus, address, "Pixels")
     self.clear_all()
+
+  @property
+  def send_buffer_size(self) -> int:
+    return NUM_LEDS * 4
   
   def set_range_rgb(self, index_from: int, index_to: int, r: int, g: int, b: int, brightness: int = 100) -> 'ModulinoPixels':
     """

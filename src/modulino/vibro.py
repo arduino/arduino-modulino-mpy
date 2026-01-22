@@ -14,10 +14,7 @@ class ModulinoVibro(Modulino):
   """
   Class to operate the vibration motor of the Modulino Vibro.
   """
-
-  name = "Vibro"
   default_addresses = [0x70]
-  receive_buffer_size: int = 12
 
   def __init__(self, i2c_bus=None, address=None):
     """
@@ -31,6 +28,10 @@ class ModulinoVibro(Modulino):
     self.data = bytearray(12)
     self.frequency = 1000  # Default frequency in Hz
     self.off()
+
+  @property
+  def send_buffer_size(self) -> int:
+    return 12
 
   def on(self, lenght_ms: int = 0xFFFF, power = PowerLevel.MEDIUM, blocking: bool = False) -> None:
     """

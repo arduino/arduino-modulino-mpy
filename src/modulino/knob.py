@@ -5,11 +5,9 @@ class ModulinoKnob(Modulino):
   Class to interact with the rotary encoder of the Modulinio Knob.
   """
   
-  name = "Knob"
   # This module can have one of two default addresses
   # This is for a use case where two encoders are bundled together in a package
   default_addresses = [0x74, 0x76]
-  receive_buffer_size: int = 4
   
   def __init__(self, i2c_bus = None, address = None):
     """
@@ -49,6 +47,10 @@ class ModulinoKnob(Modulino):
     # Reset state to make sure the first update doesn't trigger the callbacks
     self._encoder_value = None
     self._pressed_status: bool = None
+
+  @property
+  def send_buffer_size(self) -> int:
+    return 4
 
   def _has_rotated_clockwise(self, previous_value: int, current_value: int) -> bool:
     """

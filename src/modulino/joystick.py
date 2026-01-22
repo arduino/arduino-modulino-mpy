@@ -7,10 +7,8 @@ class ModulinoJoystick(Modulino):
     Class to operate the Modulino Joystick module.
     """
 
-    name = "Joystick"
     default_addresses = [0x58]
     default_long_press_duration = const(1000)  # milliseconds
-    receive_buffer_size: int = 3
 
     def __init__(self, i2c_bus=None, address=None):
         """
@@ -32,6 +30,10 @@ class ModulinoJoystick(Modulino):
         self._on_button_release = None
         self._on_button_long_press = None
         self._long_press_duration = self.default_long_press_duration  # milliseconds
+
+    @property
+    def send_buffer_size(self) -> int:
+        return 3
 
     def _values_changed(self, x_old, x_new, y_old, y_new, threshold=2):
         """

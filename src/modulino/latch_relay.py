@@ -4,10 +4,7 @@ class ModulinoLatchRelay(Modulino):
   """
   Class to control the relay module of the Modulino.
   """
-
-  name = "Latch Relay"
   default_addresses = [0x4]
-  receive_buffer_size: int = 3
 
   def __init__(self, i2c_bus=None, address=None):
     """
@@ -20,6 +17,10 @@ class ModulinoLatchRelay(Modulino):
     super().__init__(i2c_bus, address, "Latch Relay")
     self._read_buffer = bytearray(3)
     self._write_buffer = bytearray(3)
+
+  @property
+  def send_buffer_size(self) -> int:
+    return 3
 
   def on(self) -> None:
     """

@@ -7,8 +7,6 @@ class ModulinoButtonsLED():
   Class to interact with the LEDs of the Modulino Buttons.
   """
 
-  receive_buffer_size: int = 3
-
   def __init__(self, buttons):
     self._value = 0
     self._buttons = buttons
@@ -39,7 +37,6 @@ class ModulinoButtons(Modulino):
   """
   Class to interact with the buttons of the Modulino Buttons.
   """
-  name = "Buttons"
   default_addresses = [0x7C]
   default_long_press_duration = const(1000)
 
@@ -75,6 +72,10 @@ class ModulinoButtons(Modulino):
     self._led_b = ModulinoButtonsLED(self)
     self._led_c = ModulinoButtonsLED(self)
   
+  @property
+  def send_buffer_size(self) -> int:
+    return 3
+
   @property
   def led_a(self) -> ModulinoButtonsLED:
     """ Returns the LED A object of the module. """

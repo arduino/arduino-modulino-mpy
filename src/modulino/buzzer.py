@@ -81,8 +81,6 @@ class ModulinoBuzzer(Modulino):
   """
 
   default_addresses = [0x3C]
-  name = "Buzzer"
-  receive_buffer_size: int = 8
 
   def __init__(self, i2c_bus=None, address=None):
     """
@@ -95,6 +93,10 @@ class ModulinoBuzzer(Modulino):
     super().__init__(i2c_bus, address, "Buzzer")
     self.data = bytearray(8)
     self.no_tone()
+
+  @property
+  def send_buffer_size(self) -> int:
+    return 8
 
   def tone(self, frequency: int, lenght_ms: int = 0xFFFF, blocking: bool = False) -> None:
     """

@@ -10,8 +10,6 @@ class ModulinoLEDMatrix(Modulino):
     Class to control the LED Matrix module of the Modulino.
     """
 
-    name = "LED Matrix"
-    receive_buffer_size: int = 48
     default_addresses = [0x72]
 
     def __init__(self, i2c_bus=None, address=None, use_grayscale: bool = False):
@@ -43,6 +41,10 @@ class ModulinoLEDMatrix(Modulino):
         """
         self.read(self._read_buffer)
         return self._read_buffer[1:4] # Skip pinstrap address
+
+    @property
+    def send_buffer_size(self) -> int:
+        return 48 if self.use_grayscale else 12
 
     @property
     def use_grayscale(self) -> bool:
