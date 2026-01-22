@@ -1,4 +1,8 @@
 """
+This example demonstrates how to create a simple animation on the Modulino LED Matrix
+by cycling through a series of pre-defined frames.
+
+Images originally generated from Free Stock Video by user 'dietolog' on Videezy.com
 Initial author: Sebastian Romero (s.romero@arduino.cc)
 """
 
@@ -7,8 +11,6 @@ from time import sleep_ms, time
 
 led_matrix = ModulinoLEDMatrix(use_grayscale=True)
 led_matrix.clear().show()
-
-# Auto-generated frame data
 
 frames = [
     b'\x00\x00\x00\x00\x00\x00\x00\x02\x43\x20\x00\x00\x00\x02\x9e\xfe\x82\x00\x00\x00\x27\xac\xdd\x60\x00\x01\x6c\xef\xc7\x20\x00\x02\x46\x54\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
