@@ -6,8 +6,7 @@ Images originally generated from Free Stock Video by user 'dietolog' on Videezy.
 Initial author: Sebastian Romero (s.romero@arduino.cc)
 """
 
-from modulino import ModulinoLEDMatrix
-from time import sleep_ms
+from modulino import ModulinoLEDMatrix, Animation
 
 led_matrix = ModulinoLEDMatrix(use_grayscale=True)
 led_matrix.clear().show()
@@ -284,18 +283,12 @@ frames = [
     b'\x00\x00\x00\x00\x00\x00\x00\x02\x44\x21\x00\x00\x00\x02\x8d\xfe\x93\x00\x00\x00\x27\xbc\xee\x81\x00\x01\x6d\xff\xc6\x20\x00\x02\x45\x43\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
 ]
 
-frame_display_delay_ms = 5 # Time to load each frame in milliseconds
-target_fps = 25 # The frames per second matching the original animation speed
-frame_delay = max(1, int(1000 / target_fps) - frame_display_delay_ms) # Delay to achieve target FPS
-
 print(f"Playing animation with {len(frames)} frames. {len(frames)*len(frames[0]):,} bytes in total.")
 print("Press Ctrl+C to stop.")
 
 try:
-    while True:
-        for frame in frames:
-            led_matrix.set_frame(frame).show()
-            sleep_ms(frame_delay)
+    animation = Animation(led_matrix, frames, fps=25)
+    animation.play(loop=True)
 
 except KeyboardInterrupt:
     print("Animation stopped by user.")
