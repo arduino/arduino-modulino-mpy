@@ -31,7 +31,7 @@ class ModulinoLEDMatrix(Modulino):
         self._display_mode = None
         self._framebuf_buffer = None
         self._framebuf = None
-        self._shadow_buffer = None
+        self._prev_data_buffer = None
         self._default_color = 1
         self.use_grayscale = use_grayscale
 
@@ -84,14 +84,14 @@ class ModulinoLEDMatrix(Modulino):
                 self._default_color = 15
 
             self._framebuf_buffer = bytearray(buffer_size)
-            self._shadow_buffer = bytearray(buffer_size)
+            self._prev_data_buffer = bytearray(buffer_size)
             self._framebuf = FrameBuffer(self._framebuf_buffer, self._width, self._height, framebuf_format)
 
     def _normalize_color(self, color: int | None) -> int:
         """
         Sets the color to a default value if None.
         The default color is 1 for monochrome and 15 for grayscale.
-        
+
         Parameters:
             color (int | None): The color value to normalize.
         Returns:
@@ -310,12 +310,12 @@ class ModulinoLEDMatrix(Modulino):
         """
         Sends the current buffer to the LED matrix to update the display.
         """
-        if self._shadow_buffer is not None and self._framebuf_buffer == self._shadow_buffer:
+        if self._prev_data_buffer is not None and self._framebuf_buffer == self._prev_data_buffer:
             return self
 
         self.write(self._framebuf_buffer)
-        if self._shadow_buffer is not None:
-            self._shadow_buffer[:] = self._framebuf_buffer
+        if self._prev_data_buffer is not None:
+            self._prev_data_buffer[:] = self._framebuf_buffer
         return self
 
 class Animation:
