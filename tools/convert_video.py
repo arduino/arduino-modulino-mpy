@@ -1,5 +1,6 @@
 """
 Convert a video file into a ZIP archive of grayscale PNG frames with optional contrast adjustment, resizing, and cropping.
+Note that the cropping happens before resizing.
 
 Requires OpenCV. Install via:
   pip install opencv-python
