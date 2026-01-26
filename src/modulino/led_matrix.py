@@ -88,6 +88,15 @@ class ModulinoLEDMatrix(Modulino):
             self._framebuf = FrameBuffer(self._framebuf_buffer, self._width, self._height, framebuf_format)
 
     def _normalize_color(self, color: int | None) -> int:
+        """
+        Sets the color to a default value if None.
+        The default color is 1 for monochrome and 15 for grayscale.
+        
+        Parameters:
+            color (int | None): The color value to normalize.
+        Returns:
+            int: The normalized color value.
+        """
         return self._default_color if color is None else color
 
     def set_frame(self, data: bytes | bytearray):
