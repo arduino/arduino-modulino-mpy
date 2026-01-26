@@ -17,4 +17,4 @@ from .distance import ModulinoDistance
 from .joystick import ModulinoJoystick
 from .latch_relay import ModulinoLatchRelay
 from .vibro import ModulinoVibro, PowerLevel
-from .led_matrix import ModulinoLEDMatrix
+from .led_matrix import ModulinoLEDMatrix, Animation, TimedAnimation

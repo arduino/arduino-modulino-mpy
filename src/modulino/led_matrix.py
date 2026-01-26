@@ -1,9 +1,12 @@
 from micropython import const
 from modulino import Modulino
 from framebuf import FrameBuffer, GS4_HMSB, MONO_VLSB
+from time import sleep_ms
 
 _MONOCHROME = const(b'MON')
 _GRAYSCALE = const(b'GS4')
+
+_FRAME_LOAD_DELAY_MS = const(5)  # Time to load each frame onto the LED matrix
 
 class ModulinoLEDMatrix(Modulino):
     """
@@ -48,10 +51,16 @@ class ModulinoLEDMatrix(Modulino):
 
     @property
     def use_grayscale(self) -> bool:
+        """
+        Gets whether the LED matrix is in grayscale mode.
+        """
         return self._display_mode == _GRAYSCALE
 
     @use_grayscale.setter
     def use_grayscale(self, value: bool) -> None:
+        """
+        Sets the LED matrix display mode to grayscale or monochrome.
+        """
         if value and self._display_mode == _GRAYSCALE:
             return
         if not value and self._display_mode == _MONOCHROME:
@@ -299,4 +308,72 @@ class ModulinoLEDMatrix(Modulino):
         if self._shadow_buffer is not None:
             self._shadow_buffer[:] = self._framebuf_buffer
         return self
+
+class Animation:
+    """
+    Class to represent an animation for the LED Matrix.
+    """
+
+    def __init__(self, led_matrix : ModulinoLEDMatrix, frames: list[bytes | bytearray], fps: int):
+        """
+        Initializes the Animation.
+
+        Parameters:
+            led_matrix (ModulinoLEDMatrix): The LED matrix to display the animation on.
+            frames (list[bytes | bytearray]): A list of frames, each represented as bytes or bytearray.
+            fps (int): The frames per second for the animation.
+        """
+        self._led_matrix = led_matrix
+        self._frames = frames
+        self._frame_delay = max(0, int(1000 / fps) - _FRAME_LOAD_DELAY_MS) # Delay to achieve target FPS
+
+    def play(self, loop: bool = False):
+        """
+        Plays the animation on the LED matrix.
+
+        Parameters:
+            loop (bool): If True, the animation will loop indefinitely. Default is False.
+        """
+        matrix = self._led_matrix
+        while True:
+            for frame in self._frames:
+                matrix.set_frame(frame).show()
+                sleep_ms(self._frame_delay)
+            if not loop:
+                break
+
+class TimedAnimation:
+    """
+    Class to represent a timed animation for the LED Matrix.
+    Each frame can have its own display duration.
+    """
+
+    def __init__(self, led_matrix : ModulinoLEDMatrix, frames: list[tuple[bytes | bytearray, int]]):
+        """
+        Initializes the TimedAnimation.
+
+        Parameters:
+            led_matrix (ModulinoLEDMatrix): The LED matrix to display the animation on.
+            frames (list[tuple[bytes | bytearray, int]]): A list of tuples, each containing a frame (bytes or bytearray)
+                                                          and its display duration in milliseconds.
+        """
+        self._led_matrix = led_matrix
+        self._frames = frames
+
+    def play(self, loop: bool = False):
+        """
+        Plays the timed animation on the LED matrix.
+
+        Parameters:
+            loop (bool): If True, the animation will loop indefinitely. Default is False.
+        """
+        matrix = self._led_matrix
+        while True:
+            for frame, duration in self._frames:
+                matrix.set_frame(frame).show()
+                # Subtract frame load delay as the current frame
+                # will keep displaying while the next frame is being loaded
+                sleep_ms(max(0, duration - _FRAME_LOAD_DELAY_MS))
+            if not loop:
+                break
     
