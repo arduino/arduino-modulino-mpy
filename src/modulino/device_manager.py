@@ -108,10 +108,10 @@ class DeviceManager:
         devices = []
         for address in device_addresses:
             if address == _BOOTLOADER_ADDRESS:
-                # Skip bootloader address
+                devices.append(Modulino(i2c_bus=self.i2c_bus, address=address, name="Unknown", check_connection=False))
                 continue
             device_class = self._class_from_address(address)
             if device_class is not None:
-                device = device_class(i2c_bus=self.i2c_bus, address=address)
+                device = device_class(i2c_bus=self.i2c_bus, address=address, check_connection=False)
                 devices.append(device)
         return devices
