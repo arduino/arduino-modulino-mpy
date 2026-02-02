@@ -104,10 +104,25 @@ for match in pattern.finditer(cpp_code):
     
     frames.append((bytes(column_buffer), duration))
 
-# Print the C array
-print('constexpr uint32_t frames[][4] = {')
-for frame_bytes, duration in frames:
-    # Pack 12 bytes into 3x 32-bit integers (Little Endian)
-    ints = struct.unpack('<III', frame_bytes)
-    print(f"    {{ 0x{ints[0]:x}, 0x{ints[1]:x}, 0x{ints[2]:x}, {duration} }},")
-print('};')
+def print_as_uint32_array(frames):
+	print('constexpr uint32_t frames[][4] = {')
+	for frame_bytes, duration in frames:
+		# Pack 12 bytes into 3x 32-bit integers (Little Endian)
+		ints = struct.unpack('<III', frame_bytes)
+		print(f"    {{ 0x{ints[0]:x}, 0x{ints[1]:x}, 0x{ints[2]:x}, {duration} }},")
+	print('};')
+
+def print_as_uint8_array(frames, skip_duration=False):
+	print('constexpr uint8_t frames[][12] = {')
+	for frame_bytes, duration in frames:
+		byte_literals = ", ".join(f"0x{b:02x}" for b in frame_bytes)
+		if skip_duration:
+			print(f"    {{ {byte_literals} }}, // Duration: {duration} ms")
+		else:
+			# Include duration as 4 bytes at the end (Little Endian)
+			duration_bytes = struct.pack('<I', duration)
+			duration_literals = ", ".join(f"0x{b:02x}" for b in duration_bytes)
+			print(f"    {{ {byte_literals}, {duration_literals} }},")
+	print('};')
+
+print_as_uint8_array(frames, skip_duration=True)
