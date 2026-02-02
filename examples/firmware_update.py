@@ -20,6 +20,7 @@ from modulino import Modulino, DeviceManager
 
 BOOTLOADER_I2C_ADDRESS = const(0x64)
 ACK = const(0x79)
+NACK = const(0x1F)
 BUSY = const(0x76)
 
 CMD_GET = const(0x00) # Gets the version and the allowed commands
@@ -41,14 +42,17 @@ def wait_for_ack(bus):
     :return: True if an acknowledgment was received, otherwise False.
     """
     res = bus.readfrom(BOOTLOADER_I2C_ADDRESS, 1)[0]
-    if res != ACK:
-        while res == BUSY:
-            time.sleep(0.1)
-            res = bus.readfrom(BOOTLOADER_I2C_ADDRESS, 1)[0]
-        if res != ACK:
-            print(f"❌ Error processing command. Result code: {hex(res)}")
-            return False
-    return True
+    while res == BUSY:
+        time.sleep(0.1)
+        res = bus.readfrom(BOOTLOADER_I2C_ADDRESS, 1)[0]
+    if res == ACK:
+        return True
+    elif res == NACK:
+        print("❌ Command not acknowledged (NACK)")
+        return False
+    
+    print(f"❌ Error processing command. Result code: {hex(res)}")
+    return False
 
 def execute_command(bus, opcode, command_params, response_length = 0, verbose=False):
     """
@@ -106,9 +110,20 @@ def flash_firmware(device : Modulino, firmware_path, verbose=False):
     total_bytes = len(firmware_data)
 
     print(f"🔥 Writing {total_bytes} bytes")
-    for i in range(0, total_bytes, CHUNK_SIZE):
-        display_progress_bar(i, total_bytes)
-        start_address = bytearray([8, 0, i // 256, i % 256]) # 4-byte address: byte 1 = MSB, byte 4 = LSB
+    bytes_written = 0
+    chunk_starts = range(0, total_bytes, CHUNK_SIZE)
+    
+    # Write chunks in reverse order so that the first chunk (containing the header) is written last.
+    # This prevents the bootloader from jumping to a partially written application if the update fails.
+    for i in reversed(chunk_starts):
+        display_progress_bar(bytes_written, total_bytes)
+        addr = 0x08000000 + i
+        start_address = bytearray([
+            (addr >> 24) & 0xFF,
+            (addr >> 16) & 0xFF,
+            (addr >> 8) & 0xFF,
+            addr & 0xFF
+        ])
         checksum = 0
         for b in start_address:
             checksum ^= b        
@@ -118,6 +133,7 @@ def flash_firmware(device : Modulino, firmware_path, verbose=False):
             print(f"❌ Failed to write page {hex(i)}")
             return False
         time.sleep(0.01) # Give the device some time to process the data
+        bytes_written += len(data_slice)
 
     display_progress_bar(total_bytes, total_bytes)  # Complete the progress bar
 
