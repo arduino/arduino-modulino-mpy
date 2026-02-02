@@ -8,26 +8,34 @@ Initial author: Sebastian Romero (s.romero@arduino.cc)
 from modulino import ModulinoLEDMatrix
 from time import ticks_ms
 
-use_grayscale = False
-multiplier = 48 if use_grayscale else 12
-led_matrix = ModulinoLEDMatrix(use_grayscale=use_grayscale)
+led_matrix = ModulinoLEDMatrix()
 led_matrix.clear().show()
 
-frame1 = b'\x77' * multiplier
-frame2 = b'\xFF' * multiplier
+def measure_fps(use_grayscale):
+    led_matrix.use_grayscale = use_grayscale
+    multiplier = 48 if use_grayscale else 12
 
-frames = [frame1, frame2]
+    frame1 = b'\x77' * multiplier
+    frame2 = b'\xFF' * multiplier
 
-# Calculate FPS by switching between two frames rapidly for 10 seconds
-duration_ms = 10000
-end_time = ticks_ms() + duration_ms
-frame_count = 0
+    frames = [frame1, frame2]
 
-i = 0
-while ticks_ms() < end_time:
-    led_matrix.set_frame(frames[i % 2]).show()
-    i += 1
-    frame_count += 1  # One frame per loop
+    # Calculate FPS by switching between two frames rapidly for 10 seconds
+    duration_ms = 10000
+    end_time = ticks_ms() + duration_ms
+    frame_count = 0
 
-fps = frame_count / (duration_ms / 1000)
-print("Achieved FPS: {:.2f}".format(fps))
+    i = 0
+    while ticks_ms() < end_time:
+        led_matrix.set_frame(frames[i % 2]).show()
+        i += 1
+        frame_count += 1  # One frame per loop
+
+    fps = frame_count / (duration_ms / 1000)
+    return fps
+
+fps = measure_fps(use_grayscale=False)
+print(f"Achieved FPS: {fps:.2f} in monochrome mode.")
+
+fps = measure_fps(use_grayscale=True)
+print(f"Achieved FPS: {fps:.2f} in grayscale mode.")
