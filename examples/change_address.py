@@ -15,6 +15,9 @@ def main():
     bus = None # Change this to the I2C bus you are using on 3rd party host boards
     device_manager = DeviceManager(bus)
     devices = device_manager.available_devices()
+    
+    # Filter out all devices that do not support address change
+    devices = [device for device in devices if device.supports_address_change]
 
     if len(devices) == 0:
         print("No devices found on the bus. Try resetting the board.")

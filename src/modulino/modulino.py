@@ -143,6 +143,12 @@ class Modulino:
   This class variable needs to be overridden in derived classes.
   """
 
+  supports_address_change: bool = True
+  """
+  Determines if the modulino supports changing its I2C address.
+  This is only supported on modulinos with a microcontroller that can run custom firmware.
+  """
+
   name: str = None
   """
   The name of the modulino.
@@ -247,17 +253,18 @@ class Modulino:
     Sets the address of the i2c device to the given value.
     This is only supported on Modulinos that have a microcontroller.
     """
-    # TODO: Check if device supports this feature by looking at the type
+    if not self.supports_address_change:
+      raise RuntimeError("This device does not support changing its I2C address.")
 
-    data = bytearray(40)
     # Set the first two bytes to 'C' and 'F' followed by the new address
-    data[0:2] = b'CF'
-    data[2] = new_address * 2
+    data = b'CF'
+    data += bytes([new_address * 2]) # Convert to 8-bit address for the command, because that's what the firmware expects
+    data += b'\x00' * (self.send_buffer_size - len(data)) # Pad the rest of the buffer with zeros.
 
     try:
       self.write(data)
     except OSError:
-      pass  # Device resets immediately and causes ENODEV to be thrown which is expected
+      raise RuntimeError("Failed to write the new address to the device. Make sure the device is connected and try again.")
 
     self.address = new_address
 
