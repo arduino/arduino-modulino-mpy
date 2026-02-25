@@ -15,15 +15,16 @@ class ModulinoMovement(Modulino):
     default_addresses = [0x6A, 0x6B]
     convert_default_addresses = False
 
-    def __init__(self, i2c_bus = None, address: int | None = None) -> None:
+    def __init__(self, i2c_bus = None, address: int | None = None, check_connection: bool = True) -> None:
         """
         Initializes the Modulino Movement.
 
         Parameters:
             i2c_bus (I2C): The I2C bus to use. If not provided, the default I2C bus will be used.
             address (int): The I2C address of the module. If not provided, the default address will be used.
+            check_connection (bool): Whether to check the connection to the module.
         """
-        super().__init__(i2c_bus, address, "Movement")
+        super().__init__(i2c_bus, address, "Movement", check_connection=check_connection)
         self.sensor = LSM6DSOX(self.i2c_bus, address=self.address)
 
     @property

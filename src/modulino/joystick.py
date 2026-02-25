@@ -10,15 +10,16 @@ class ModulinoJoystick(Modulino):
     default_addresses = [0x58]
     default_long_press_duration = const(1000)  # milliseconds
 
-    def __init__(self, i2c_bus=None, address=None):
+    def __init__(self, i2c_bus=None, address=None, check_connection: bool = True):
         """
         Initializes the Modulino Joystick module.
 
         Parameters:
             i2c_bus (I2C): The I2C bus to use. If not provided, the default I2C bus will be used.
             address (int): The I2C address of the module. If not provided, the default address will be used.
+            check_connection (bool): Whether to check the connection to the module.
         """
-        super().__init__(i2c_bus, address, "Joystick")
+        super().__init__(i2c_bus, address, "Joystick", check_connection=check_connection)
         self._read_buffer = bytearray(4)  # 2 bytes for x,y + 1 byte for button state + 1 byte for pinstrap address
         self._state = [0, 0, 0]  # x, y, button state
         self._x = 0

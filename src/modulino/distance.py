@@ -10,16 +10,17 @@ class ModulinoDistance(Modulino):
     default_addresses = [0x29]
     convert_default_addresses = False
 
-    def __init__(self, i2c_bus = None, address: int | None = None) -> None:
+    def __init__(self, i2c_bus = None, address: int | None = None, check_connection: bool = True) -> None:
         """
         Initializes the Modulino Distance.
 
         Parameters:
             i2c_bus (I2C): The I2C bus to use. If not provided, the default I2C bus will be used.
             address (int): The I2C address of the module. If not provided, the default address will be used.
+            check_connection (bool): Whether to check the connection to the module.
         """
         
-        super().__init__(i2c_bus, address, "Distance")
+        super().__init__(i2c_bus, address, "Distance", check_connection=check_connection)
         self.sensor = VL53L4CD(self.i2c_bus, self.address) 
         self.sensor.timing_budget = 20     
         self.sensor.inter_measurement = 0

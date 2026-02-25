@@ -6,15 +6,16 @@ class ModulinoLatchRelay(Modulino):
   """
   default_addresses = [0x4]
 
-  def __init__(self, i2c_bus=None, address=None):
+  def __init__(self, i2c_bus=None, address=None, check_connection: bool = True):
     """
     Initializes the Modulino Buzzer.
 
     Parameters:
         i2c_bus (I2C): The I2C bus to use. If not provided, the default I2C bus will be used.
         address (int): The I2C address of the module. If not provided, the default address will be used.
+        check_connection (bool): Whether to check the connection to the module.
     """
-    super().__init__(i2c_bus, address, "Latch Relay")
+    super().__init__(i2c_bus, address, "Latch Relay", check_connection=check_connection)
     self._read_buffer = bytearray(3)
     self._write_buffer = bytearray(3)
 
