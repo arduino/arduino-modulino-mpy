@@ -205,26 +205,20 @@ class Modulino:
       return devices_on_bus[0]
     return None
 
-  def __bool__(self) -> bool:
-    """
-    Boolean cast operator to determine if the given i2c device has a correct address
-    and if the bus is defined.
-    In case of auto discovery this also means that the device was found on the bus
-    because otherwise the address would be None.
-    """
-    # Check if a valid i2c address is set and bus is defined
-    return self.i2c_bus is not None and self.address is not None and self.address <= 127 and self.address >= 0
-
   @property
   def connected(self) -> bool:
     """
     Determines if the given modulino is connected to the i2c bus.
     """
-    if not bool(self):
+    # Check if a valid i2c address is set and bus is defined
+    # In case of auto discovery this also means that the device was found on the bus
+    # because otherwise the address would be None.
+    addr = self.address
+    if self.i2c_bus is None or addr is None or addr > 127 or addr < 0:
       return False
-    
+
     try:
-        self.i2c_bus.writeto(self.address, b'')
+        self.i2c_bus.writeto(addr, b'')
         return True
     except OSError:
         return False
