@@ -1,4 +1,4 @@
-from machine import Pin, I2C
+from machine import Pin, I2C, SoftI2C
 from time import sleep
 from micropython import const
 import re
@@ -40,7 +40,7 @@ class _I2CHelper:
   @staticmethod
   def reset_bus(i2c_bus: I2C) -> I2C:
     """
-    Resets the I2C bus in case it got stuck. To unblock the bus the SDA line is kept high for 20 clock cycles
+    Resets the I2C bus in case it got stuck. To unblock the bus the SDA line is kept high for up to 9 clock cycles
     Which causes the triggering of a NAK message.
     """
 
@@ -48,29 +48,52 @@ class _I2CHelper:
     # Unfortunately the I2C class does not expose those attributes directly.
     interface, scl_pin_number, sda_pin_number = _I2CHelper.extract_i2c_info(i2c_bus)
 
-    # Detach pins from I2C and configure them as GPIO outputs in open-drain mode
+    if scl_pin_number is None or sda_pin_number is None:
+        print("Could not extract SCL/SDA pins. Skipping bus reset.")
+        return i2c_bus
+
+    # Configure them as GPIO outputs in open-drain mode
     scl_pin = Pin(scl_pin_number, Pin.OPEN_DRAIN)
     sda_pin = Pin(sda_pin_number, Pin.OPEN_DRAIN)
 
-    # Set both lines high initially
+    # In I2C, the idle state of the bus is when both SCL and SDA are HIGH.
+    # By setting the open-drain pins to 1, we stop driving them LOW, allowing
+    # the external pull-up resistors on the I2C bus to pull the lines HIGH.
+    # This ensures we start our manual clocking sequence from a known, clean state.
     scl_pin.value(1)
     sda_pin.value(1)
     sleep(0.001)  # 1 millisecond delay to stabilize bus
 
-    # Pulse the SCL line 9 times to release any stuck device
+    # Pulse the SCL line up to 9 times to release any stuck device.
+    # 9 clocks is the worst-case scenario: a device was in the middle of sending
+    # a byte (8 bits) + waiting for an ACK (1 bit) when the bus was interrupted.
+    # By clocking up to 9 times, the device will eventually reach the ACK phase 
+    # and release the SDA line that was being held low, allowing the bus to return to an idle state.
     for _ in range(9):
+        if sda_pin.value() == 1:
+            break
         scl_pin.value(0)
         sleep(0.001)  # 1 millisecond delay for each pulse
         scl_pin.value(1)
         sleep(0.001)
 
-    # Ensure SDA is high before re-initializing
-    sda_pin.value(1)
+    # Generate STOP condition: SDA rising while SCL is high
+    # Ensure both are low first to prepare for the transition
+    scl_pin.value(0)
+    sda_pin.value(0)
+    sleep(0.001)
     scl_pin.value(1)
-    sleep(0.001)  # 1 millisecond delay to stabilize bus
+    sleep(0.001)
+    sda_pin.value(1)
+    sleep(0.001)  # Allow to stabilize bus
 
-    # Need to re-initialize the bus after resetting it
-    return I2C(interface, freq=_I2CHelper.frequency)
+    # Need to re-initialize the bus after resetting it    
+    is_soft = isinstance(i2c_bus, SoftI2C)
+
+    if is_soft:
+        return SoftI2C(scl=Pin(scl_pin_number), sda=Pin(sda_pin_number), freq=_I2CHelper.frequency)
+    else:
+        return I2C(interface, scl=Pin(scl_pin_number), sda=Pin(sda_pin_number), freq=_I2CHelper.frequency)
 
   @staticmethod
   def get_interface() -> I2C:
@@ -100,7 +123,6 @@ class _I2CHelper:
       return I2C(interface_info.bus_number, freq=_I2CHelper.frequency)
 
     if interface_info.type == "sw":
-      from machine import SoftI2C, Pin
       return SoftI2C(scl=Pin(interface_info.scl), sda=Pin(interface_info.sda), freq=_I2CHelper.frequency)
 
 class Modulino:
