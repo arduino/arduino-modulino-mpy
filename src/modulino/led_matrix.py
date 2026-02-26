@@ -9,6 +9,8 @@ _MONOCHROME = const(b'MON')
 _GRAYSCALE = const(b'GS4')
 
 _FRAME_LOAD_DELAY_MS = const(5)  # Time to load each frame onto the LED matrix
+_MATRIX_WIDTH = const(12)
+_MATRIX_HEIGHT = const(8)
 
 class ModulinoLEDMatrix(Modulino):
     """
@@ -381,6 +383,13 @@ class Animation:
             # will keep displaying while the next frame is being loaded
             await asyncio.sleep_ms(max(0, duration - _FRAME_LOAD_DELAY_MS))
 
+    @property
+    def frame_count(self) -> int:
+        """
+        Returns the number of frames in the animation.
+        """
+        return len(self._frames)
+
 class FPSAnimation(Animation):
     """
     Class to represent an animation for the LED Matrix with a fixed frame rate.
@@ -414,4 +423,40 @@ class FPSAnimation(Animation):
                 yield frame, self._frame_delay
             if not loop:
                 break
+
+class MPJAnimation(Animation):
+    """
+    Class to represent an animation loaded from an MPJ (JSON) file.
+    The JSON file should contain a list of frames, each with a 'matrix' (2D array of 0s and 1s)
+    and a 'duration' in milliseconds.
+    """
+
+    def __init__(self, led_matrix: ModulinoLEDMatrix, file_path: str, async_mode: bool = False):
+        """
+        Initializes the MPJAnimation.
+
+        Parameters:
+            led_matrix (ModulinoLEDMatrix): The LED matrix to display the animation on.
+            file_path (str): The path to the .mpj JSON file.
+            async_mode (bool): If True, play() returns a coroutine that can be awaited.
+        """
+        import json
+        with open(file_path, 'r') as f:
+            data = json.load(f)
+
+        frames = []
+        for frame_data in data:
+            matrix = frame_data['matrix']
+            duration = int(frame_data['duration'])
+
+            buffer = bytearray(_MATRIX_WIDTH)
+            for y in range(min(_MATRIX_HEIGHT, len(matrix))):
+                for x in range(min(_MATRIX_WIDTH, len(matrix[y]))):
+                    if matrix[y][x]:
+                        buffer[x] |= (1 << y)
+
+            frames.append((buffer, duration))
+
+        super().__init__(led_matrix, frames, async_mode)
+
     
