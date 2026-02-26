@@ -1,86 +1,44 @@
 """
-Script to convert C frame data in row-major order into C format column-major order for Modulino LED Matrix animations.
+Script to convert C frame data in uint32_t big-endian row-major order 
+into uint8_t C format column-major order for Modulino LED Matrix animations.
+
+Usage: python convert_frames_c.py <input_file>
+
+Expected input format:
+	Data type: uint32_t (32-bit unsigned integers)
+	Endianness: Big-endian bit ordering within the 32-bit words
+	Pixel order: Row-major (pixels are ordered left-to-right, top-to-bottom)
+
+Example input:
+const uint32_t animation[][4] = {
+	{ 0x1fc10, 0x41041041, 0x41041fc, 66 },
+	{ 0x1fc10, 0x41441041, 0x41041fc, 66 }
+};
+
+Output format:
+	constexpr uint8_t frames[][16] = {
+		{ 0x00, 0x00, 0x00, 0xfe, 0x82, 0x82, 0x82, 0x82, 0x82, 0xfe, 0x00, 0x00, 0x42, 0x00, 0x00, 0x00 },
+    	{ 0x00, 0x00, 0x00, 0xfe, 0x82, 0x8a, 0x82, 0x82, 0x82, 0xfe, 0x00, 0x00, 0x42, 0x00, 0x00, 0x00 }
+	};
+	- Each frame is represented as 16 bytes: 12 bytes for the column data (each byte corresponds to a column, with bits representing rows) 
+	followed by 4 bytes for the duration (in milliseconds, little-endian format)
 """
 
 import re
 import struct
+import sys
 
-# Frames in uint32_t format in row-major order
-# including durations (4th value)
-cpp_code = """
-	{ 0x0, 0x0, 0x0, 66 },
-	{ 0x0, 0x800, 0x0, 66 },
-	{ 0x0, 0x801, 0x0, 40 },
-	{ 0x0, 0x803, 0x0, 40 },
-	{ 0x0, 0x807, 0x0, 40 },
-	{ 0x0, 0x8807, 0x0, 40 },
-	{ 0x0, 0x8008807, 0x0, 40 },
-	{ 0x80, 0x8008807, 0x0, 40 },
-	{ 0x40080, 0x8008807, 0x0, 30 },
-	{ 0x60080, 0x8008807, 0x0, 30 },
-	{ 0x70080, 0x8008807, 0x0, 30 },
-	{ 0x70088, 0x8008807, 0x0, 30 },
-	{ 0x70088, 0x8408807, 0x0, 30 },
-	{ 0x70088, 0x8408a07, 0x0, 30 },
-	{ 0x70088, 0x8408a07, 0x10000000, 30 },
-	{ 0x70088, 0x8408a07, 0x18000000, 30 },
-	{ 0x70088, 0x8408a07, 0x1c000000, 30 },
-	{ 0x70088, 0x8408a27, 0x1c000000, 40 },
-	{ 0x70088, 0x8428a27, 0x1c000000, 40 },
-	{ 0x70088, 0x28428a27, 0x1c000000, 40 },
-	{ 0x70488, 0x28428a27, 0x1c000000, 40 },
-	{ 0x70c88, 0x28428a27, 0x1c000000, 40 },
-	{ 0x71c88, 0x28428a27, 0x1c000000, 66 },
-	{ 0x71c8a, 0x28428a27, 0x1c000000, 240 },
-	{ 0x71d8a, 0xa842aa27, 0x1c000000, 66 },
-	{ 0x171c8a, 0x2a4a8a27, 0x1c000000, 400 },
-	{ 0x2e3814, 0x4494144e, 0x38000000, 66 },
-	{ 0x4c7028, 0x9929289c, 0x71000000, 66 },
-	{ 0x88e151, 0x22535128, 0xe2000000, 66 },
-	{ 0x101c3a2, 0x44a7a241, 0xc4000000, 66 },
-	{ 0x2038644, 0x994f4493, 0x89000000, 66 },
-	{ 0x4070c89, 0x229e8927, 0x12000000, 66 },
-	{ 0x80e1912, 0x553d125e, 0x25000000, 66 },
-	{ 0x100c3324, 0xaa7b24ac, 0x4a000000, 66 },
-	{ 0x20086749, 0x44f74948, 0x94000000, 66 },
-	{ 0x4000ce92, 0x99ee9291, 0x29000000, 66 },
-	{ 0x80019c25, 0x23dc2522, 0x52000000, 66 },
-	{ 0x3394a, 0x57b94a54, 0xa5000000, 100 },
-	{ 0x67394, 0xaf7294a9, 0x4b000000, 66 },
-	{ 0xce729, 0x4ee42942, 0x97000000, 66 },
-	{ 0x9ce52, 0x9dc95295, 0x2e000000, 66 },
-	{ 0x39ca5, 0x2b92a52a, 0x5c000000, 66 },
-	{ 0x7394a, 0x57254a54, 0xb8000000, 66 },
-	{ 0xe7294, 0xae4a94a9, 0x71000000, 66 },
-	{ 0xce429, 0x4c942942, 0xe3000000, 66 },
-	{ 0x9c952, 0x99295295, 0xc6000000, 66 },
-	{ 0x392a5, 0x2252a52b, 0x8c000000, 66 },
-	{ 0x7254a, 0x44a44a47, 0x19000000, 66 },
-	{ 0xe4b94, 0x9949949e, 0x33000000, 66 },
-	{ 0xc9729, 0x2292292c, 0x67000000, 66 },
-	{ 0x92e52, 0x45245248, 0xce000000, 66 },
-	{ 0x25da4, 0x9a49a491, 0x9d000000, 66 },
-	{ 0x4ba49, 0x34924923, 0x3a000000, 66 },
-	{ 0x97492, 0x69259246, 0x74000000, 66 },
-	{ 0x2e924, 0xd24b249c, 0xe9000000, 66 },
-	{ 0x5d249, 0xa4964929, 0xd2000000, 66 },
-	{ 0xba493, 0x592d9253, 0xa4000000, 66 },
-	{ 0x74926, 0xa25a24a7, 0x49000000, 66 },
-	{ 0xe934d, 0x44b4494e, 0x93000000, 66 },
-	{ 0xd269a, 0x9969929d, 0x26000000, 66 },
-	{ 0xa4c35, 0x22d2252a, 0x4c000000, 66 },
-	{ 0x4986a, 0x45a44a44, 0x98000000, 66 },
-	{ 0x930d4, 0x8b489489, 0x30000000, 66 },
-	{ 0x260a9, 0x6902902, 0x60000000, 66 },
-	{ 0x4c052, 0xd205204, 0xc0000000, 66 },
-	{ 0x980a4, 0xa40a409, 0x80000000, 66 },
-	{ 0x30048, 0x4804803, 0x0, 66 },
-	{ 0x60090, 0x9009006, 0x0, 66 },
-	{ 0xc0020, 0x200200c, 0x0, 66 },
-	{ 0x80040, 0x4004008, 0x0, 66 },
-	{ 0x80, 0x8008000, 0x0, 66 },
-	{ 0x0, 0x0, 0x0, 66 }
-"""
+# Read from file provided as argument
+if len(sys.argv) < 2:
+	print("Usage: python convert_frames_c.py <input_file>")
+	sys.exit(1)
+
+with open(sys.argv[1], 'r') as f:
+	cpp_code = f.read()
+
+if not cpp_code.strip():
+	print("Input file is empty.")
+	sys.exit(1)
 
 # RegEx to match content inside brackets
 pattern = re.compile(r"\{\s*(0x[0-9a-fA-F]+)\s*,\s*(0x[0-9a-fA-F]+)\s*,\s*(0x[0-9a-fA-F]+)\s*,\s*(\d+)\s*\}")
@@ -112,8 +70,11 @@ def print_as_uint32_array(frames):
 		print(f"    {{ 0x{ints[0]:x}, 0x{ints[1]:x}, 0x{ints[2]:x}, {duration} }},")
 	print('};')
 
-def print_as_uint8_array(frames, skip_duration=False):
-	print('constexpr uint8_t frames[][12] = {')
+def print_as_uint8_array(frames, array_name="frames", skip_duration=False):
+	if skip_duration:
+		print(f'constexpr uint8_t {array_name}[][12] = {{')
+	else:
+		print(f'constexpr uint8_t {array_name}[][16] = {{')
 	for frame_bytes, duration in frames:
 		byte_literals = ", ".join(f"0x{b:02x}" for b in frame_bytes)
 		if skip_duration:
@@ -125,4 +86,10 @@ def print_as_uint8_array(frames, skip_duration=False):
 			print(f"    {{ {byte_literals}, {duration_literals} }},")
 	print('};')
 
-print_as_uint8_array(frames, skip_duration=True)
+# Extract array name if present
+array_name = "frames"
+name_match = re.search(r"(?:const\s+)?(?:uint32_t|int|uint8_t)\s+(\w+)\s*\[", cpp_code)
+if name_match:
+    array_name = name_match.group(1)
+
+print_as_uint8_array(frames, array_name=array_name, skip_duration=False)
