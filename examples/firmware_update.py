@@ -22,6 +22,7 @@ BOOTLOADER_I2C_ADDRESS = const(0x64)
 ACK = const(0x79)
 NACK = const(0x1F)
 BUSY = const(0x76)
+BL_RESET_DELAY_MS = const(6500) # Time it takes for the device to reset and be ready
 
 CMD_GET = const(0x00) # Gets the version and the allowed commands
 CMD_GET_LENGTH_V12 = const(20) # Length of the response data
@@ -331,7 +332,7 @@ def run(bus: I2C):
         # If the device is already in bootloader mode, give it some time to be ready to receive commands
         # As a result of scanning, devices in bootloader mode reset and need some time (~6.5 seconds) before they can receive commands.
         print("⏱️ Waiting for device to be ready...")
-        remaining_time = 6500 - time.ticks_diff(time.ticks_ms(), device_scan_timestamp)
+        remaining_time = BL_RESET_DELAY_MS - time.ticks_diff(time.ticks_ms(), device_scan_timestamp)
         if remaining_time > 0:
             time.sleep_ms(remaining_time)
 
