@@ -16,6 +16,7 @@ class ModulinoThermo(Modulino):
     # The default I2C address of the HS3003 sensor cannot be changed by the user
     # so we can define it as a constant and avoid discovery overhead.
     DEFAULT_ADDRESS = const(0x44)
+    has_mcu = False
 
     def __init__(self, i2c_bus: I2C = None, address: int = DEFAULT_ADDRESS, check_connection: bool = True) -> None:
         """

@@ -8,7 +8,7 @@ class ModulinoDistance(Modulino):
     """
 
     default_addresses = [0x29]
-    convert_default_addresses = False
+    has_mcu = False
 
     def __init__(self, i2c_bus = None, address: int | None = None, check_connection: bool = True) -> None:
         """

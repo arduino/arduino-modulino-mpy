@@ -17,7 +17,7 @@ def main():
     devices = device_manager.available_devices()
     
     # Filter out all devices that do not support address change
-    devices = [device for device in devices if device.supports_address_change]
+    devices = [device for device in devices if device.has_mcu]
 
     if len(devices) == 0:
         print("No devices found on the bus. Try resetting the board.")

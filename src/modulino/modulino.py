@@ -136,17 +136,10 @@ class Modulino:
   This list needs to be overridden derived classes.
   """
 
-  convert_default_addresses: bool = True
+  has_mcu: bool = True
   """
-  Determines if the default addresses need to be converted from 8-bit to 7-bit.
-  Addresses of modulinos without native I2C modules need to be converted.
-  This class variable needs to be overridden in derived classes.
-  """
-
-  supports_address_change: bool = True
-  """
-  Determines if the modulino supports changing its I2C address.
-  This is only supported on modulinos with a microcontroller that can run custom firmware.
+  Determines if the modulino has a microcontroller on board.
+  This is used to determine if the device should be expected to support features such as address change or entering bootloader mode.
   """
 
   name: str = None
@@ -182,8 +175,9 @@ class Modulino:
       if len(self.default_addresses) == 0:
         raise RuntimeError(f"No default addresses defined for the {self.name} device.")
 
-      if self.convert_default_addresses:
-        # Need to convert the 8-bit address to 7-bit
+      if self.has_mcu:
+        # Devices with MCU need to convert the 8-bit address to 7-bit
+        # Native I2C devices don't require this conversion, because they already use 7-bit addresses in their firmware.
         actual_addresses = list(map(lambda addr: addr >> 1, self.default_addresses))
         self.address = self.discover(actual_addresses)
       else:
@@ -253,7 +247,7 @@ class Modulino:
     Sets the address of the i2c device to the given value.
     This is only supported on Modulinos that have a microcontroller.
     """
-    if not self.supports_address_change:
+    if not self.has_mcu:
       raise RuntimeError("This device does not support changing its I2C address.")
 
     # Set the first two bytes to 'C' and 'F' followed by the new address
@@ -276,6 +270,9 @@ class Modulino:
     Returns:
       bool: True if the device entered bootloader mode, False otherwise.
     """
+    if not self.has_mcu:
+      raise RuntimeError("This device does not support entering bootloader mode.")
+
     buffer = b'DIE'
     # Pad buffer. The amount of sent bytes must be equal to what the Modulino firmware expects.
     # Otherwise it won't process the data.

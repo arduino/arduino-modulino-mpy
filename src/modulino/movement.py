@@ -13,7 +13,7 @@ class ModulinoMovement(Modulino):
     # Module can have one of two default addresses
     # based on the solder jumper configuration on the board
     default_addresses = [0x6A, 0x6B]
-    convert_default_addresses = False
+    has_mcu = False
 
     def __init__(self, i2c_bus = None, address: int | None = None, check_connection: bool = True) -> None:
         """
