@@ -5,7 +5,7 @@ by cycling through a series of pre-defined frames with specific durations.
 Initial author: Sebastian Romero (s.romero@arduino.cc)
 """
 
-from modulino import ModulinoLEDMatrix, TimedAnimation
+from modulino import ModulinoLEDMatrix, Animation
 
 led_matrix = ModulinoLEDMatrix(use_grayscale=False)
 led_matrix.clear().show()
@@ -89,7 +89,7 @@ print(f"Playing animation with {len(frames)} frames. {len(frames)*len(frames[0])
 print("Press Ctrl+C to stop.")
 
 try:
-    animation = TimedAnimation(led_matrix, frames)
+    animation = Animation(led_matrix, frames)
     animation.play(loop=True)
 
 except KeyboardInterrupt:

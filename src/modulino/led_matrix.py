@@ -322,7 +322,7 @@ class ModulinoLEDMatrix(Modulino):
             self._prev_data_buffer[:] = self._framebuf_buffer
         return self
 
-class TimedAnimation:
+class Animation:
     """
     Class to represent a timed animation for the LED Matrix.
     Each frame can have its own display duration.
@@ -330,7 +330,7 @@ class TimedAnimation:
 
     def __init__(self, led_matrix : ModulinoLEDMatrix, frames: list[tuple[bytes | bytearray, int]], async_mode: bool = False):
         """
-        Initializes the TimedAnimation.
+        Initializes the Animation.
 
         Parameters:
             led_matrix (ModulinoLEDMatrix): The LED matrix to display the animation on.
@@ -383,7 +383,7 @@ class TimedAnimation:
             sleep_time = max(0, duration - _FRAME_LOAD_DELAY_MS)
             await asyncio.sleep_ms(sleep_time)
 
-class Animation(TimedAnimation):
+class FPSAnimation(Animation):
     """
     Class to represent an animation for the LED Matrix with a fixed frame rate.
     Each frame is displayed for a duration based on the specified frames per second (FPS).
@@ -393,7 +393,7 @@ class Animation(TimedAnimation):
 
     def __init__(self, led_matrix : ModulinoLEDMatrix, frames: list[bytes | bytearray], fps: int, async_mode: bool = False):
         """
-        Initializes the Animation.
+        Initializes the FPSAnimation.
 
         Parameters:
             led_matrix (ModulinoLEDMatrix): The LED matrix to display the animation on.

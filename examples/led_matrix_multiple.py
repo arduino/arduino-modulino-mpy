@@ -6,7 +6,7 @@ Initial author: Sebastian Romero (s.romero@arduino.cc)
 """
 
 import asyncio
-from modulino import ModulinoLEDMatrix, TimedAnimation
+from modulino import ModulinoLEDMatrix, Animation
 from micropython import const
 
 # The custom address for the second LED Matrix. 
@@ -98,8 +98,8 @@ print(f"Playing animation with {len(frames)} frames. {len(frames)*len(frames[0])
 print("Press Ctrl+C to stop.")
 
 async def main():
-    animation_1 = TimedAnimation(led_matrix_1, frames, async_mode=True)
-    animation_2 = TimedAnimation(led_matrix_2, frames, async_mode=True)
+    animation_1 = Animation(led_matrix_1, frames, async_mode=True)
+    animation_2 = Animation(led_matrix_2, frames, async_mode=True)
     await asyncio.gather(
         animation_1.play(loop=False),
         animation_2.play(loop=False)

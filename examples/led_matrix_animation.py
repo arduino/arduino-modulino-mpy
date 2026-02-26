@@ -6,7 +6,7 @@ Images originally generated from Free Stock Video by user 'dietolog' on Videezy.
 Initial author: Sebastian Romero (s.romero@arduino.cc)
 """
 
-from modulino import ModulinoLEDMatrix, Animation
+from modulino import ModulinoLEDMatrix, FPSAnimation
 
 led_matrix = ModulinoLEDMatrix(use_grayscale=True)
 led_matrix.clear().show()
@@ -287,7 +287,7 @@ print(f"Playing animation with {len(frames)} frames. {len(frames)*len(frames[0])
 print("Press Ctrl+C to stop.")
 
 try:
-    animation = Animation(led_matrix, frames, fps=25)
+    animation = FPSAnimation(led_matrix, frames, fps=25)
     animation.play(loop=True)
 
 except KeyboardInterrupt:
