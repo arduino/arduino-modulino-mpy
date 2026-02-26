@@ -4,6 +4,27 @@ Optionally rotate images to adjust for orientation.
 
 Example usage:
   python convert_frames_mpy.py images.zip --rotate -90 > animation.py
+
+This script processes each image by:
+1. Loading the image and converting it to grayscale.
+2. Applying gamma correction to enhance contrast.
+3. Rotating the image if a rotation angle is specified.
+4. Resizing the image to 12x8 pixels (the resolution of the Modulino LED matrix).
+5. Packing the pixel data into a bytearray where each byte represents two pixels (4 bits per pixel).
+The output is a Python list of byte arrays, which can be directly used in a Modulino MPY script to display animations on the LED matrix.
+
+Arguments:
+  input_files: One or more image files or a zip file containing images.
+  --rotate: Optional rotation angle in degrees (positive values rotate counter-clockwise). Useful for adjusting portrait/landscape orientation.
+
+Supported image formats include PNG, JPEG, BMP, and GIF. Non-image files and macOS metadata files are ignored gracefully.
+Example output format:
+
+frames = [
+    b'\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f',
+    b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
+    ...
+]
 """
 import argparse
 import sys

@@ -7,6 +7,20 @@ Requires OpenCV. Install via:
 
 Example usage:
   python convert_video.py input_video.mp4 output_frames.zip --contrast 1.5 --resize 12 --crop "100,50,640,480"
+
+Arguments:
+  input_video: Path to the input video file. Supported formats depend on your OpenCV installation (commonly .mp4, .avi, etc.).
+  output_zip: Path to the output ZIP file that will contain the extracted frames as PNG images.
+  --contrast: (Optional) Contrast adjustment factor. 1.0 means no change, >1.0 increases contrast, <1.0 decreases contrast.
+  --resize: (Optional) Resize the frames so that their maximum dimension (width or height) matches this value, while preserving aspect ratio.
+  --crop: (Optional) Crop region specified as "x,y,w,h".
+          - x: The x-coordinate of the top-left corner of the crop rectangle.
+          - y: The y-coordinate of the top-left corner of the crop rectangle.
+          - w: The width of the crop rectangle.
+          - h: The height of the crop rectangle.
+          The crop will be applied before resizing. If the specified crop region exceeds the image bounds, it will be automatically clamped to fit within the image.
+Output:
+  A ZIP file containing the extracted frames as grayscale PNG images, named sequentially as frame_00000.png, frame_00001.png, etc.
 """
 
 import argparse
