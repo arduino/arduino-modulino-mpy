@@ -11,6 +11,7 @@ from micropython import const
 
 # The custom address for the second LED Matrix. 
 # Change this to the address of your second LED Matrix.
+# Use the 'change_address.py' example to set the address of your LED Matrix if needed.
 CUSTOM_ADDRESS = const(0x40)
 
 led_matrix_1 = ModulinoLEDMatrix(use_grayscale=False)
@@ -101,8 +102,8 @@ async def main():
     animation_1 = Animation(led_matrix_1, frames, async_mode=True)
     animation_2 = Animation(led_matrix_2, frames, async_mode=True)
     await asyncio.gather(
-        animation_1.play(loop=False),
-        animation_2.play(loop=False)
+        animation_1.play(loop=True),
+        animation_2.play(loop=True)
     )
 
 try:
