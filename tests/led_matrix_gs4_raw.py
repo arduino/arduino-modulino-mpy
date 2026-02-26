@@ -1,6 +1,8 @@
 """
 Test script for controlling an LED matrix in 4-bit grayscale (GS4) mode
 using raw bytearray data.
+
+Initial author: Sebastian Romero (s.romero@arduino.cc)
 """
 
 from machine import I2C
