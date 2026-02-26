@@ -370,8 +370,7 @@ class Animation:
             matrix.set_frame(frame).show()
             # Subtract frame load delay as the current frame
             # will keep displaying while the next frame is being loaded
-            sleep_time = max(0, duration - _FRAME_LOAD_DELAY_MS)
-            sleep_ms(sleep_time)
+            sleep_ms(max(0, duration - _FRAME_LOAD_DELAY_MS))
 
     async def _play_async(self, loop: bool = False):
         import asyncio
@@ -380,8 +379,7 @@ class Animation:
             matrix.set_frame(frame).show()
             # Subtract frame load delay as the current frame
             # will keep displaying while the next frame is being loaded
-            sleep_time = max(0, duration - _FRAME_LOAD_DELAY_MS)
-            await asyncio.sleep_ms(sleep_time)
+            await asyncio.sleep_ms(max(0, duration - _FRAME_LOAD_DELAY_MS))
 
 class FPSAnimation(Animation):
     """
@@ -401,9 +399,8 @@ class FPSAnimation(Animation):
             fps (int): The frames per second for the animation.
             async_mode (bool): If True, play() returns a coroutine that can be awaited.
         """
-        self._duration = int(1000 / fps)
         super().__init__(led_matrix, frames, async_mode)
-        self._frame_delay = max(0, self._duration - _FRAME_LOAD_DELAY_MS) # Delay to achieve target FPS
+        self._frame_delay = max(0, int(1000 / fps) - _FRAME_LOAD_DELAY_MS) # Delay to achieve target FPS
 
     def _generate_frames(self, loop: bool):
         """
@@ -414,7 +411,7 @@ class FPSAnimation(Animation):
         """
         while True:
             for frame in self._frames:
-                yield frame, self._duration
+                yield frame, self._frame_delay
             if not loop:
                 break
     
