@@ -1,3 +1,5 @@
+import asyncio
+
 from micropython import const
 from modulino import Modulino
 from framebuf import FrameBuffer, GS4_HMSB, MONO_VLSB
@@ -320,46 +322,13 @@ class ModulinoLEDMatrix(Modulino):
             self._prev_data_buffer[:] = self._framebuf_buffer
         return self
 
-class Animation:
-    """
-    Class to represent an animation for the LED Matrix.
-    """
-
-    def __init__(self, led_matrix : ModulinoLEDMatrix, frames: list[bytes | bytearray], fps: int):
-        """
-        Initializes the Animation.
-
-        Parameters:
-            led_matrix (ModulinoLEDMatrix): The LED matrix to display the animation on.
-            frames (list[bytes | bytearray]): A list of frames, each represented as bytes or bytearray.
-            fps (int): The frames per second for the animation.
-        """
-        self._led_matrix = led_matrix
-        self._frames = frames
-        self._frame_delay = max(0, int(1000 / fps) - _FRAME_LOAD_DELAY_MS) # Delay to achieve target FPS
-
-    def play(self, loop: bool = False):
-        """
-        Plays the animation on the LED matrix.
-
-        Parameters:
-            loop (bool): If True, the animation will loop indefinitely. Default is False.
-        """
-        matrix = self._led_matrix
-        while True:
-            for frame in self._frames:
-                matrix.set_frame(frame).show()
-                sleep_ms(self._frame_delay)
-            if not loop:
-                break
-
 class TimedAnimation:
     """
     Class to represent a timed animation for the LED Matrix.
     Each frame can have its own display duration.
     """
 
-    def __init__(self, led_matrix : ModulinoLEDMatrix, frames: list[tuple[bytes | bytearray, int]]):
+    def __init__(self, led_matrix : ModulinoLEDMatrix, frames: list[tuple[bytes | bytearray, int]], async_mode: bool = False):
         """
         Initializes the TimedAnimation.
 
@@ -367,9 +336,24 @@ class TimedAnimation:
             led_matrix (ModulinoLEDMatrix): The LED matrix to display the animation on.
             frames (list[tuple[bytes | bytearray, int]]): A list of tuples, each containing a frame (bytes or bytearray)
                                                           and its display duration in milliseconds.
+            async_mode (bool): If True, play() returns a coroutine that can be awaited.
         """
         self._led_matrix = led_matrix
         self._frames = frames
+        self._async_mode = async_mode
+
+    def _generate_frames(self, loop: bool):
+        """
+        Generator that yields frames and their display durations for the animation.
+
+        Parameters:
+            loop (bool): If True, the generator will yield frames indefinitely.
+        """
+        while True:
+            for frame, duration in self._frames:
+                yield frame, duration
+            if not loop:
+                break
 
     def play(self, loop: bool = False):
         """
@@ -378,13 +362,59 @@ class TimedAnimation:
         Parameters:
             loop (bool): If True, the animation will loop indefinitely. Default is False.
         """
+        if self._async_mode:
+            return self._play_async(loop)
+
         matrix = self._led_matrix
+        for frame, duration in self._generate_frames(loop):
+            matrix.set_frame(frame).show()
+            # Subtract frame load delay as the current frame
+            # will keep displaying while the next frame is being loaded
+            sleep_time = max(0, duration - _FRAME_LOAD_DELAY_MS)
+            sleep_ms(sleep_time)
+
+    async def _play_async(self, loop: bool = False):
+        import asyncio
+        matrix = self._led_matrix
+        for frame, duration in self._generate_frames(loop):
+            matrix.set_frame(frame).show()
+            # Subtract frame load delay as the current frame
+            # will keep displaying while the next frame is being loaded
+            sleep_time = max(0, duration - _FRAME_LOAD_DELAY_MS)
+            await asyncio.sleep_ms(sleep_time)
+
+class Animation(TimedAnimation):
+    """
+    Class to represent an animation for the LED Matrix with a fixed frame rate.
+    Each frame is displayed for a duration based on the specified frames per second (FPS).
+    The frame rate is achieved by calculating the delay between frames and accounting for 
+    the time it takes to load each frame onto the LED matrix.
+    """
+
+    def __init__(self, led_matrix : ModulinoLEDMatrix, frames: list[bytes | bytearray], fps: int, async_mode: bool = False):
+        """
+        Initializes the Animation.
+
+        Parameters:
+            led_matrix (ModulinoLEDMatrix): The LED matrix to display the animation on.
+            frames (list[bytes | bytearray]): A list of frames, each represented as bytes or bytearray.
+            fps (int): The frames per second for the animation.
+            async_mode (bool): If True, play() returns a coroutine that can be awaited.
+        """
+        self._duration = int(1000 / fps)
+        super().__init__(led_matrix, frames, async_mode)
+        self._frame_delay = max(0, self._duration - _FRAME_LOAD_DELAY_MS) # Delay to achieve target FPS
+
+    def _generate_frames(self, loop: bool):
+        """
+        Generator that yields frames and their display durations for the animation.
+
+        Parameters:
+            loop (bool): If True, the generator will yield frames indefinitely.
+        """
         while True:
-            for frame, duration in self._frames:
-                matrix.set_frame(frame).show()
-                # Subtract frame load delay as the current frame
-                # will keep displaying while the next frame is being loaded
-                sleep_ms(max(0, duration - _FRAME_LOAD_DELAY_MS))
+            for frame in self._frames:
+                yield frame, self._duration
             if not loop:
                 break
     
