@@ -333,7 +333,7 @@ class Modulino:
     raise NotImplementedError("The send_buffer_size property must be overridden in the derived class.")
 
   @staticmethod
-  def scan(bus: I2C, target_addresses = None) -> list[int]:
+  def scan(bus: I2C, target_addresses: list[int] | None = None) -> list[int]:
     addresses = bytearray() # Use 8bit data type
     # General call address (0x00) is skipped in default range
     candidates = target_addresses if target_addresses is not None else range(1,128)
