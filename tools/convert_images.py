@@ -3,7 +3,7 @@ Convert images (individual files or inside a zip) to Modulino MPY frames (Python
 Optionally rotate images to adjust for orientation.
 
 Example usage:
-  python convert_frames_mpy.py images.zip --rotate -90 > animation.py
+  python convert_frames_mpy.py images.zip --rotate -90 --fps 25 --format py > animation.py
 
 This script processes each image by:
 1. Loading the image and converting it to grayscale.
@@ -25,6 +25,8 @@ frames = [
     b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
     ...
 ]
+
+fps = 25
 """
 import argparse
 import sys
@@ -140,22 +142,44 @@ def process_file(file_path: str, rotation: int) -> Optional[bytearray]:
             sys.stderr.write(f"Error reading file {file_path}: {e}\n")
     return None
 
-def generate_output(frames: List[bytearray]):
+def generate_output(frames: List[bytearray], output_format: str, fps: int):
     """
-    Print the generated Python code to stdout.
+    Print the generated code to stdout.
     """
-    print("# Auto-generated frame data")
-    print("")
-    print("frames = [")
-    for frame in frames:
-        hex_content = "".join(f"\\x{b:02x}" for b in frame)
-        print(f"    b'{hex_content}',")
-    print("]")
+    if fps <= 0:
+        sys.stderr.write("Warning: FPS must be greater than 0. Defaulting to 25 FPS for C output.\n")
+        return
+
+    if output_format == 'py':
+        print("# Auto-generated frame data")
+        print("")
+        print("frames = [")
+        for frame in frames:
+            hex_content = "".join(f"\\x{b:02x}" for b in frame)
+            print(f"    b'{hex_content}',")
+        print("]\n")
+        print(f"fps = {fps}")
+
+    elif output_format == 'c':
+        load_delay = 5 # Takes ~5ms to load each frame
+        delay = int(1000 / fps) - load_delay
+        delay_bytes = [delay & 0xFF, (delay >> 8) & 0xFF, (delay >> 16) & 0xFF, (delay >> 24) & 0xFF]
+        print("#pragma once")
+        print("")
+        frame_size = (len(frames[0]) + 4) if frames else 52
+        print(f"const uint8_t animation[][{frame_size}] = {{")
+        for frame in frames:
+            full_frame = list(frame) + delay_bytes
+            hex_content = ", ".join(f"0x{b:02x}" for b in full_frame)
+            print(f"    {{ {hex_content} }},")
+        print("};")
 
 def main():
     parser = argparse.ArgumentParser(description='Convert images to Modulino MPY frames (Python list of byte arrays).')
     parser.add_argument('input_files', nargs='+', help='Image files or zip file')
     parser.add_argument('--rotate', type=int, default=0, help='Rotation angle in degrees (positive = counter-clockwise). Useful for adjusting portrait/landscape orientation.')
+    parser.add_argument('-format', '--format', choices=['py', 'c'], default='py', dest='format', help='Output format: Python list (py) or C array (c)')
+    parser.add_argument('-fps', '--fps', type=int, default=25, dest='fps', help='Frames per second (only used for C output)')
     
     args = parser.parse_args()
     
@@ -170,7 +194,7 @@ def main():
             if res:
                 all_frames.append(res)
 
-    generate_output(all_frames)
+    generate_output(all_frames, args.format, args.fps)
 
 if __name__ == '__main__':
     main()
