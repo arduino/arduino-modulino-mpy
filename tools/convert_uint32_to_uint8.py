@@ -18,7 +18,7 @@ matrix.play();
 Usage: python convert_frames_c.py <input_file>
 
 Expected input format:
-	Data type: uint32_t (32-bit unsigned integers)
+	Data type: uint32_t (32-bit unsigned integers), 4th value is duration in milliseconds
 	Endianness: Big-endian bit ordering within the 32-bit words
 	Pixel order: Row-major (pixels are ordered left-to-right, top-to-bottom)
 
