@@ -409,7 +409,7 @@ class FPSAnimation(Animation):
             async_mode (bool): If True, play() returns a coroutine that can be awaited.
         """
         super().__init__(led_matrix, frames, async_mode)
-        self._frame_delay = max(0, int(1000 / fps) - _FRAME_LOAD_DELAY_MS) # Delay to achieve target FPS
+        self._frame_delay = max(0, int(1000 / fps)) # Delay to achieve target FPS
 
     def _generate_frames(self, loop: bool):
         """
