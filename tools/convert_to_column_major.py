@@ -37,21 +37,24 @@ Output format:
 	followed by 4 bytes for the duration (in milliseconds, little-endian format)
 """
 
+import argparse
 import re
 import struct
 import sys
 
-# Read from file provided as argument
-if len(sys.argv) < 2:
-	print("Usage: python convert_frames_c.py <input_file>")
-	sys.exit(1)
+parser = argparse.ArgumentParser(description="Convert Modulino LED Matrix animations.")
+parser.add_argument("input_file", help="Input C/C++ file containing frame/icon arrays")
+parser.add_argument("--format", choices=["uint8", "uint32"], default="uint8", help="Output format type (default: uint8)")
+args = parser.parse_args()
 
-with open(sys.argv[1], 'r') as f:
+with open(args.input_file, 'r') as f:
 	cpp_code = f.read()
 
 if not cpp_code.strip():
 	print("Input file is empty.")
 	sys.exit(1)
+
+output_format = args.format
 
 # RegEx to match an array declaration and its content (supports both 1D and 2D arrays)
 array_pattern = re.compile(r"(?:const\s+|constexpr\s+)?(?:uint32_t|int|uint8_t)\s+(\w+)\s*(?:\[[^\]]*\])+\s*=\s*\{([\s\S]*?)\}\s*;")
@@ -65,8 +68,8 @@ icon_pattern = re.compile(r"^\s*(0x[0-9a-fA-F]+)\s*,\s*(0x[0-9a-fA-F]+)\s*,\s*(0
 def print_as_uint32_array(frames, array_name="frames"):
 	print(f'constexpr uint32_t {array_name}[][4] = {{')
 	for frame_bytes, duration in frames:
-		# Pack 12 bytes into 3x 32-bit integers (Little Endian)
-		ints = struct.unpack('<III', frame_bytes)
+		# Pack 12 bytes into 3x 32-bit integers (Big Endian)
+		ints = struct.unpack('>III', frame_bytes)
 		print(f"    {{ 0x{ints[0]:x}, 0x{ints[1]:x}, 0x{ints[2]:x}, {duration} }},")
 	print('};\n')
 
@@ -90,6 +93,11 @@ def print_as_uint8_icon(frame_bytes, array_name="icon"):
 	byte_literals = ", ".join(f"0x{b:02x}" for b in frame_bytes)
 	print(f"constexpr uint8_t {array_name}[12] = {{ {byte_literals} }};\n")
 
+def print_as_uint32_icon(frame_bytes, array_name="icon"):
+	# Pack 12 bytes into 3x 32-bit integers (Big Endian)
+	ints = struct.unpack('>III', frame_bytes)
+	print(f"constexpr uint32_t {array_name}[3] = {{ 0x{ints[0]:08x}, 0x{ints[1]:08x}, 0x{ints[2]:08x} }};\n")
+
 # Find all arrays in the input file
 found_arrays = False
 for array_match in array_pattern.finditer(cpp_code):
@@ -112,7 +120,10 @@ for array_match in array_pattern.finditer(cpp_code):
                 if (frame_parts[part_index] >> bit_index) & 1:
                     column_buffer[col] |= (1 << row)
                     
-        print_as_uint8_icon(bytes(column_buffer), array_name=array_name)
+        if output_format == "uint32":
+            print_as_uint32_icon(bytes(column_buffer), array_name=array_name)
+        else:
+            print_as_uint8_icon(bytes(column_buffer), array_name=array_name)
         continue
 
     # Otherwise treat it as an animation with multiple frames
@@ -135,7 +146,10 @@ for array_match in array_pattern.finditer(cpp_code):
         frames.append((bytes(column_buffer), duration))
     
     if frames:
-        print_as_uint8_array(frames, array_name=array_name, skip_duration=False)
+        if output_format == "uint32":
+            print_as_uint32_array(frames, array_name=array_name)
+        else:
+            print_as_uint8_array(frames, array_name=array_name, skip_duration=False)
 
 if not found_arrays:
     print("No matching arrays found in the input file.")
