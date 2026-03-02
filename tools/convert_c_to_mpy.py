@@ -17,12 +17,12 @@ animation = Animation(led_matrix, animation)
 animation.play()
 ```
 
-Usage: python convert_frames_mpy.py <input_file>
+Usage: python convert_frames_mpy.py <input_file> [--order {row-major,column-major}]
 
 Expected input format:
 	Data type: uint32_t (32-bit unsigned integers)
 	Endianness: Big-endian bit ordering within the 32-bit words
-	Pixel order: Row-major (pixels are ordered left-to-right, top-to-bottom)
+	Pixel order: Column-major by default (pixels ordered top-to-bottom, left-to-right), but can be set to row-major via --order.
 
 Example input:
 
@@ -39,14 +39,16 @@ Output format:
 """
 
 import re
-
-# Read from file provided as argument
 import sys
-if len(sys.argv) < 2:
-	print("Usage: python convert_frames_mpy.py <input_file>")
-	sys.exit(1)
+import argparse
 
-with open(sys.argv[1], 'r') as f:
+parser = argparse.ArgumentParser(description="Convert C++ frame data into Python format for Modulino LED Matrix animations.")
+parser.add_argument("input_file", help="Input file containing C++ frame data")
+parser.add_argument("--order", choices=["row-major", "column-major"], default="column-major", help="Pixel order of the input data (default: column-major)")
+
+args = parser.parse_args()
+
+with open(args.input_file, 'r') as f:
 	cpp_code = f.read()
 
 if not cpp_code.strip():
@@ -66,7 +68,11 @@ for match in pattern.finditer(cpp_code):
     column_buffer = bytearray(12)
     for col in range(12):
         for row in range(8):
-            linear_pixel_index = row * 12 + col
+            if args.order == "row-major":
+                linear_pixel_index = row * 12 + col
+            else:
+                linear_pixel_index = col * 8 + row
+            
             part_index = linear_pixel_index // 32
             bit_index = 31 - (linear_pixel_index % 32)
             
