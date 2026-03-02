@@ -1,6 +1,6 @@
 """
 Script to convert C frame data in uint32_t big-endian row-major order 
-into uint8_t C format column-major order for Modulino LED Matrix animations.
+into uint8_t or uint32_t C format column-major order for Modulino LED Matrix animations.
 You can use the output of this script to provide the frame data to your animation code. E.g.:
 
 ```
@@ -15,7 +15,7 @@ matrix.setSequence(animation);
 matrix.play();
 ```
 
-Usage: python convert_frames_c.py <input_file>
+Usage: python convert_frames_c.py <input_file> [--format uint8|uint32]
 
 Expected input format:
 	Data type: uint32_t (32-bit unsigned integers), 4th value is duration in milliseconds
@@ -28,13 +28,21 @@ const uint32_t animation[][4] = {
 	{ 0x1fc10, 0x41441041, 0x41041fc, 66 }
 };
 
-Output format:
+Output format (uint8, default):
 	constexpr uint8_t frames[][16] = {
 		{ 0x00, 0x00, 0x00, 0xfe, 0x82, 0x82, 0x82, 0x82, 0x82, 0xfe, 0x00, 0x00, 0x42, 0x00, 0x00, 0x00 },
     	{ 0x00, 0x00, 0x00, 0xfe, 0x82, 0x8a, 0x82, 0x82, 0x82, 0xfe, 0x00, 0x00, 0x42, 0x00, 0x00, 0x00 }
 	};
 	- Each frame is represented as 16 bytes: 12 bytes for the column data (each byte corresponds to a column, with bits representing rows) 
 	followed by 4 bytes for the duration (in milliseconds, little-endian format)
+
+Output format (uint32):
+	constexpr uint32_t frames[][4] = {
+		{ 0x000000fe, 0x82828282, 0x82fe0000, 66 },
+    	{ 0x000000fe, 0x828a8282, 0x82fe0000, 66 }
+	};
+	- Each frame is represented as 4 words: 3x 32-bit unsigned words for the column data 
+	followed by an integer for the duration (in milliseconds)
 """
 
 import argparse
