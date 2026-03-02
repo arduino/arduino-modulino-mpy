@@ -53,35 +53,19 @@ if not cpp_code.strip():
 	print("Input file is empty.")
 	sys.exit(1)
 
-# RegEx to match content inside brackets
-pattern = re.compile(r"\{\s*(0x[0-9a-fA-F]+)\s*,\s*(0x[0-9a-fA-F]+)\s*,\s*(0x[0-9a-fA-F]+)\s*,\s*(\d+)\s*\}")
+# RegEx to match an array declaration and its content
+array_pattern = re.compile(r"(?:const\s+|constexpr\s+)?(?:uint32_t|int|uint8_t)\s+(\w+)\s*\[[^\]]*\]\[[^\]]*\]\s*=\s*\{([\s\S]*?)\}\s*;")
 
-frames = []
+# RegEx to match content inside brackets for a single frame
+frame_pattern = re.compile(r"\{\s*(0x[0-9a-fA-F]+)\s*,\s*(0x[0-9a-fA-F]+)\s*,\s*(0x[0-9a-fA-F]+)\s*,\s*(\d+)\s*\}")
 
-for match in pattern.finditer(cpp_code):
-    frame_parts = [int(match.group(i), 16) for i in range(1, 4)]
-    duration = int(match.group(4))
-    
-    # Conversion logic
-    column_buffer = bytearray(12)
-    for col in range(12):
-        for row in range(8):
-            linear_pixel_index = row * 12 + col
-            part_index = linear_pixel_index // 32
-            bit_index = 31 - (linear_pixel_index % 32)
-            
-            if (frame_parts[part_index] >> bit_index) & 1:
-                column_buffer[col] |= (1 << row)
-    
-    frames.append((bytes(column_buffer), duration))
-
-def print_as_uint32_array(frames):
-	print('constexpr uint32_t frames[][4] = {')
+def print_as_uint32_array(frames, array_name="frames"):
+	print(f'constexpr uint32_t {array_name}[][4] = {{')
 	for frame_bytes, duration in frames:
 		# Pack 12 bytes into 3x 32-bit integers (Little Endian)
 		ints = struct.unpack('<III', frame_bytes)
 		print(f"    {{ 0x{ints[0]:x}, 0x{ints[1]:x}, 0x{ints[2]:x}, {duration} }},")
-	print('};')
+	print('};\n')
 
 def print_as_uint8_array(frames, array_name="frames", skip_duration=False):
 	if skip_duration:
@@ -97,12 +81,35 @@ def print_as_uint8_array(frames, array_name="frames", skip_duration=False):
 			duration_bytes = struct.pack('<I', duration)
 			duration_literals = ", ".join(f"0x{b:02x}" for b in duration_bytes)
 			print(f"    {{ {byte_literals}, {duration_literals} }},")
-	print('};')
+	print('};\n')
 
-# Extract array name if present
-array_name = "frames"
-name_match = re.search(r"(?:const\s+)?(?:uint32_t|int|uint8_t)\s+(\w+)\s*\[", cpp_code)
-if name_match:
-    array_name = name_match.group(1)
+# Find all arrays in the input file
+found_arrays = False
+for array_match in array_pattern.finditer(cpp_code):
+    found_arrays = True
+    array_name = array_match.group(1)
+    array_content = array_match.group(2)
+    
+    frames = []
+    for match in frame_pattern.finditer(array_content):
+        frame_parts = [int(match.group(i), 16) for i in range(1, 4)]
+        duration = int(match.group(4))
+        
+        # Conversion logic
+        column_buffer = bytearray(12)
+        for col in range(12):
+            for row in range(8):
+                linear_pixel_index = row * 12 + col
+                part_index = linear_pixel_index // 32
+                bit_index = 31 - (linear_pixel_index % 32)
+                
+                if (frame_parts[part_index] >> bit_index) & 1:
+                    column_buffer[col] |= (1 << row)
+        
+        frames.append((bytes(column_buffer), duration))
+    
+    if frames:
+        print_as_uint8_array(frames, array_name=array_name, skip_duration=False)
 
-print_as_uint8_array(frames, array_name=array_name, skip_duration=False)
+if not found_arrays:
+    print("No matching arrays found in the input file.")
