@@ -16,6 +16,8 @@ The output is a Python list of byte arrays, which can be directly used in a Modu
 Arguments:
   input_files: One or more image files or a zip file containing images.
   --rotate: Optional rotation angle in degrees (positive values rotate counter-clockwise). Useful for adjusting portrait/landscape orientation.
+  --format: Output format, either 'py' for Python list or 'c' for C array. Default is 'py'.
+  --fps: Frames per second. Default is 25 FPS.
 
 Supported image formats include PNG, JPEG, BMP, and GIF. Non-image files and macOS metadata files are ignored gracefully.
 Example output format:
@@ -35,7 +37,12 @@ import io
 import math
 import os
 from typing import List, Tuple, Optional
-from PIL import Image
+
+try:
+    from PIL import Image
+except ImportError:
+    sys.stderr.write("Error: Pillow library is required. Install it with 'pip install pillow'.\n")
+    sys.exit(1)
 
 def gamma_correct(pixel_value: int) -> int:
     """
@@ -177,7 +184,7 @@ def generate_output(frames: List[bytearray], output_format: str, fps: int):
 def main():
     parser = argparse.ArgumentParser(description='Convert images to Modulino MPY frames (Python list of byte arrays).')
     parser.add_argument('input_files', nargs='+', help='Image files or zip file')
-    parser.add_argument('--rotate', type=int, default=0, help='Rotation angle in degrees (positive = counter-clockwise). Useful for adjusting portrait/landscape orientation.')
+    parser.add_argument('-rotate', '--rotate', type=int, default=0, help='Rotation angle in degrees (positive = counter-clockwise). Useful for adjusting portrait/landscape orientation.')
     parser.add_argument('-format', '--format', choices=['py', 'c'], default='py', dest='format', help='Output format: Python list (py) or C array (c)')
     parser.add_argument('-fps', '--fps', type=int, default=25, dest='fps', help='Frames per second (only used for C output)')
     
