@@ -283,11 +283,13 @@ frames = [
     b'\x00\x00\x00\x00\x00\x00\x00\x02\x44\x21\x00\x00\x00\x02\x8d\xfe\x93\x00\x00\x00\x27\xbc\xee\x81\x00\x01\x6d\xff\xc6\x20\x00\x02\x45\x43\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
 ]
 
-print(f"Playing animation with {len(frames)} frames. {len(frames)*len(frames[0]):,} bytes in total.")
+fps = 25
+
+print(f"Playing animation with {len(frames)} frames at {fps} FPS. {len(frames)*len(frames[0]):,} bytes in total.")
 print("Press Ctrl+C to stop.")
 
 try:
-    animation = FPSAnimation(led_matrix, frames, fps=25)
+    animation = FPSAnimation(led_matrix, frames, fps=fps)
     animation.play(loop=True)
 
 except KeyboardInterrupt:
