@@ -131,7 +131,7 @@ def draw_checkerboard(matrix: ModulinoLEDMatrix):
     matrix.show()
 def draw_diamond(matrix: ModulinoLEDMatrix):
     """Draw a diamond shape using poly()."""
-    points = [6, 0, 11, 3, 6, 7, 1, 3]
+    points = [(6, 0), (11, 3), (6, 7), (1, 3)]
     matrix.poly(0,0,points).show()
     
 
@@ -148,6 +148,8 @@ draw_circles(led_matrix)
 sleep_ms(500)
 draw_checkerboard(led_matrix)
 sleep_ms(500)
+draw_diamond(led_matrix)
+sleep_ms(1000)
 display_text_animation(led_matrix)
 sleep_ms(500)
 display_ascii_frame(led_matrix)

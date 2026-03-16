@@ -265,7 +265,9 @@ class ModulinoLEDMatrix(Modulino):
             fill (bool): True to fill the polygon, False for outline only.
         """
         color = self._normalize_color(color)
-        self._framebuf.poly(x, y, points, color, fill)
+        from array import array
+        flat_points = array('h', (coord for point in points for coord in point))
+        self._framebuf.poly(x, y, flat_points, color, fill)
         return self
 
     def text(self, x, y, string, color = None):
