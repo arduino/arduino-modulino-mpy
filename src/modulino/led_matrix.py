@@ -180,6 +180,16 @@ class ModulinoLEDMatrix(Modulino):
         self._framebuf.pixel(x, y, color)
         return self
 
+    def clear_pixel(self, x, y):
+        """
+        Clears a specific pixel in the LED matrix (sets it to off).
+
+        Parameters:
+            x (int): The x-coordinate of the pixel (0-11).
+            y (int): The y-coordinate of the pixel (0-7).
+        """
+        return self.set_pixel(x, y, color=0)
+
     def hline(self, x, y, length, color = None):
         """
         Draws a horizontal line on the LED matrix.
