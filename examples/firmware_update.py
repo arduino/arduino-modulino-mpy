@@ -16,11 +16,13 @@ import sys
 import time
 from micropython import const
 from machine import I2C
-from modulino import Modulino
+from modulino import Modulino, DeviceManager
 
 BOOTLOADER_I2C_ADDRESS = const(0x64)
 ACK = const(0x79)
+NACK = const(0x1F)
 BUSY = const(0x76)
+BL_RESET_DELAY_MS = const(6500) # Time it takes for the device to reset and be ready
 
 CMD_GET = const(0x00) # Gets the version and the allowed commands
 CMD_GET_LENGTH_V12 = const(20) # Length of the response data
@@ -41,14 +43,17 @@ def wait_for_ack(bus):
     :return: True if an acknowledgment was received, otherwise False.
     """
     res = bus.readfrom(BOOTLOADER_I2C_ADDRESS, 1)[0]
-    if res != ACK:
-        while res == BUSY:
-            time.sleep(0.1)
-            res = bus.readfrom(BOOTLOADER_I2C_ADDRESS, 1)[0]
-        if res != ACK:
-            print(f"❌ Error processing command. Result code: {hex(res)}")
-            return False
-    return True
+    while res == BUSY:
+        time.sleep(0.1)
+        res = bus.readfrom(BOOTLOADER_I2C_ADDRESS, 1)[0]
+    if res == ACK:
+        return True
+    elif res == NACK:
+        print("❌ Command not acknowledged (NACK)")
+        return False
+    
+    print(f"❌ Error processing command. Result code: {hex(res)}")
+    return False
 
 def execute_command(bus, opcode, command_params, response_length = 0, verbose=False):
     """
@@ -67,14 +72,12 @@ def execute_command(bus, opcode, command_params, response_length = 0, verbose=Fa
     cmd = bytes([opcode, 0xFF ^ opcode]) # Send command code and complement (XOR = 0x00)
     bus.writeto(BOOTLOADER_I2C_ADDRESS, cmd, True)
     if not wait_for_ack(bus):
-        print(f"❌ Command not acknowledged: {hex(opcode)}")
-        return None
+        raise RuntimeError(f"❌ Command not acknowledged: {hex(opcode)}")
 
     if command_params is not None:
         bus.writeto(BOOTLOADER_I2C_ADDRESS, command_params, True)
         if not wait_for_ack(bus):
-            print("❌ Command failed")
-            return None
+            raise RuntimeError("❌ Command failed")
 
     if response_length == 0:
         return None
@@ -82,10 +85,21 @@ def execute_command(bus, opcode, command_params, response_length = 0, verbose=Fa
     data = bus.readfrom(BOOTLOADER_I2C_ADDRESS, response_length)
 
     if not wait_for_ack(bus):
-        print("❌ Failed completing command")
-        return None
+        raise RuntimeError("❌ Failed completing command")
 
     return data
+
+def erase_memory(device : Modulino, verbose=False):
+    """
+    Erase the memory of the I2C device.
+
+    :param device: The Modulino device to erase.
+    :param verbose: Whether to print debug information.
+    """
+    bus = device.i2c_bus
+    print("🗑️ Erasing memory...")
+    erase_params = bytearray([0xFF, 0xFF, 0x0]) # Mass erase flash
+    execute_command(bus, CMD_ERASE_NO_STRETCH, erase_params, 0, verbose)
 
 def flash_firmware(device : Modulino, firmware_path, verbose=False):
     """
@@ -97,18 +111,27 @@ def flash_firmware(device : Modulino, firmware_path, verbose=False):
     :return: True if the flashing was successful, otherwise False.
     """
     bus = device.i2c_bus
-    print("🗑️ Erasing memory...")
-    erase_params = bytearray([0xFF, 0xFF, 0x0]) # Mass erase flash
-    execute_command(bus, CMD_ERASE_NO_STRETCH, erase_params, 0, verbose)
+    erase_memory(device, verbose)
 
     with open(firmware_path, 'rb') as file:
         firmware_data = file.read()
     total_bytes = len(firmware_data)
 
     print(f"🔥 Writing {total_bytes} bytes")
-    for i in range(0, total_bytes, CHUNK_SIZE):
-        display_progress_bar(i, total_bytes)
-        start_address = bytearray([8, 0, i // 256, i % 256]) # 4-byte address: byte 1 = MSB, byte 4 = LSB
+    bytes_written = 0
+    chunk_starts = range(0, total_bytes, CHUNK_SIZE)
+    
+    # Write chunks in reverse order so that the first chunk (containing the header) is written last.
+    # This prevents the bootloader from jumping to a partially written application if the update fails.
+    for i in reversed(chunk_starts):
+        display_progress_bar(bytes_written, total_bytes)
+        addr = 0x08000000 + i
+        start_address = bytearray([
+            (addr >> 24) & 0xFF,
+            (addr >> 16) & 0xFF,
+            (addr >> 8) & 0xFF,
+            addr & 0xFF
+        ])
         checksum = 0
         for b in start_address:
             checksum ^= b        
@@ -118,6 +141,7 @@ def flash_firmware(device : Modulino, firmware_path, verbose=False):
             print(f"❌ Failed to write page {hex(i)}")
             return False
         time.sleep(0.01) # Give the device some time to process the data
+        bytes_written += len(data_slice)
 
     display_progress_bar(total_bytes, total_bytes)  # Complete the progress bar
 
@@ -211,14 +235,13 @@ def select_file(bin_files):
         return None
     return bin_files[choice - 1]
 
-def select_device(bus : I2C) -> Modulino:
+def select_device(devices: list) -> Modulino:
     """
-    Scan the I2C bus for devices and prompt the user to select one.
+    Prompt the user to select a device from the list.
 
-    :param bus: The I2C bus to scan.
+    :param devices: A list of available devices.
     :return: The selected Modulino device.
     """
-    devices = Modulino.available_devices(bus)
 
     if len(devices) == 0:
         print("❌ No devices found")
@@ -226,7 +249,7 @@ def select_device(bus : I2C) -> Modulino:
 
     if len(devices) == 1:
         device = devices[0]
-        confirm = input(f"🔌 Found {device.device_type} at address {hex(device.address)}. Do you want to update this device? (yes/no) ")
+        confirm = input(f"🔌 Found {device.name} at address {hex(device.address)}. Do you want to update this device? (yes/no) ")
         if confirm.lower() == 'yes':
             return devices[0]
         else:
@@ -234,7 +257,7 @@ def select_device(bus : I2C) -> Modulino:
 
     print("🔌 Devices found:")
     for index, device in enumerate(devices):
-        print(f"{index + 1}) {device.device_type} at {hex(device.address)}")
+        print(f"{index + 1}) {device.name} at {hex(device.address)}")
     choice = int(input("Select the device to flash (number): "))
     if choice < 1 or choice > len(devices):
         return None
@@ -289,17 +312,29 @@ def run(bus: I2C):
         print("❌ No file selected")
         return
 
-    device = select_device(bus) 
+    device_manager = DeviceManager(i2c_bus=bus)
+    devices = device_manager.available_devices()
+    device_scan_timestamp = time.ticks_ms() # Remeber when the scan was performed
+    device = select_device(devices)
+
     if device is None:
         print("❌ No device selected")
         return
     
-    print(f"🔄 Resetting device at address {hex(device.address)}")
-    if device.enter_bootloader():
-        print("✅ Device reset successfully")
+    if device.address != BOOTLOADER_I2C_ADDRESS:
+        print(f"🔄 Resetting device at address {hex(device.address)}")
+        if device.enter_bootloader():
+            print("✅ Device reset successfully")
+        else:
+            print("❌ Failed to reset device")
+            return
     else:
-        print("❌ Failed to reset device")
-        return
+        # If the device is already in bootloader mode, give it some time to be ready to receive commands
+        # As a result of scanning, devices in bootloader mode reset and need some time (~6.5 seconds) before they can receive commands.
+        print("⏱️ Waiting for device to be ready...")
+        remaining_time = BL_RESET_DELAY_MS - time.ticks_diff(time.ticks_ms(), device_scan_timestamp)
+        if remaining_time > 0:
+            time.sleep_ms(remaining_time)
 
     print(f"🕵️ Flashing {bin_file} to device at address {hex(BOOTLOADER_I2C_ADDRESS)}")
     

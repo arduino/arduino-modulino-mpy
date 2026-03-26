@@ -16,16 +16,18 @@ class ModulinoThermo(Modulino):
     # The default I2C address of the HS3003 sensor cannot be changed by the user
     # so we can define it as a constant and avoid discovery overhead.
     DEFAULT_ADDRESS = const(0x44)
+    has_mcu = False
 
-    def __init__(self, i2c_bus: I2C = None, address: int = DEFAULT_ADDRESS) -> None:
+    def __init__(self, i2c_bus: I2C = None, address: int = DEFAULT_ADDRESS, check_connection: bool = True) -> None:
         """
         Initializes the Modulino Thermo.
 
         Parameters:
             i2c_bus (I2C): The I2C bus to use. If not provided, the default I2C bus will be used.
             address (int): The I2C address of the module. If not provided, the default address will be used.
+            check_connection (bool): Whether to check the connection to the module.
         """
-        super().__init__(i2c_bus, address, "Thermo")
+        super().__init__(i2c_bus, address, "Thermo", check_connection=check_connection)
         self.sensor: hs3003.HS3003 = hs3003.HS3003(self.i2c_bus)
 
     @property

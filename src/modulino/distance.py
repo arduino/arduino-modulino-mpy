@@ -8,24 +8,24 @@ class ModulinoDistance(Modulino):
     """
 
     default_addresses = [0x29]
-    convert_default_addresses = False
+    has_mcu = False
 
-    def __init__(self, i2c_bus = None, address: int | None = None) -> None:
+    def __init__(self, i2c_bus = None, address: int | None = None, check_connection: bool = True) -> None:
         """
         Initializes the Modulino Distance.
 
         Parameters:
             i2c_bus (I2C): The I2C bus to use. If not provided, the default I2C bus will be used.
             address (int): The I2C address of the module. If not provided, the default address will be used.
+            check_connection (bool): Whether to check the connection to the module.
         """
         
-        super().__init__(i2c_bus, address, "Distance")
+        super().__init__(i2c_bus, address, "Distance", check_connection=check_connection)
         self.sensor = VL53L4CD(self.i2c_bus, self.address) 
         self.sensor.timing_budget = 20     
         self.sensor.inter_measurement = 0
         self.sensor.start_ranging()
 
-    @property
     def _distance_raw(self, timeout = 1000) -> int | None:
         """
         Reads the raw distance value from the sensor and clears the interrupt.
@@ -40,8 +40,7 @@ class ModulinoDistance(Modulino):
                     raise OSError("Timeout waiting for sensor data")
                 sleep_ms(1)
             self.sensor.clear_interrupt()
-            sensor_value = self.sensor.distance
-            return sensor_value
+            return self.sensor.distance
         except OSError:
             # Catch timeout errors
             return None
@@ -52,8 +51,11 @@ class ModulinoDistance(Modulino):
         Returns:
             int: The distance in centimeters.
         """
-        while True:
-            raw_distance = self._distance_raw
-            # Filter out invalid readings
-            if not raw_distance is None and raw_distance > 0:
-                return raw_distance
+        raw_distance = self._distance_raw()
+
+        # Retry once if the reading is invalid
+        if raw_distance <= 0:
+            raw_distance = self._distance_raw()
+        
+        # Filter out invalid readings
+        return raw_distance if raw_distance > 0 else None

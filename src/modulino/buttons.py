@@ -37,20 +37,21 @@ class ModulinoButtons(Modulino):
   """
   Class to interact with the buttons of the Modulino Buttons.
   """
-
   default_addresses = [0x7C]
   default_long_press_duration = const(1000)
 
-  def __init__(self, i2c_bus = None, address = None):
+  def __init__(self, i2c_bus = None, address = None, check_connection: bool = True):
     """
     Initializes the Modulino Buttons.
 
     Parameters:
         i2c_bus (I2C): The I2C bus to use. If not provided, the default I2C bus will be used.
         address (int): The I2C address of the module. If not provided, the default address will be used.
+        check_connection (bool): Whether to check the connection to the module.
     """
 
-    super().__init__(i2c_bus, address, "Buttons")
+    super().__init__(i2c_bus, address, "Buttons", check_connection=check_connection)
+    self._read_buffer = bytearray(4) # 3 bytes for buttons status + 1 byte for pinstrap address
     self.long_press_duration = self.default_long_press_duration
 
     self._current_buttons_status = [None, None, None]
@@ -72,6 +73,10 @@ class ModulinoButtons(Modulino):
     self._led_b = ModulinoButtonsLED(self)
     self._led_c = ModulinoButtonsLED(self)
   
+  @property
+  def send_buffer_size(self) -> int:
+    return 3
+
   @property
   def led_a(self) -> ModulinoButtonsLED:
     """ Returns the LED A object of the module. """
@@ -261,7 +266,8 @@ class ModulinoButtons(Modulino):
     Returns:
       bool: True if any of the buttons has changed its state.
     """
-    new_status = self.read(3)
+    self.read(self._read_buffer)
+    new_status = self._read_buffer[1:] # Skip pinstrap address
     button_states_changed = new_status != self._current_buttons_status
     previous_status = self._current_buttons_status
     current_timestamp = ticks_ms()

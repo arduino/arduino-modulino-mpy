@@ -59,19 +59,23 @@ class ModulinoPixels(Modulino):
   """
   Class to interact with the LEDs of the Modulino Pixels.
   """
-
   default_addresses = [0x6C]
 
-  def __init__(self, i2c_bus = None, address=None):
+  def __init__(self, i2c_bus = None, address=None, check_connection: bool = True):
     """
     Initializes the Modulino Pixels.
 
     Parameters:
         i2c_bus (I2C): The I2C bus to use. If not provided, the default I2C bus will be used.
         address (int): The I2C address of the module. If not provided, the default address will be used.
+        check_connection (bool): Whether to check the connection to the module.
     """
-    super().__init__(i2c_bus, address, "Pixels")
+    super().__init__(i2c_bus, address, "Pixels", check_connection=check_connection)
     self.clear_all()
+
+  @property
+  def send_buffer_size(self) -> int:
+    return NUM_LEDS * 4
   
   def set_range_rgb(self, index_from: int, index_to: int, r: int, g: int, b: int, brightness: int = 100) -> 'ModulinoPixels':
     """
@@ -91,6 +95,11 @@ class ModulinoPixels(Modulino):
     self.set_range_color(index_from, index_to, ModulinoColor(r, g, b), brightness)
     return self
 
+  def _color_to_bytes(self, color: ModulinoColor, brightness: int) -> bytes:
+    mapped_brightness = map_value_int(brightness, 0, 100, 0, 0x1f)
+    color_data_bytes =  int(color) | mapped_brightness | 0xE0
+    return color_data_bytes.to_bytes(4, 'little')
+
   def set_range_color(self, index_from: int, index_to: int, color: ModulinoColor, brightness: int = 100) -> 'ModulinoPixels':
     """
     Sets the color of the LEDs in the given range to the given color.
@@ -104,8 +113,17 @@ class ModulinoPixels(Modulino):
     Returns:
         ModulinoPixels: The object itself. Allows for daisy chaining of methods.
     """
-    for i in range(index_from, index_to + 1):
-      self.set_color(i, color, brightness)
+    if index_to < index_from:
+      raise ValueError(f"LED index_to {index_to} should be greater than or equal to index_from {index_from}")
+    if index_from < 0 or index_from >= NUM_LEDS:
+      raise ValueError(f"LED index_from out of range {index_from} (Valid: 0..{NUM_LEDS - 1})")
+    if index_to < 0 or index_to >= NUM_LEDS:
+      raise ValueError(f"LED index_to out of range {index_to} (Valid: 0..{NUM_LEDS - 1})")
+
+    byte_start_index = index_from * 4
+    byte_end_index = (index_to + 1) * 4
+    data = self._color_to_bytes(color, brightness)
+    self.data[byte_start_index : byte_end_index] = data * (index_to - index_from + 1)  
     return self
 
   def set_all_rgb(self, r: int, g: int, b: int, brightness: int = 100) -> 'ModulinoPixels':
@@ -154,9 +172,8 @@ class ModulinoPixels(Modulino):
       raise ValueError(f"LED index out of range {idx} (Valid: 0..{NUM_LEDS - 1})")
 
     byte_index = idx * 4
-    mapped_brightness = map_value_int(brightness, 0, 100, 0, 0x1f)
-    color_data_bytes =  int(rgb) | mapped_brightness | 0xE0
-    self.data[byte_index: byte_index+4] = color_data_bytes.to_bytes(4, 'little')
+    data = self._color_to_bytes(rgb, brightness)
+    self.data[byte_index : byte_index + 4] = data
     return self
 
   def set_rgb(self, idx: int, r: int, g: int, b: int, brightness: int = 100) -> 'ModulinoPixels':
@@ -230,14 +247,21 @@ class ModulinoPixels(Modulino):
     Turns off the LEDs in the given range.
 
     Parameters:
-        start (int): The starting index of the range.
-        end (int): The ending index (inclusive) of the range.
+        start (int): The starting index of the range (0..7).
+        end (int): The ending index (inclusive) of the range (0..7).
 
     Returns:
         ModulinoPixels: The object itself. Allows for daisy chaining of methods.
     """
-    for i in range(start, end):
-        self.clear(i)
+    if start < 0 or start >= NUM_LEDS:
+      raise ValueError(f"LED start index out of range {start} (Valid: 0..{NUM_LEDS - 1})")
+    if end < 0 or end >= NUM_LEDS:
+      raise ValueError(f"LED end index out of range {end} (Valid: 0..{NUM_LEDS - 1})")
+    if end < start:
+      raise ValueError(f"LED end index {end} should be greater than or equal to start index {start}")
+    byte_start_index = start * 4
+    byte_end_index = (end + 1) * 4
+    self.data[byte_start_index : byte_end_index] = bytearray([0xE0] * (end - start + 1) * 4)
     return self
         
   def clear_all(self) -> 'ModulinoPixels':

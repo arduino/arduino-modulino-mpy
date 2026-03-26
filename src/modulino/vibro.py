@@ -14,21 +14,25 @@ class ModulinoVibro(Modulino):
   """
   Class to operate the vibration motor of the Modulino Vibro.
   """
-
   default_addresses = [0x70]
 
-  def __init__(self, i2c_bus=None, address=None):
+  def __init__(self, i2c_bus=None, address=None, check_connection: bool = True):
     """
     Initializes the Modulino Vibro.
 
     Parameters:
         i2c_bus (I2C): The I2C bus to use. If not provided, the default I2C bus will be used.
         address (int): The I2C address of the module. If not provided, the default address will be used.
+        check_connection (bool): Whether to check the connection to the module.
     """
-    super().__init__(i2c_bus, address, "Vibro")
+    super().__init__(i2c_bus, address, "Vibro", check_connection=check_connection)
     self.data = bytearray(12)
     self.frequency = 1000  # Default frequency in Hz
     self.off()
+
+  @property
+  def send_buffer_size(self) -> int:
+    return 12
 
   def on(self, lenght_ms: int = 0xFFFF, power = PowerLevel.MEDIUM, blocking: bool = False) -> None:
     """

@@ -7,14 +7,17 @@ e.g. ModulinoBuzzer(address=0x2A)
 Initial author: Sebastian Romero (s.romero@arduino.cc)
 """
 
-from sys import exit
 from time import sleep
-from modulino import Modulino
+from modulino import DeviceManager
 
 def main():
     print()
     bus = None # Change this to the I2C bus you are using on 3rd party host boards
-    devices = Modulino.available_devices(bus)
+    device_manager = DeviceManager(bus)
+    devices = device_manager.available_devices()
+    
+    # Filter out all devices that do not support address change
+    devices = [device for device in devices if device.has_mcu]
 
     if len(devices) == 0:
         print("No devices found on the bus. Try resetting the board.")
@@ -23,8 +26,8 @@ def main():
     print("The following devices were found on the bus:")
 
     for index, device in enumerate(devices):
-        dev_type = device.device_type if device.device_type is not None else "Unknown Device"
-        print(f"{index + 1}) {dev_type} at {hex(device.address)}")
+        name = device.name if device.name is not None else "Unknown Device"
+        print(f"{index + 1}) {name} at {hex(device.address)}")
 
     choice_is_valid = False
     while not choice_is_valid:

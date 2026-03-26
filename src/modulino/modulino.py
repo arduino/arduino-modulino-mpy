@@ -1,4 +1,4 @@
-from machine import Pin, I2C
+from machine import Pin, I2C, SoftI2C
 from time import sleep
 from micropython import const
 import re
@@ -14,19 +14,6 @@ DEVICE_I2C_INTERFACES = {
   "Arduino Portenta C33": I2CInterface("hw", 0, None, None),
   "Generic ESP32S3 module": I2CInterface("hw", 0, None, None),
 }
-
-PINSTRAP_ADDRESS_MAP = {
-  0x3C: "Buzzer",
-  0x7C: "Buttons",
-  0x76: "Knob",
-  0x74: "Knob",
-  0x6C: "Pixels",
-  0x58: "Joystick",
-  0x4: "Latch Relay",
-  0x70: "Vibro"
-}
-
-_BOOTLOADER_ADDRESS = const(0x64)
 
 class _I2CHelper:
   """
@@ -53,7 +40,7 @@ class _I2CHelper:
   @staticmethod
   def reset_bus(i2c_bus: I2C) -> I2C:
     """
-    Resets the I2C bus in case it got stuck. To unblock the bus the SDA line is kept high for 20 clock cycles
+    Resets the I2C bus in case it got stuck. To unblock the bus the SDA line is kept high for up to 9 clock cycles
     Which causes the triggering of a NAK message.
     """
 
@@ -61,29 +48,52 @@ class _I2CHelper:
     # Unfortunately the I2C class does not expose those attributes directly.
     interface, scl_pin_number, sda_pin_number = _I2CHelper.extract_i2c_info(i2c_bus)
 
-    # Detach pins from I2C and configure them as GPIO outputs in open-drain mode
-    scl_pin = Pin(scl_pin_number, Pin.OUT, Pin.OPEN_DRAIN)
-    sda_pin = Pin(sda_pin_number, Pin.OUT, Pin.OPEN_DRAIN)
+    if scl_pin_number is None or sda_pin_number is None:
+        print("Could not extract SCL/SDA pins. Skipping bus reset.")
+        return i2c_bus
 
-    # Set both lines high initially
+    # Configure them as GPIO outputs in open-drain mode
+    scl_pin = Pin(scl_pin_number, Pin.OPEN_DRAIN)
+    sda_pin = Pin(sda_pin_number, Pin.OPEN_DRAIN)
+
+    # In I2C, the idle state of the bus is when both SCL and SDA are HIGH.
+    # By setting the open-drain pins to 1, we stop driving them LOW, allowing
+    # the external pull-up resistors on the I2C bus to pull the lines HIGH.
+    # This ensures we start our manual clocking sequence from a known, clean state.
     scl_pin.value(1)
     sda_pin.value(1)
     sleep(0.001)  # 1 millisecond delay to stabilize bus
 
-    # Pulse the SCL line 9 times to release any stuck device
+    # Pulse the SCL line up to 9 times to release any stuck device.
+    # 9 clocks is the worst-case scenario: a device was in the middle of sending
+    # a byte (8 bits) + waiting for an ACK (1 bit) when the bus was interrupted.
+    # By clocking up to 9 times, the device will eventually reach the ACK phase 
+    # and release the SDA line that was being held low, allowing the bus to return to an idle state.
     for _ in range(9):
+        if sda_pin.value() == 1:
+            break
         scl_pin.value(0)
         sleep(0.001)  # 1 millisecond delay for each pulse
         scl_pin.value(1)
         sleep(0.001)
 
-    # Ensure SDA is high before re-initializing
-    sda_pin.value(1)
+    # Generate STOP condition: SDA rising while SCL is high
+    # Ensure both are low first to prepare for the transition
+    scl_pin.value(0)
+    sda_pin.value(0)
+    sleep(0.001)
     scl_pin.value(1)
-    sleep(0.001)  # 1 millisecond delay to stabilize bus
+    sleep(0.001)
+    sda_pin.value(1)
+    sleep(0.001)  # Allow to stabilize bus
 
-    # Need to re-initialize the bus after resetting it
-    return I2C(interface, freq=_I2CHelper.frequency)
+    # Need to re-initialize the bus after resetting it    
+    is_soft = isinstance(i2c_bus, SoftI2C)
+
+    if is_soft:
+        return SoftI2C(scl=Pin(scl_pin_number), sda=Pin(sda_pin_number), freq=_I2CHelper.frequency)
+    else:
+        return I2C(interface, scl=Pin(scl_pin_number), sda=Pin(sda_pin_number), freq=_I2CHelper.frequency)
 
   @staticmethod
   def get_interface() -> I2C:
@@ -113,7 +123,6 @@ class _I2CHelper:
       return I2C(interface_info.bus_number, freq=_I2CHelper.frequency)
 
     if interface_info.type == "sw":
-      from machine import SoftI2C, Pin
       return SoftI2C(scl=Pin(interface_info.scl), sda=Pin(interface_info.sda), freq=_I2CHelper.frequency)
 
 class Modulino:
@@ -127,11 +136,16 @@ class Modulino:
   This list needs to be overridden derived classes.
   """
 
-  convert_default_addresses: bool = True
+  has_mcu: bool = True
   """
-  Determines if the default addresses need to be converted from 8-bit to 7-bit.
-  Addresses of modulinos without native I2C modules need to be converted.
-  This class variable needs to be overridden in derived classes.
+  Determines if the modulino has a microcontroller on board.
+  This is used to determine if the device should be expected to support features such as address change or entering bootloader mode.
+  """
+
+  name: str = None
+  """
+  The name of the modulino.
+  This property should be overridden in derived classes.
   """
 
   def __init__(self, i2c_bus: I2C = None, address: int = None, name: str = None, check_connection: bool = True) -> None:
@@ -161,8 +175,9 @@ class Modulino:
       if len(self.default_addresses) == 0:
         raise RuntimeError(f"No default addresses defined for the {self.name} device.")
 
-      if self.convert_default_addresses:
-        # Need to convert the 8-bit address to 7-bit
+      if self.has_mcu:
+        # Devices with MCU need to convert the 8-bit address to 7-bit
+        # Native I2C devices don't require this conversion, because they already use 7-bit addresses in their firmware.
         actual_addresses = list(map(lambda addr: addr >> 1, self.default_addresses))
         self.address = self.discover(actual_addresses)
       else:
@@ -190,26 +205,20 @@ class Modulino:
       return devices_on_bus[0]
     return None
 
-  def __bool__(self) -> bool:
-    """
-    Boolean cast operator to determine if the given i2c device has a correct address
-    and if the bus is defined.
-    In case of auto discovery this also means that the device was found on the bus
-    because otherwise the address would be None.
-    """
-    # Check if a valid i2c address is set and bus is defined
-    return self.i2c_bus is not None and self.address is not None and self.address <= 127 and self.address >= 0
-
   @property
   def connected(self) -> bool:
     """
     Determines if the given modulino is connected to the i2c bus.
     """
-    if not bool(self):
+    # Check if a valid i2c address is set and bus is defined
+    # In case of auto discovery this also means that the device was found on the bus
+    # because otherwise the address would be None.
+    addr = self.address
+    if self.i2c_bus is None or addr is None or addr > 127 or addr < 0:
       return False
-    
+
     try:
-        self.i2c_bus.writeto(self.address, b'')
+        self.i2c_bus.writeto(addr, b'')
         return True
     except OSError:
         return False
@@ -233,29 +242,23 @@ class Modulino:
     # The first byte is always the pinstrap address
     return data[0]
 
-  @property
-  def device_type(self) -> str | None:
-    """
-    Returns the type of the modulino based on the pinstrap address as a string.
-    """
-    return PINSTRAP_ADDRESS_MAP.get(self.pin_strap_address, None)
-
   def change_address(self, new_address: int):
     """
     Sets the address of the i2c device to the given value.
     This is only supported on Modulinos that have a microcontroller.
     """
-    # TODO: Check if device supports this feature by looking at the type
+    if not self.has_mcu:
+      raise RuntimeError("This device does not support changing its I2C address.")
 
-    data = bytearray(40)
     # Set the first two bytes to 'C' and 'F' followed by the new address
-    data[0:2] = b'CF'
-    data[2] = new_address * 2
+    data = b'CF'
+    data += bytes([new_address * 2]) # Convert to 8-bit address for the command, because that's what the firmware expects
+    data += b'\x00' * (self.send_buffer_size - len(data)) # Pad the rest of the buffer with zeros.
 
     try:
       self.write(data)
     except OSError:
-      pass  # Device resets immediately and causes ENODEV to be thrown which is expected
+      raise RuntimeError("Failed to write the new address to the device. Make sure the device is connected and try again.")
 
     self.address = new_address
 
@@ -267,34 +270,32 @@ class Modulino:
     Returns:
       bool: True if the device entered bootloader mode, False otherwise.
     """
+    if not self.has_mcu:
+      raise RuntimeError("This device does not support entering bootloader mode.")
+
     buffer = b'DIE'
-    buffer += b'\x00' * (8 - len(buffer)) # Pad buffer to 8 bytes
+    # Pad buffer. The amount of sent bytes must be equal to what the Modulino firmware expects.
+    # Otherwise it won't process the data.
+    # If more than the expected amount is sent, the write command
+    # raises an ENODEV error because the device resets while writing.    
+    buffer += b'\x00' * (self.send_buffer_size - len(buffer))
     try:
-        self.i2c_bus.writeto(self.address, buffer, True)
-        sleep(0.25) # Wait for the device to reset
-        return True
+      self.i2c_bus.writeto(self.address, buffer, True)
+      sleep(0.25) # Wait for the device to reset
+      return True
     except OSError as e:
       # ENODEV (e.errno == 19) can be thrown if the device resets while writing out the buffer
       return False
 
-  def read(self, amount_of_bytes: int) -> bytes | None:
+  def read(self, read_buffer: bytearray) -> None:
     """
-    Reads the given amount of bytes from the i2c device and returns the data.
-    It skips the first byte which is the pinstrap address.
-
-    Returns:
-      bytes | None: The data read from the device.
+    Reads the given amount of bytes from the i2c device defined by the length of the read_buffer.
     """
 
     if self.address is None:
-      return None
+      raise RuntimeError("I2C address is not set.")
 
-    data = self.i2c_bus.readfrom(self.address, amount_of_bytes + 1, True)
-    if len(data) < amount_of_bytes + 1:
-      return None  # Something went wrong in the data transmission
-
-    # data[0] is always the pinstrap address
-    return data[1:]
+    self.i2c_bus.readfrom_into(self.address, read_buffer, True)
 
   def write(self, data_buffer: bytearray) -> bool:
     """
@@ -319,8 +320,17 @@ class Modulino:
     """
     return self.address in self.default_addresses
 
+  @property
+  def send_buffer_size(self) -> int:
+    """
+    The expected size of the buffer sent to the device.
+    Used to calculate the padding for commands such as the DIE command.
+    This property needs to be overridden in derived classes.
+    """
+    raise NotImplementedError("The send_buffer_size property must be overridden in the derived class.")
+
   @staticmethod
-  def scan(bus: I2C, target_addresses = None) -> list[int]:
+  def scan(bus: I2C, target_addresses: list[int] | None = None) -> list[int]:
     addresses = bytearray() # Use 8bit data type
     # General call address (0x00) is skipped in default range
     candidates = target_addresses if target_addresses is not None else range(1,128)
@@ -332,29 +342,6 @@ class Modulino:
         except OSError:
             pass
     return list(addresses)
-
-  @staticmethod
-  def available_devices(bus: I2C = None) -> list[Modulino]:
-    """
-    Finds all devices on the i2c bus and returns them as a list of Modulino objects.
-
-    Parameters:
-      bus (I2C): The I2C bus to use. If not provided, the default I2C bus will be used.
-
-    Returns:
-      list: A list of Modulino objects.
-    """
-    if bus is None:
-      bus = _I2CHelper.get_interface()
-    device_addresses = Modulino.scan(bus)
-    devices = []
-    for address in device_addresses:
-      if address == _BOOTLOADER_ADDRESS:
-        # Skip bootloader address
-        continue
-      device = Modulino(i2c_bus=bus, address=address, check_connection=False)
-      devices.append(device)
-    return devices
 
   @staticmethod
   def reset_bus(i2c_bus: I2C) -> I2C:

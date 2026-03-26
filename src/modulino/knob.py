@@ -9,16 +9,18 @@ class ModulinoKnob(Modulino):
   # This is for a use case where two encoders are bundled together in a package
   default_addresses = [0x74, 0x76]
   
-  def __init__(self, i2c_bus = None, address = None):
+  def __init__(self, i2c_bus = None, address = None, check_connection: bool = True):
     """
     Initializes the Modulino Knob.
 
     Parameters:
         i2c_bus (I2C): The I2C bus to use. If not provided, the default I2C bus will be used.
         address (int): The I2C address of the module. If not provided, the default address will be used.
+        check_connection (bool): Whether to check the connection to the module.
     """
 
-    super().__init__(i2c_bus, address, "Knob")
+    super().__init__(i2c_bus, address, "Knob", check_connection=check_connection)
+    self._read_buffer = bytearray(4) # 3 bytes for encoder value + pressed status + 1 byte for pinstrap address
     self._pressed: bool = None
     self._encoder_value: int = None
     self._value_range: tuple[int, int] = None
@@ -46,6 +48,10 @@ class ModulinoKnob(Modulino):
     # Reset state to make sure the first update doesn't trigger the callbacks
     self._encoder_value = None
     self._pressed_status: bool = None
+
+  @property
+  def send_buffer_size(self) -> int:
+    return 4
 
   def _has_rotated_clockwise(self, previous_value: int, current_value: int) -> bool:
     """
@@ -100,7 +106,8 @@ class ModulinoKnob(Modulino):
     Adjusts the value to the range if it is set.
     Converts the encoder value to a signed 16-bit integer.
     """
-    data: bytes = self.read(3)
+    self.read(self._read_buffer)
+    data: bytes = self._read_buffer[1:] # Skip pinstrap address
     self._pressed = data[2] != 0
     self._encoder_value = int.from_bytes(data[0:2], 'little', True)
 
