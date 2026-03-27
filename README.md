@@ -18,6 +18,7 @@ Supports the following Modulinos:
 - ⚡️ **Modulino Latch Relay**: Control a latching relay to switch devices on and off.
 - 🕹️ **Modulino Joystick**: Read X/Y axis and button state from a joystick Modulino.
 - 📳 **Modulino Vibro**: Control a vibration motor.
+- 🟦 **Modulino LED Matrix**: Control an 12x8 LED matrix.
 
 ## 📖 Documentation
 For more information on the features of this library and how to use them please read the documentation [here](./docs/).
