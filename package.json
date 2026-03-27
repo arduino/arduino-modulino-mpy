@@ -19,5 +19,5 @@
       ["lsm6dsox", "latest"],
       ["github:jposada202020/MicroPython_HS3003", "master"]
   ],
-    "version": "1.0.0"
+    "version": "1.1.0"
   }
