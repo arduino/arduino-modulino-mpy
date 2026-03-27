@@ -19,3 +19,4 @@ from .latch_relay import ModulinoLatchRelay
 from .vibro import ModulinoVibro, PowerLevel
 from .led_matrix import ModulinoLEDMatrix, MPJAnimation, FPSAnimation, Animation
 from .light import ModulinoLight
+from .motors import ModulinoMotors
