@@ -39,7 +39,8 @@ class ModulinoMotors(Modulino):
   KISEN_FULL_SCALE = const(7500)  # MAX22211 KISEN when HFS is low
   KISEN_HALF_SCALE = const(3750)  # MAX22211 KISEN when HFS is high
 
-  def __init__(self, i2c_bus=None, address=None, check_connection: bool = True):
+  def __init__(self, i2c_bus=None, address=None, check_connection: bool = True,
+               steps_per_revolution=None):
     """
     Initializes the Modulino Motors.
     
@@ -47,6 +48,8 @@ class ModulinoMotors(Modulino):
         i2c_bus (I2C): The I2C bus to use. If not provided, the default I2C bus will be used.
         address (int): The I2C address of the module. If not provided, the default address will be used.
         check_connection (bool): Whether to check the connection to the module.
+        steps_per_revolution (int | None): Full-step motor steps per shaft
+          revolution. Required for RPM-based stepper control.
     """
     super().__init__(i2c_bus, address, "Motors", check_connection=check_connection)
     self._send_buffer = bytearray(7)  # Buffer for sending commands
@@ -63,6 +66,7 @@ class ModulinoMotors(Modulino):
     self._busy = False
     self._sense_a = 0
     self._sense_b = 0
+    self.steps_per_revolution = steps_per_revolution
 
   def _send_command(self, msg):
     # Padding to 7 bytes to match firmware expectation
@@ -105,14 +109,30 @@ class ModulinoMotors(Modulino):
   def move_stepper(self, steps: int, speed_period: int) -> None:
     """Command a stepper move using signed steps and uint16 period."""
     speed_period = int(speed_period)
-    if speed_period < 0 or speed_period > 0xFFFF:
-      raise ValueError("speed_period must be in range 0..65535")
+    if speed_period < 1 or speed_period > 0xFFFF:
+      raise ValueError("speed_period must be in range 1..65535")
 
     self._send_buffer[:] = b'\x00' * len(self._send_buffer)
     self._send_buffer[0] = self.CMD_STEPPER
     self._send_buffer[1:5] = int(steps).to_bytes(4, 'little', True)
     self._send_buffer[5:7] = speed_period.to_bytes(2, 'little')
     self._send_command(self._send_buffer)
+
+  def move_stepper_rpm(self, steps: int, rpm: float) -> None:
+    """Command a stepper move using target speed in RPM."""
+    if self._steps_per_revolution is None:
+      raise ValueError("steps_per_revolution must be set before using move_stepper_rpm")
+
+    rpm = float(rpm)
+    if rpm <= 0:
+      raise ValueError("rpm must be > 0")
+
+    effective_steps_per_rev = self._steps_per_revolution * (2 if self._half_step else 1)
+    period_us = int(60000000.0 / (rpm * effective_steps_per_rev))
+    if period_us < 1 or period_us > 0xFFFF:
+      raise ValueError("rpm out of range for current step mode and steps_per_revolution")
+
+    self.move_stepper(steps, period_us)
 
   @property
   def speed_a(self) -> int:
@@ -289,6 +309,17 @@ class ModulinoMotors(Modulino):
     val = 1 if value else 0
     self._send_command(bytes([self.CMD_STEP_MODE, val]))
     self._half_step = bool(value)
+
+  @property
+  def steps_per_revolution(self) -> int | None:
+    """Gets or sets full-step motor steps per shaft revolution."""
+    return self._steps_per_revolution
+
+  @steps_per_revolution.setter
+  def steps_per_revolution(self, value: int) -> None:
+    if value is not None and value < 1:
+      raise ValueError("steps_per_revolution must be >= 1")
+    self._steps_per_revolution = value
 
   @property
   def decay_mode(self) -> int:
