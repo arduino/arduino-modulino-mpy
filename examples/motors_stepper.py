@@ -13,8 +13,7 @@ motors.stepper_mode_enabled = True
 # Configure stepper parameters
 print("Configuring stepper settings...")
 motors.half_step_enabled = False  # Full step mode
-motors.half_full_scale_enabled = False  # Full range
-motors.set_decay(0)
+motors.set_decay(ModulinoMotors.DecayMode.FAST)
 
 print("Moving stepper with different periods...\n")
 
@@ -55,12 +54,5 @@ motors.half_step_enabled = False
 motors.move_stepper(100, 5000)
 sleep_ms(600)
 print("Full-step move complete.\n")
-
-# Demonstrate half-full-scale mode
-print("Enabling half-full-scale (HFS) mode...")
-motors.half_full_scale_enabled = True
-motors.move_stepper(50, 5000)
-sleep_ms(300)
-print("HFS move complete.\n")
 
 print("Stepper example finished.")
