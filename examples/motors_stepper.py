@@ -1,7 +1,7 @@
 from modulino import ModulinoMotors
 from time import sleep_ms
 
-motors = ModulinoMotors()
+motors = ModulinoMotors(steps_per_revolution=200)
 
 print("Stepper Motor Example")
 print("=====================\n")
@@ -15,22 +15,23 @@ print("Configuring stepper settings...")
 motors.half_step_enabled = False  # Full step mode
 motors.set_decay(ModulinoMotors.DecayMode.FAST)
 
-print("Moving stepper with different periods...\n")
+print("Moving stepper with different RPM targets...\n")
 
-# Define step sequences and periods (microseconds between steps)
+# Define step sequences and target RPM
 step_sequences = [
-  (100, 5000, "Fast move: 100 steps, 5ms period"),
-  (200, 10000, "Medium move: 200 steps, 10ms period"),
-  (50, 20000, "Slow move: 50 steps, 20ms period"),
-  (-100, 5000, "Reverse: 100 steps backward, 5ms period"),
+  (100, 60, "Fast move: 100 steps at 60 RPM"),
+  (200, 30, "Medium move: 200 steps at 30 RPM"),
+  (50, 10, "Slow move: 50 steps at 10 RPM"),
+  (-100, 40, "Reverse: 100 steps backward at 40 RPM"),
 ]
 
-for steps, period, description in step_sequences:
+for steps, rpm, description in step_sequences:
   print(description)
-  motors.move_stepper(steps, period)
+  motors.move_stepper_rpm(steps, rpm)
   
   # Wait for move to complete (rough estimate)
-  move_time = (abs(steps) * period) // 1000 + 100
+  effective_steps_per_rev = motors.steps_per_revolution * (2 if motors.half_step_enabled else 1)
+  move_time = int((abs(steps) * 60000) / (rpm * effective_steps_per_rev)) + 100
   sleep_ms(move_time)
   
   # Check status
@@ -44,14 +45,14 @@ for steps, period, description in step_sequences:
 # Demonstrate step mode switching
 print("Switching to half-step mode...")
 motors.half_step_enabled = True
-motors.move_stepper(100, 5000)
+motors.move_stepper_rpm(100, 30)
 sleep_ms(600)
 print("Half-step move complete.\n")
 
 # Switch back to full step
 print("Switching back to full-step mode...")
 motors.half_step_enabled = False
-motors.move_stepper(100, 5000)
+motors.move_stepper_rpm(100, 30)
 sleep_ms(600)
 print("Full-step move complete.\n")
 
