@@ -58,7 +58,7 @@ class ModulinoMotors(Modulino):
     self._invert_a = False
     self._speed_b = 0
     self._invert_b = False
-    self._frequency = 1000
+    self._frequency = 20000
     self._mode = self.MODE_DC
     self._half_step = False
     self._decay_mode = 0
