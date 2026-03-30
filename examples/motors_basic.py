@@ -2,6 +2,7 @@ from modulino import ModulinoMotors
 from time import sleep_ms
 
 motors = ModulinoMotors()
+motors.stepper_mode_enabled = False  # DC mode
 
 for i in range(0, 101):
   print(f"Setting speed to {i}")
