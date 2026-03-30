@@ -6,6 +6,25 @@ class ModulinoMotors(Modulino):
   Class to operate the motors of the Modulino.
   """
   default_addresses = [0x48]
+
+  CMD_MODE      = const(ord('M'))
+  CMD_SPEED_DC  = const(ord('S'))
+  CMD_STEPPER   = const(ord('G'))
+  CMD_DECAY     = const(ord('T'))
+  CMD_STEP_MODE = const(ord('H'))
+  CMD_FREQ_DC   = const(ord('F'))
+  CMD_HFS       = const(ord('X'))
+
+  MODE_DC       = const(0)
+  MODE_STEPPER  = const(1)
+
+  FLAG_BUSY        = const(0x01)
+  FLAG_MODE        = const(0x02)
+  FLAG_STEP_MODE   = const(0x04)
+  FLAG_HFS         = const(0x08)
+  FLAG_DECAY_MASK  = const(0x30)
+  FLAG_DECAY_SHIFT = const(4)
+
   MAX_SPEED = const(32767)  # Max speed value for 16-bit signed integer
 
   def __init__(self, i2c_bus=None, address=None, check_connection: bool = True):
@@ -25,6 +44,13 @@ class ModulinoMotors(Modulino):
     self._speed_b = 0
     self._invert_b = False
     self._frequency = 1000
+    self._mode = self.MODE_DC
+    self._half_step = False
+    self._decay_mode = 0
+    self._hfs_enabled = False
+    self._busy = False
+    self._sense_a = 0
+    self._sense_b = 0
 
   def _send_command(self, msg):
     # Padding to 7 bytes to match firmware expectation
@@ -38,12 +64,37 @@ class ModulinoMotors(Modulino):
   def _update_speed(self):
     val_a = int(self._speed_a * self.MAX_SPEED / 100) * (-1 if self._invert_a else 1)
     val_b = int(self._speed_b * self.MAX_SPEED / 100) * (-1 if self._invert_b else 1)
-    
-    # Command: 'S' + int16 (A) + int16 (B)
-    self._send_buffer[:] = b'\x00' * len(self._send_buffer)  # Clear buffer
-    self._send_buffer[0] = ord('S')
-    self._send_buffer[1:3] = val_a.to_bytes(2, 'little', True)
-    self._send_buffer[3:5] = val_b.to_bytes(2, 'little', True)
+    self._set_dc_speed_raw(val_a, val_b)
+
+  def _set_dc_speed_raw(self, speed_a: int, speed_b: int) -> None:
+    """Set DC motor speeds in raw signed int16 units (-32767..32767)."""
+    speed_a = int(speed_a)
+    speed_b = int(speed_b)
+    if speed_a < -self.MAX_SPEED or speed_a > self.MAX_SPEED:
+      raise ValueError("speed_a must be in range -32767..32767")
+    if speed_b < -self.MAX_SPEED or speed_b > self.MAX_SPEED:
+      raise ValueError("speed_b must be in range -32767..32767")
+
+    self._send_buffer[:] = b'\x00' * len(self._send_buffer)
+    self._send_buffer[0] = self.CMD_SPEED_DC
+    self._send_buffer[1:3] = speed_a.to_bytes(2, 'little', True)
+    self._send_buffer[3:5] = speed_b.to_bytes(2, 'little', True)
+    self._send_command(self._send_buffer)
+
+  def stop(self) -> None:
+    """Stop both motors."""
+    self._set_dc_speed_raw(0, 0)
+
+  def move_stepper(self, steps: int, speed_period: int) -> None:
+    """Command a stepper move using signed steps and uint16 period."""
+    speed_period = int(speed_period)
+    if speed_period < 0 or speed_period > 0xFFFF:
+      raise ValueError("speed_period must be in range 0..65535")
+
+    self._send_buffer[:] = b'\x00' * len(self._send_buffer)
+    self._send_buffer[0] = self.CMD_STEPPER
+    self._send_buffer[1:5] = int(steps).to_bytes(4, 'little', True)
+    self._send_buffer[5:7] = speed_period.to_bytes(2, 'little')
     self._send_command(self._send_buffer)
 
   @property
@@ -105,7 +156,10 @@ class ModulinoMotors(Modulino):
     Parameters:
       decay_mode (int): The decay mode to set.
     """
-    self._send_command(bytes([ord('T'), decay_mode]))
+    if decay_mode < 0 or decay_mode > 3:
+      raise ValueError("decay_mode must be in range 0..3")
+    self._send_command(bytes([self.CMD_DECAY, decay_mode]))
+    self._decay_mode = int(decay_mode)
 
   @property
   def frequency(self) -> int:
@@ -117,12 +171,57 @@ class ModulinoMotors(Modulino):
   @frequency.setter
   def frequency(self, value: int):
     """Set DC Motor PWM Frequency in Hz (200 - 60000)"""
+    value = int(value)
+    if value < 200 or value > 60000:
+      raise ValueError("frequency must be in range 200..60000 Hz")
     self._frequency = value
     # Command: 'F' + uint16
     self._send_buffer[:] = b'\x00' * len(self._send_buffer)  # Clear buffer
-    self._send_buffer[0] = ord('F')
+    self._send_buffer[0] = self.CMD_FREQ_DC
     self._send_buffer[1:3] = value.to_bytes(2, 'little')
     self._send_command(self._send_buffer)
+
+  def update(self) -> tuple[int, int, bool, bool, int, bool, int]:
+    """
+    Refresh telemetry from the module.
+
+    Returns:
+      tuple[int, int, bool, bool, int, bool, int]:
+      (sense_a, sense_b, busy, hfs_enabled, mode, half_step, decay_mode)
+    """
+    self._receive_buffer[:] = b'\x00' * len(self._receive_buffer)
+    self.read(self._receive_buffer)
+
+    self._sense_a = int.from_bytes(self._receive_buffer[1:3], 'little')
+    self._sense_b = int.from_bytes(self._receive_buffer[3:5], 'little')
+    flags = self._receive_buffer[5]
+    self._busy = bool(flags & self.FLAG_BUSY)
+    self._hfs_enabled = bool(flags & self.FLAG_HFS)
+    self._mode = self.MODE_STEPPER if (flags & self.FLAG_MODE) else self.MODE_DC
+    self._half_step = bool(flags & self.FLAG_STEP_MODE)
+    self._decay_mode = (flags & self.FLAG_DECAY_MASK) >> self.FLAG_DECAY_SHIFT
+
+    return (self._sense_a, self._sense_b, self._busy, self._hfs_enabled,
+            self._mode, self._half_step, self._decay_mode)
+
+  @property
+  def busy(self) -> bool:
+    """Returns True when the module reports an active move."""
+    self.update()
+    return self._busy
+
+  @property
+  def half_full_scale_enabled(self) -> bool:
+    """Gets or sets the half-full-scale (HFS) mode."""
+    self.update()
+    return self._hfs_enabled
+
+  @half_full_scale_enabled.setter
+  def half_full_scale_enabled(self, value: bool) -> None:
+    """Set HFS pin: False=full range, True=half range."""
+    val = 1 if value else 0
+    self._send_command(bytes([self.CMD_HFS, val]))
+    self._hfs_enabled = bool(value)
 
   @property
   def sense_a(self) -> int:
@@ -152,11 +251,42 @@ class ModulinoMotors(Modulino):
     Returns:
       tuple[int, int]: The sense values of motor A and motor B.
     """
-    self._receive_buffer[:] = b'\x00' * len(self._receive_buffer)  # Clear buffer
-    self.read(self._receive_buffer)
-    sense_a = int.from_bytes(self._receive_buffer[1:3], 'little')
-    sense_b = int.from_bytes(self._receive_buffer[3:5], 'little')
-    return sense_a, sense_b
+    sense = self.update()
+    return sense[0], sense[1]
+
+  @property
+  def stepper_mode_enabled(self) -> bool:
+    """Returns True if stepper mode is active, False if DC mode."""
+    self.update()
+    return self._mode == self.MODE_STEPPER
+
+  @stepper_mode_enabled.setter
+  def stepper_mode_enabled(self, value: bool) -> None:
+    """Set stepper mode: True=stepper, False=DC."""
+    mode = self.MODE_STEPPER if value else self.MODE_DC
+    if mode not in (self.MODE_DC, self.MODE_STEPPER):
+      raise ValueError("mode must be MODE_DC (0) or MODE_STEPPER (1)")
+    self._send_command(bytes([self.CMD_MODE, mode]))
+    self._mode = mode
+
+  @property
+  def half_step_enabled(self) -> bool:
+    """Gets or sets the half-step mode."""
+    self.update()
+    return self._half_step
+
+  @half_step_enabled.setter
+  def half_step_enabled(self, value: bool) -> None:
+    """Set step mode: False=full step, True=half step."""
+    val = 1 if value else 0
+    self._send_command(bytes([self.CMD_STEP_MODE, val]))
+    self._half_step = bool(value)
+
+  @property
+  def decay_mode(self) -> int:
+    """Returns decay mode reported by the latest telemetry update."""
+    self.update()
+    return self._decay_mode
 
   @property
   def send_buffer_size(self) -> int:
