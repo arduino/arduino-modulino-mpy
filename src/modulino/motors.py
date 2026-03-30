@@ -5,6 +5,13 @@ class ModulinoMotors(Modulino):
   """
   Class to operate the motors of the Modulino.
   """
+  class DecayMode:
+    """Enum-like decay mode constants for `set_decay`."""
+    SLOW = 0
+    MIXED_30_FAST_70_SLOW = 1
+    MIXED_60_FAST_40_SLOW = 2
+    FAST = 3
+
   default_addresses = [0x48]
 
   CMD_MODE      = const(ord('M'))
@@ -26,6 +33,11 @@ class ModulinoMotors(Modulino):
   FLAG_DECAY_SHIFT = const(4)
 
   MAX_SPEED = const(32767)  # Max speed value for 16-bit signed integer
+  ADC_FULL_SCALE = const(4095)  # 12-bit ADC full scale
+  ADC_REF_MV = const(3300)  # ADC reference in millivolts
+  ISEN_RESISTOR_OHMS = const(4700)  # ISEN pull-down resistor on the host board
+  KISEN_FULL_SCALE = const(7500)  # MAX22211 KISEN when HFS is low
+  KISEN_HALF_SCALE = const(3750)  # MAX22211 KISEN when HFS is high
 
   def __init__(self, i2c_bus=None, address=None, check_connection: bool = True):
     """
@@ -80,6 +92,11 @@ class ModulinoMotors(Modulino):
     self._send_buffer[1:3] = speed_a.to_bytes(2, 'little', True)
     self._send_buffer[3:5] = speed_b.to_bytes(2, 'little', True)
     self._send_command(self._send_buffer)
+
+  def _sense_raw_to_ma(self, raw: int, hfs_enabled: bool) -> float:
+    """Convert raw ADC delta counts from ISEN to motor current in mA."""
+    kisen = self.KISEN_HALF_SCALE if hfs_enabled else self.KISEN_FULL_SCALE
+    return (float(raw) * self.ADC_REF_MV * kisen) / (self.ADC_FULL_SCALE * self.ISEN_RESISTOR_OHMS)
 
   def stop(self) -> None:
     """Stop both motors."""
@@ -154,12 +171,13 @@ class ModulinoMotors(Modulino):
     Sets the decay mode of the motors.
 
     Parameters:
-      decay_mode (int): The decay mode to set.
+      decay_mode (int): One of `ModulinoMotors.DecayMode.*` or a raw int in range 0..3.
     """
+    decay_mode = int(decay_mode)
     if decay_mode < 0 or decay_mode > 3:
       raise ValueError("decay_mode must be in range 0..3")
     self._send_command(bytes([self.CMD_DECAY, decay_mode]))
-    self._decay_mode = int(decay_mode)
+    self._decay_mode = decay_mode
 
   @property
   def frequency(self) -> int:
@@ -224,35 +242,25 @@ class ModulinoMotors(Modulino):
     self._hfs_enabled = bool(value)
 
   @property
-  def sense_a(self) -> int:
-    """
-    Gets the current sense value of motor A.
-
-    Returns:
-      int: The sense value of motor A.
-    """
-    return self.sense[0]
+  def sensed_current_a(self) -> float:
+    """Gets sensed current of motor A in milliamps (mA)."""
+    self.update()
+    return self._sense_raw_to_ma(self._sense_a, self._hfs_enabled)
 
   @property
-  def sense_b(self) -> int:
-    """
-    Gets the current sense value of motor B.
-
-    Returns:
-      int: The sense value of motor B.
-    """
-    return self.sense[1]
+  def sensed_current_b(self) -> float:
+    """Gets sensed current of motor B in milliamps (mA)."""
+    self.update()
+    return self._sense_raw_to_ma(self._sense_b, self._hfs_enabled)
 
   @property
-  def sense(self) -> tuple[int, int]:
-    """
-    Gets the current sense values of both motors.
-
-    Returns:
-      tuple[int, int]: The sense values of motor A and motor B.
-    """
-    sense = self.update()
-    return sense[0], sense[1]
+  def sensed_current(self) -> tuple[float, float]:
+    """Gets sensed currents of both motors in milliamps (mA)."""
+    self.update()
+    return (
+      self._sense_raw_to_ma(self._sense_a, self._hfs_enabled),
+      self._sense_raw_to_ma(self._sense_b, self._hfs_enabled),
+    )
 
   @property
   def stepper_mode_enabled(self) -> bool:
