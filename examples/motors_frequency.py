@@ -1,7 +1,6 @@
 from modulino import ModulinoMotors
 from time import sleep_ms
 
-
 def play_song(motors: ModulinoMotors, song: list, tempo: int):
   # Note frequencies in Hz (names based on scientific pitch notation)
   frequencies = {
@@ -15,16 +14,18 @@ def play_song(motors: ModulinoMotors, song: list, tempo: int):
   for note, beat in song:
     duration = beat * tempo
     if note == 'REST':
+      motors.speed_a = 0
+      motors.speed_b = 0
       sleep_ms(duration)
     else:
       if note in frequencies:
+        motors.speed_a = base_speed
+        motors.speed_b = base_speed
         motors.frequency = frequencies[note]
       sleep_ms(duration)
     sleep_ms(tempo // 10)
 
 motors = ModulinoMotors()
-motors.speed_a = 50
-motors.speed_b = 50
 
 # Song represented as list of (Note, Duration) tuples
 song = [
@@ -193,7 +194,9 @@ song = [
     ('C5', 2),
     ('REST', 6),
 ]
-tempo = 100
+
+base_speed = 30
+tempo = 135  # ms per beat
 play_song(motors, song, tempo)
 motors.speed_a = 0
 motors.speed_b = 0
