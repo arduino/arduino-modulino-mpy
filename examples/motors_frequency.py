@@ -1,4 +1,4 @@
-from modulino import ModulinoMotors
+from modulino import ModulinoMotors, DecayMode
 from time import sleep_ms
 
 def play_song(motors: ModulinoMotors, song: list, tempo: int):
@@ -26,6 +26,8 @@ def play_song(motors: ModulinoMotors, song: list, tempo: int):
     sleep_ms(tempo // 10)
 
 motors = ModulinoMotors()
+motors.stepper_mode_enabled = False  # DC mode
+motors.set_decay(DecayMode.FAST)
 
 # Song represented as list of (Note, Duration) tuples
 song = [
