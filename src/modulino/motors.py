@@ -1,6 +1,13 @@
 from .modulino import Modulino
 from micropython import const
 
+class DecayMode:
+  """Enum-like decay mode constants for `ModulinoMotors.set_decay`."""
+  SLOW = const(0)
+  MIXED_30_FAST_70_SLOW = const(1)
+  MIXED_60_FAST_40_SLOW = const(2)
+  FAST = const(3)
+
 class ModulinoMotors(Modulino):
   """
   Class to operate the motors of the Modulino.
