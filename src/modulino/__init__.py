@@ -18,4 +18,4 @@ from .joystick import ModulinoJoystick
 from .latch_relay import ModulinoLatchRelay
 from .vibro import ModulinoVibro, PowerLevel
 from .led_matrix import ModulinoLEDMatrix, MPJAnimation, FPSAnimation, Animation
-from .motors import ModulinoMotors
+from .motors import ModulinoMotors, DecayMode
