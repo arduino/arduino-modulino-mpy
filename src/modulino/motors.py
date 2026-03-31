@@ -31,6 +31,7 @@ class ModulinoMotors(Modulino):
   FLAG_HFS         = const(0x08)
   FLAG_DECAY_MASK  = const(0x30)
   FLAG_DECAY_SHIFT = const(4)
+  FLAG_RELEASE     = const(0x40)
 
   MAX_SPEED = const(32767)  # Max speed value for 16-bit signed integer
   ADC_FULL_SCALE = const(4095)  # 12-bit ADC full scale
@@ -52,7 +53,7 @@ class ModulinoMotors(Modulino):
           revolution. Required for RPM-based stepper control.
     """
     super().__init__(i2c_bus, address, "Motors", check_connection=check_connection)
-    self._send_buffer = bytearray(7)  # Buffer for sending commands
+    self._send_buffer = bytearray(8)  # Buffer for sending commands
     self._receive_buffer = bytearray(6)  # Buffer for receiving sense data
     self._speed_a = 0
     self._invert_a = False
@@ -63,18 +64,20 @@ class ModulinoMotors(Modulino):
     self._half_step = False
     self._decay_mode = 0
     self._hfs_enabled = False
+    self._release_on_complete_default = False
+    self._release_on_complete_reported = False
     self._busy = False
     self._sense_a = 0
     self._sense_b = 0
     self.steps_per_revolution = steps_per_revolution
 
   def _send_command(self, msg):
-    # Padding to 7 bytes to match firmware expectation
+    # Padding to 8 bytes to match firmware expectation
     length = len(msg)
-    if length < 7:
-        msg += b'\x00' * (7 - length)
-    elif length > 7:
-        raise ValueError(f"Message length {length} exceeds maximum of 7 bytes")
+    if length < 8:
+      msg += b'\x00' * (8 - length)
+    elif length > 8:
+      raise ValueError(f"Message length {length} exceeds maximum of 8 bytes")
     self.write(msg)
 
   def _update_speed(self):
@@ -106,20 +109,56 @@ class ModulinoMotors(Modulino):
     """Stop both motors."""
     self._set_dc_speed_raw(0, 0)
 
-  def move_stepper(self, steps: int, speed_period: int) -> None:
-    """Command a stepper move using signed steps and uint16 period."""
+  def release(self) -> None:
+    """Release stepper coils immediately without changing the default move behavior."""
+    self._send_buffer[:] = b'\x00' * len(self._send_buffer)
+    self._send_buffer[0] = self.CMD_STEPPER
+    self._send_buffer[5:7] = (1).to_bytes(2, 'little')
+    self._send_buffer[7] = 1
+    self._send_command(self._send_buffer)
+
+  def hold(self) -> None:
+    """Enable and energize stepper coils immediately without changing defaults."""
+    self._send_buffer[:] = b'\x00' * len(self._send_buffer)
+    self._send_buffer[0] = self.CMD_STEPPER
+    self._send_buffer[5:7] = (1).to_bytes(2, 'little')
+    self._send_buffer[7] = 0
+    self._send_command(self._send_buffer)
+
+  def set_release_on_complete(self, value: bool) -> None:
+    """Set default post-move behavior for subsequent stepper moves only."""
+    self._release_on_complete_default = bool(value)
+
+  def move_stepper(self, steps: int, speed_period: int, release_on_complete: bool | None = None) -> None:
+    """Command a stepper move.
+
+    Args:
+      steps: Signed number of steps.
+      speed_period: Step period in 0.1 ms timer ticks (1..65535).
+      release_on_complete: Per-move override. If None, uses the configured default.
+
+    Notes:
+      - The first step is applied immediately at move start.
+      - Remaining steps follow `speed_period`.
+    """
     speed_period = int(speed_period)
     if speed_period < 1 or speed_period > 0xFFFF:
       raise ValueError("speed_period must be in range 1..65535")
+
+    release_setting = self._release_on_complete_default if release_on_complete is None else bool(release_on_complete)
 
     self._send_buffer[:] = b'\x00' * len(self._send_buffer)
     self._send_buffer[0] = self.CMD_STEPPER
     self._send_buffer[1:5] = int(steps).to_bytes(4, 'little', True)
     self._send_buffer[5:7] = speed_period.to_bytes(2, 'little')
+    self._send_buffer[7] = 1 if release_setting else 0
     self._send_command(self._send_buffer)
 
-  def move_stepper_rpm(self, steps: int, rpm: float) -> None:
-    """Command a stepper move using target speed in RPM."""
+  def move_stepper_rpm(self, steps: int, rpm: float, release_on_complete: bool | None = None) -> None:
+    """Command a stepper move using target speed in RPM.
+
+    Converts RPM to the underlying period value used by `move_stepper`.
+    """
     if self._steps_per_revolution is None:
       raise ValueError("steps_per_revolution must be set before using move_stepper_rpm")
 
@@ -132,7 +171,7 @@ class ModulinoMotors(Modulino):
     if period_us < 1 or period_us > 0xFFFF:
       raise ValueError("rpm out of range for current step mode and steps_per_revolution")
 
-    self.move_stepper(steps, period_us)
+    self.move_stepper(steps, period_us, release_on_complete=release_on_complete)
 
   @property
   def speed_a(self) -> int:
@@ -238,6 +277,7 @@ class ModulinoMotors(Modulino):
     self._mode = self.MODE_STEPPER if (flags & self.FLAG_MODE) else self.MODE_DC
     self._half_step = bool(flags & self.FLAG_STEP_MODE)
     self._decay_mode = (flags & self.FLAG_DECAY_MASK) >> self.FLAG_DECAY_SHIFT
+    self._release_on_complete_reported = bool(flags & self.FLAG_RELEASE)
 
     return (self._sense_a, self._sense_b, self._busy, self._hfs_enabled,
             self._mode, self._half_step, self._decay_mode)
@@ -253,6 +293,16 @@ class ModulinoMotors(Modulino):
     """Gets or sets the half-full-scale (HFS) mode."""
     self.update()
     return self._hfs_enabled
+
+  @property
+  def release_on_complete(self) -> bool:
+    """Gets the reported release-on-complete state; setter sets the default for future moves."""
+    self.update()
+    return self._release_on_complete_reported
+
+  @release_on_complete.setter
+  def release_on_complete(self, value: bool) -> None:
+    self.set_release_on_complete(value)
 
   @half_full_scale_enabled.setter
   def half_full_scale_enabled(self, value: bool) -> None:

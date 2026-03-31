@@ -1,7 +1,7 @@
-from modulino import ModulinoMotors
+from modulino import ModulinoMotors, DecayMode
 from time import sleep_ms
 
-motors = ModulinoMotors(steps_per_revolution=200)
+motors = ModulinoMotors(steps_per_revolution=20)
 
 print("Stepper Motor Example")
 print("=====================\n")
@@ -13,47 +13,43 @@ motors.stepper_mode_enabled = True
 # Configure stepper parameters
 print("Configuring stepper settings...")
 motors.half_step_enabled = False  # Full step mode
-motors.set_decay(ModulinoMotors.DecayMode.FAST)
+motors.set_decay(DecayMode.FAST)
 
 print("Moving stepper with different RPM targets...\n")
 
+
+def wait_until_idle():
+  while motors.busy:
+    sleep_ms(10)
+
+
+def run_move(steps, rpm, release_on_complete, description):
+  print(f"{description} | release_on_complete={release_on_complete}")
+  motors.move_stepper_rpm(steps, rpm, release_on_complete=release_on_complete)
+  wait_until_idle()
+  sleep_ms(150)
+  print(f"  Busy: {motors.busy}, Release state: {motors.release_on_complete}\n")
+
 # Define step sequences and target RPM
 step_sequences = [
-  (100, 60, "Fast move: 100 steps at 60 RPM"),
-  (200, 30, "Medium move: 200 steps at 30 RPM"),
-  (50, 10, "Slow move: 50 steps at 10 RPM"),
-  (-100, 40, "Reverse: 100 steps backward at 40 RPM"),
+  (100, 60, False, "Fast move: 100 steps at 60 RPM, hold at target"),
+  (200, 30, True, "Medium move: 200 steps at 30 RPM, release at target"),
+  (50, 10, False, "Slow move: 50 steps at 10 RPM, keep holding torque"),
+  (-100, 40, True, "Reverse: 100 steps backward at 40 RPM, release"),
 ]
 
-for steps, rpm, description in step_sequences:
-  print(description)
-  motors.move_stepper_rpm(steps, rpm)
-  
-  # Wait for move to complete (rough estimate)
-  effective_steps_per_rev = motors.steps_per_revolution * (2 if motors.half_step_enabled else 1)
-  move_time = int((abs(steps) * 60000) / (rpm * effective_steps_per_rev)) + 100
-  sleep_ms(move_time)
-  
-  # Check status
-  for _ in range(3):
-    busy = motors.busy
-    mode = "stepper" if motors.stepper_mode_enabled else "DC"
-    print(f"  Status - Mode: {mode}, Busy: {busy}")
-    sleep_ms(50)
-  print()
+for steps, rpm, release_on_complete, description in step_sequences:
+  run_move(steps, rpm, release_on_complete, description)
 
 # Demonstrate step mode switching
 print("Switching to half-step mode...")
 motors.half_step_enabled = True
-motors.move_stepper_rpm(100, 30)
-sleep_ms(600)
-print("Half-step move complete.\n")
+run_move(100, 30, False, "Half-step move: 100 steps at 30 RPM, hold")
+run_move(-100, 30, True, "Half-step move: 100 steps reverse at 30 RPM, release")
 
 # Switch back to full step
 print("Switching back to full-step mode...")
 motors.half_step_enabled = False
-motors.move_stepper_rpm(100, 30)
-sleep_ms(600)
-print("Full-step move complete.\n")
+run_move(100, 30, False, "Full-step move: 100 steps at 30 RPM, hold")
 
 print("Stepper example finished.")
