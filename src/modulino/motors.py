@@ -12,22 +12,15 @@ class ModulinoMotors(Modulino):
   """
   Class to operate the motors of the Modulino.
   """
-  class DecayMode:
-    """Enum-like decay mode constants for `set_decay`."""
-    SLOW = 0
-    MIXED_30_FAST_70_SLOW = 1
-    MIXED_60_FAST_40_SLOW = 2
-    FAST = 3
-
   default_addresses = [0x48]
 
-  CMD_MODE      = const(ord('M'))
-  CMD_SPEED_DC  = const(ord('S'))
-  CMD_STEPPER   = const(ord('G'))
-  CMD_DECAY     = const(ord('T'))
-  CMD_STEP_MODE = const(ord('H'))
-  CMD_FREQ_DC   = const(ord('F'))
-  CMD_HFS       = const(ord('X'))
+  CMD_MODE      = const(77) # 'M'
+  CMD_SPEED_DC  = const(83) # 'S'
+  CMD_STEPPER   = const(71) # 'G'
+  CMD_DECAY     = const(84) # 'T'
+  CMD_STEP_MODE = const(72) # 'H'
+  CMD_FREQ_DC   = const(70) # 'F'
+  CMD_HFS       = const(88) # 'X'
 
   MODE_DC       = const(0)
   MODE_STEPPER  = const(1)
