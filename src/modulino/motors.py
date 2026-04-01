@@ -165,11 +165,11 @@ class ModulinoMotors(Modulino):
       raise ValueError("rpm must be > 0")
 
     effective_steps_per_rev = self._steps_per_revolution * (2 if self._half_step else 1)
-    period_us = int(60000000.0 / (rpm * effective_steps_per_rev))
-    if period_us < 1 or period_us > 0xFFFF:
+    period_ticks = int(600000.0 / (rpm * effective_steps_per_rev))
+    if period_ticks < 1 or period_ticks > 0xFFFF:
       raise ValueError("rpm out of range for current step mode and steps_per_revolution")
 
-    self.move_stepper(steps, period_us, release_delay_ms=release_delay_ms)
+    self.move_stepper(steps, period_ticks, release_delay_ms=release_delay_ms)
 
   @property
   def speed_a(self) -> int:
