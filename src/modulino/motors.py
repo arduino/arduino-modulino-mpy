@@ -64,7 +64,6 @@ class ModulinoMotors(Modulino):
     self._half_step = False
     self._decay_mode = 0
     self._hfs_enabled = False
-    self._release_on_complete_default = False
     self._release_on_complete_reported = False
     self._busy = False
     self._sense_a = 0
@@ -124,10 +123,6 @@ class ModulinoMotors(Modulino):
     self._send_buffer[5:7] = (1).to_bytes(2, 'little')
     self._send_buffer[7] = 0
     self._send_command(self._send_buffer)
-
-  def set_release_on_complete(self, value: bool) -> None:
-    """Set default post-move behavior for subsequent stepper moves only."""
-    self._release_on_complete_default = bool(value)
 
   def move_stepper(self, steps: int, speed_period: int, release_on_complete: bool | None = None) -> None:
     """Command a stepper move.
@@ -296,13 +291,9 @@ class ModulinoMotors(Modulino):
 
   @property
   def release_on_complete(self) -> bool:
-    """Gets the reported release-on-complete state; setter sets the default for future moves."""
+    """Gets the release-on-complete state reported by the module."""
     self.update()
     return self._release_on_complete_reported
-
-  @release_on_complete.setter
-  def release_on_complete(self, value: bool) -> None:
-    self.set_release_on_complete(value)
 
   @half_full_scale_enabled.setter
   def half_full_scale_enabled(self, value: bool) -> None:
