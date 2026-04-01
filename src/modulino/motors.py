@@ -109,10 +109,11 @@ class ModulinoMotors(Modulino):
     self._set_dc_speed_raw(0, 0)
 
   def release(self) -> None:
-    """Release stepper coils immediately without changing the default move behavior."""
+    """Release stepper coils with minimal delay without changing default move behavior."""
     self._send_buffer[:] = b'\x00' * len(self._send_buffer)
     self._send_buffer[0] = self.CMD_STEPPER
-    self._send_buffer[5:7] = (1).to_bytes(2, 'little')
+    self._send_buffer[5:7] = (1).to_bytes(2, 'little') # speed_period = 1 (placeholder)
+    # release_delay_ms = 1 (minimum non-zero delay in current protocol)
     self._send_buffer[7] = 1
     self._send_command(self._send_buffer)
 
@@ -120,17 +121,18 @@ class ModulinoMotors(Modulino):
     """Enable and energize stepper coils immediately without changing defaults."""
     self._send_buffer[:] = b'\x00' * len(self._send_buffer)
     self._send_buffer[0] = self.CMD_STEPPER
-    self._send_buffer[5:7] = (1).to_bytes(2, 'little')
+    self._send_buffer[5:7] = (1).to_bytes(2, 'little') # speed_period = 1 (placeholder)
     self._send_buffer[7] = 0
     self._send_command(self._send_buffer)
 
-  def move_stepper(self, steps: int, speed_period: int, release_on_complete: bool | None = None) -> None:
+  def move_stepper(self, steps: int, speed_period: int, release_delay_ms: int = 0) -> None:
     """Command a stepper move.
 
     Args:
       steps: Signed number of steps.
       speed_period: Step period in 0.1 ms timer ticks (1..65535).
-      release_on_complete: Per-move override. If None, uses the configured default.
+      release_delay_ms: Delay before releasing coils after move completion.
+        0 keeps holding torque, 1..255 releases after that many milliseconds.
 
     Notes:
       - The first step is applied immediately at move start.
@@ -139,17 +141,18 @@ class ModulinoMotors(Modulino):
     speed_period = int(speed_period)
     if speed_period < 1 or speed_period > 0xFFFF:
       raise ValueError("speed_period must be in range 1..65535")
-
-    release_setting = self._release_on_complete_default if release_on_complete is None else bool(release_on_complete)
+    release_delay_ms = int(release_delay_ms)
+    if release_delay_ms < 0 or release_delay_ms > 0xFF:
+      raise ValueError("release_delay_ms must be in range 0..255")
 
     self._send_buffer[:] = b'\x00' * len(self._send_buffer)
     self._send_buffer[0] = self.CMD_STEPPER
     self._send_buffer[1:5] = int(steps).to_bytes(4, 'little', True)
     self._send_buffer[5:7] = speed_period.to_bytes(2, 'little')
-    self._send_buffer[7] = 1 if release_setting else 0
+    self._send_buffer[7] = release_delay_ms
     self._send_command(self._send_buffer)
 
-  def move_stepper_rpm(self, steps: int, rpm: float, release_on_complete: bool | None = None) -> None:
+  def move_stepper_rpm(self, steps: int, rpm: float, release_delay_ms: int = 0) -> None:
     """Command a stepper move using target speed in RPM.
 
     Converts RPM to the underlying period value used by `move_stepper`.
@@ -166,7 +169,7 @@ class ModulinoMotors(Modulino):
     if period_us < 1 or period_us > 0xFFFF:
       raise ValueError("rpm out of range for current step mode and steps_per_revolution")
 
-    self.move_stepper(steps, period_us, release_on_complete=release_on_complete)
+    self.move_stepper(steps, period_us, release_delay_ms=release_delay_ms)
 
   @property
   def speed_a(self) -> int:
