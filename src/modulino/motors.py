@@ -68,6 +68,7 @@ class ModulinoMotors(Modulino):
     self._busy = False
     self._sense_a = 0
     self._sense_b = 0
+    self._stepper_direction_inverted = False
     self.steps_per_revolution = steps_per_revolution
 
   def _send_command(self, msg):
@@ -145,6 +146,9 @@ class ModulinoMotors(Modulino):
     if release_delay_ms < 0 or release_delay_ms > 0xFF:
       raise ValueError("release_delay_ms must be in range 0..255")
 
+    if self._stepper_direction_inverted:
+      steps = -steps
+
     self._send_buffer[:] = b'\x00' * len(self._send_buffer)
     self._send_buffer[0] = self.CMD_STEPPER
     self._send_buffer[1:5] = int(steps).to_bytes(4, 'little', True)
@@ -170,6 +174,15 @@ class ModulinoMotors(Modulino):
       raise ValueError("rpm out of range for current step mode and steps_per_revolution")
 
     self.move_stepper(steps, period_ticks, release_delay_ms=release_delay_ms)
+
+  @property
+  def stepper_direction_inverted(self) -> bool:
+    """Gets or sets whether the stepper direction is inverted."""
+    return self._stepper_direction_inverted
+
+  @stepper_direction_inverted.setter
+  def stepper_direction_inverted(self, value: bool) -> None:
+    self._stepper_direction_inverted = bool(value)
 
   @property
   def speed_a(self) -> int:
