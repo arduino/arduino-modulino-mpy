@@ -25,10 +25,9 @@ for speed in [30, 50, 75, 100]:
   sleep_ms(200)  # Let the motors stabilize at the new speed
   for i in range(5):
     sensed_current_a, sensed_current_b = motors.sensed_current
-    busy = motors.busy
     print(
       f"  Current A: {sensed_current_a:7.1f} mA | "
-      f"Current B: {sensed_current_b:7.1f} mA | Busy: {busy}"
+      f"Current B: {sensed_current_b:7.1f} mA"
     )
     sleep_ms(SLEEP_TIME)
 

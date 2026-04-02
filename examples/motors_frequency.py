@@ -197,7 +197,7 @@ song = [
     ('REST', 6),
 ]
 
-base_speed = 30
+base_speed = 30 # Motor speed (0-100) for playing notes
 tempo = 135  # ms per beat
 play_song(motors, song, tempo)
 motors.speed_a = 0
