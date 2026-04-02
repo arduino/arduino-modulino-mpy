@@ -19,7 +19,10 @@ motors.stepper_direction_inverted = False  # Normal direction
 print("Moving stepper with different RPM targets...\n")
 
 def wait_until_idle():
-  while motors.busy:
+  while True:
+    motors.update()  # Update internal state
+    if not motors.busy:
+      break
     sleep_ms(10)
 
 def run_move(steps, rpm, release_delay_ms, description):
