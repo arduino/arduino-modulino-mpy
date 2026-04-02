@@ -3,6 +3,7 @@ from time import sleep_ms
 
 motors = ModulinoMotors()
 motors.stepper_mode_enabled = False  # DC mode
+# Set decay mode to slow for more gradual current changes
 motors.set_decay(DecayMode.SLOW)
 
 for i in range(0, 101):
