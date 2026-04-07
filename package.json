@@ -13,7 +13,9 @@
       ["modulino/thermo.py", "github:arduino/modulino-mpy/src/modulino/thermo.py"],
       ["modulino/joystick.py", "github:arduino/modulino-mpy/src/modulino/joystick.py"],
       ["modulino/latch_relay.py", "github:arduino/modulino-mpy/src/modulino/latch_relay.py"],
-      ["modulino/vibro.py", "github:arduino/modulino-mpy/src/modulino/vibro.py"]
+      ["modulino/vibro.py", "github:arduino/modulino-mpy/src/modulino/vibro.py"],
+      ["modulino/led_matrix.py", "github:arduino/modulino-mpy/src/modulino/led_matrix.py"],
+      ["modulino/device_manager.py", "github:arduino/modulino-mpy/src/modulino/device_manager.py"]
     ],
     "deps": [
       ["lsm6dsox", "latest"],
