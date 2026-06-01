@@ -2,6 +2,21 @@ from .modulino import Modulino
 from micropython import const
 from machine import I2C
 
+class ModulinoHubPort:
+    """
+    Represents a port on the Modulino Hub.
+    """
+    def __init__(self, hub:'ModulinoHub', port_number: int):
+        self._hub = hub
+        self._port_number = port_number
+
+    def __enter__(self):
+        self._hub.select_port(self._port_number)
+        return self
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self._hub.deselect_ports()
+
 class ModulinoHub(Modulino):
     """
     Class to interact with the Modulino Hub (TCA9548A I2C multiplexer).
@@ -32,9 +47,22 @@ class ModulinoHub(Modulino):
         self._write_buffer[0] = 1 << port
         self.write(self._write_buffer)
         
+    def select_all_ports(self) -> None:
+        """
+        Selects all ports on the multiplexer.
+        """
+        self._write_buffer[0] = 0xFF
+        self.write(self._write_buffer)
+
     def deselect_ports(self) -> None:
         """
         Deselects all ports on the multiplexer.
         """
         self._write_buffer[0] = 0
         self.write(self._write_buffer)
+
+    def get_port(self, port_number: int) -> ModulinoHubPort:
+        """
+        Creates a context manager for the specified port.
+        """
+        return ModulinoHubPort(self, port_number)
