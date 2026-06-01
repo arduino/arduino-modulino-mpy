@@ -10,21 +10,23 @@ class ModulinoDistance(Modulino):
     default_addresses = [0x29]
     has_mcu = False
 
-    def __init__(self, i2c_bus = None, address: int | None = None, check_connection: bool = True) -> None:
+    def __init__(self, i2c_bus = None, address: int | None = None, hub_port=None, check_connection: bool = True) -> None:
         """
         Initializes the Modulino Distance.
 
         Parameters:
             i2c_bus (I2C): The I2C bus to use. If not provided, the default I2C bus will be used.
             address (int): The I2C address of the module. If not provided, the default address will be used.
+            hub_port (ModulinoHubPort): The Modulino Hub port to which the device is connected.
             check_connection (bool): Whether to check the connection to the module.
         """
         
-        super().__init__(i2c_bus, address, "Distance", check_connection=check_connection)
-        self.sensor = VL53L4CD(self.i2c_bus, self.address) 
-        self.sensor.timing_budget = 20     
-        self.sensor.inter_measurement = 0
-        self.sensor.start_ranging()
+        super().__init__(i2c_bus, address, "Distance", check_connection=check_connection, hub_port=hub_port)
+        with self._hub_port:
+            self.sensor = VL53L4CD(self.i2c_bus, self.address) 
+            self.sensor.timing_budget = 20     
+            self.sensor.inter_measurement = 0
+            self.sensor.start_ranging()
 
     def _distance_raw(self, timeout = 1000) -> int | None:
         """
@@ -34,13 +36,14 @@ class ModulinoDistance(Modulino):
             int: The distance in centimeters.
         """
         try:
-            start = ticks_ms()
-            while not self.sensor.data_ready:
-                if ticks_diff(ticks_ms(), start) > timeout:
-                    raise OSError("Timeout waiting for sensor data")
-                sleep_ms(1)
-            self.sensor.clear_interrupt()
-            return self.sensor.distance
+            with self._hub_port:
+                start = ticks_ms()
+                while not self.sensor.data_ready:
+                    if ticks_diff(ticks_ms(), start) > timeout:
+                        raise OSError("Timeout waiting for sensor data")
+                    sleep_ms(1)
+                self.sensor.clear_interrupt()
+                return self.sensor.distance
         except OSError:
             # Catch timeout errors
             return None

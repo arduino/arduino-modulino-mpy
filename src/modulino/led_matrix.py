@@ -19,7 +19,7 @@ class ModulinoLEDMatrix(Modulino):
 
     default_addresses = [0x72]
 
-    def __init__(self, i2c_bus=None, address=None, use_grayscale: bool = False, check_connection: bool = True):
+    def __init__(self, i2c_bus=None, address=None, use_grayscale: bool = False, hub_port=None, check_connection: bool = True):
         """
         Initializes the Modulino LED Matrix.
 
@@ -27,9 +27,10 @@ class ModulinoLEDMatrix(Modulino):
             i2c_bus (I2C): The I2C bus to use. If not provided, the default I2C bus will be used.
             address (int): The I2C address of the module. If not provided, the default address will be used.
             use_grayscale (bool): Whether to use grayscale mode.
+            hub_port (ModulinoHubPort): The Modulino Hub port to which the device is connected.
             check_connection (bool): Whether to check the connection to the module.
         """
-        super().__init__(i2c_bus, address, "LED Matrix", check_connection=check_connection)
+        super().__init__(i2c_bus, address, "LED Matrix", hub_port=hub_port, check_connection=check_connection)
         self._width = 12
         self._height = 8
 

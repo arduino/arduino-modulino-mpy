@@ -167,7 +167,7 @@ class Modulino:
       i2c_bus (I2C): The I2C bus to use. If not provided, the default I2C bus will be used.
       address (int): The address of the device. If not provided, the device will try to auto discover it.
       name (str): The name of the device.
-      hub_port: The hub port to which the device is connected. If not provided, the device is assumed to be directly connected.
+      hub_port (ModulinoHubPort): The Modulino Hub port to which the device is connected.
       check_connection (bool): Whether to check if the device is connected to the bus.
     """
 

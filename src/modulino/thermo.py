@@ -18,7 +18,7 @@ class ModulinoThermo(Modulino):
     DEFAULT_ADDRESS = const(0x44)
     has_mcu = False
 
-    def __init__(self, i2c_bus: I2C = None, address: int = DEFAULT_ADDRESS, hub_port = None, check_connection: bool = True) -> None:
+    def __init__(self, i2c_bus: I2C = None, address: int = DEFAULT_ADDRESS, hub_port=None, check_connection: bool = True) -> None:
         """
         Initializes the Modulino Thermo.
 
@@ -26,6 +26,7 @@ class ModulinoThermo(Modulino):
             i2c_bus (I2C): The I2C bus to use. If not provided, the default I2C bus will be used.
             address (int): The I2C address of the module. If not provided, the default address will be used.
             hub_port: The hub port to which the module is connected. If not provided, the module is assumed to be directly connected.
+            hub_port (ModulinoHubPort): The Modulino Hub port to which the device is connected.
             check_connection (bool): Whether to check the connection to the module.
         """
         super().__init__(i2c_bus, address, "Thermo", hub_port=hub_port, check_connection=check_connection)
