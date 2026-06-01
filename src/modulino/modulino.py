@@ -5,6 +5,13 @@ import re
 import os
 from collections import namedtuple
 
+class _NullHubPort:
+    """A dummy hub port for devices not connected through a hub."""
+    def __enter__(self):
+        return self
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass
+
 I2CInterface = namedtuple('I2CInterface', ['type', 'bus_number', "scl", "sda"])
 
 DEVICE_I2C_INTERFACES = {
@@ -148,7 +155,7 @@ class Modulino:
   This property should be overridden in derived classes.
   """
 
-  def __init__(self, i2c_bus: I2C = None, address: int = None, name: str = None, check_connection: bool = True) -> None:
+  def __init__(self, i2c_bus: I2C = None, address: int = None, name: str = None, hub_port = None, check_connection: bool = True) -> None:
     """
     Initializes the Modulino object with the given i2c bus and address.
     If the address is not provided, the device will try to auto discover it.
@@ -160,6 +167,7 @@ class Modulino:
       i2c_bus (I2C): The I2C bus to use. If not provided, the default I2C bus will be used.
       address (int): The address of the device. If not provided, the device will try to auto discover it.
       name (str): The name of the device.
+      hub_port: The hub port to which the device is connected. If not provided, the device is assumed to be directly connected.
       check_connection (bool): Whether to check if the device is connected to the bus.
     """
 
@@ -170,6 +178,9 @@ class Modulino:
 
     self.name = name
     self.address = address
+    
+    # Initialize the hub port. If no hub port is provided, use a dummy one is used that does nothing.
+    self._hub_port = hub_port if hub_port is not None else _NullHubPort()
 
     if self.address is None:
       if len(self.default_addresses) == 0:
@@ -200,7 +211,7 @@ class Modulino:
     if len(default_addresses) == 0:
       return None
 
-    devices_on_bus = Modulino.scan(self.i2c_bus, default_addresses)
+    devices_on_bus = Modulino.scan(self.i2c_bus, default_addresses, hub_port=self._hub_port)
     if len(devices_on_bus) > 0:
       return devices_on_bus[0]
     return None
@@ -218,7 +229,8 @@ class Modulino:
       return False
 
     try:
-        self.i2c_bus.writeto(addr, b'')
+        with self._hub_port:
+          self.i2c_bus.writeto(addr, b'')
         return True
     except OSError:
         return False
@@ -295,8 +307,9 @@ class Modulino:
     if self.address is None:
       raise RuntimeError("I2C address is not set.")
 
-    self.i2c_bus.readfrom_into(self.address, read_buffer, True)
-
+    with self._hub_port:
+      self.i2c_bus.readfrom_into(self.address, read_buffer, True)
+    
   def write(self, data_buffer: bytearray) -> bool:
     """
     Writes the given buffer to the i2c device.
@@ -309,7 +322,9 @@ class Modulino:
     """
     if self.address is None:
       return False
-    self.i2c_bus.writeto(self.address, data_buffer)
+    
+    with self._hub_port:
+      self.i2c_bus.writeto(self.address, data_buffer)
     return True
 
   @property
@@ -330,17 +345,18 @@ class Modulino:
     raise NotImplementedError("The send_buffer_size property must be overridden in the derived class.")
 
   @staticmethod
-  def scan(bus: I2C, target_addresses: list[int] | None = None) -> list[int]:
+  def scan(bus: I2C, target_addresses: list[int] | None = None, hub_port = None) -> list[int]:
     addresses = bytearray() # Use 8bit data type
     # General call address (0x00) is skipped in default range
     candidates = target_addresses if target_addresses is not None else range(1,128)
 
-    for address in candidates:
-        try:
-            bus.writeto(address, b'')
-            addresses.append(address)
-        except OSError:
-            pass
+    with hub_port:
+      for address in candidates:
+          try:
+              bus.writeto(address, b'')
+              addresses.append(address)
+          except OSError:
+              pass
     return list(addresses)
 
   @staticmethod
@@ -353,4 +369,5 @@ class Modulino:
     Returns:
       I2C: A new i2c bus object after resetting the bus.
     """
+    # TODO: Check if we should cycle through all channels of the hub and perform a reset on each of them to make sure all devices get unstuck.
     return _I2CHelper.reset_bus(i2c_bus)

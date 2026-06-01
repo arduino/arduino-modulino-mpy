@@ -7,11 +7,8 @@ hub = ModulinoHub()
 # Now we can initialize the Modulino Thermo which will communicate over port 1.
 # Note: It is important to initialize the thermo after selecting the port,
 # as it will attempt to verify its connection on initialization.
-print("Initializing Modulino Thermo on Port 1...")
-thermo_a = ModulinoThermo()
-
-print("Initializing Modulino Thermo on Port 0...")
-thermo_b = ModulinoThermo()
+thermo_a = ModulinoThermo(hub_port=hub.get_port(1))
+thermo_b = ModulinoThermo(hub_port=hub.get_port(0))
 
 # Wait a moment for the sensor to be ready a fter being connected to the bus
 time.sleep(0.1)
@@ -19,8 +16,9 @@ time.sleep(0.1)
 print("Starting continuous temperature and humidity readings...\n")
 
 def print_sensor_data(thermo):
-    temp = thermo.temperature
-    hum = thermo.relative_humidity
+    data = thermo.measurements
+    temp = data.temperature
+    hum = data.relative_humidity
     
     if temp is not None and hum is not None:
         print(f"Temperature: {temp:.2f} °C, Humidity: {hum:.2f} %")
@@ -29,9 +27,11 @@ def print_sensor_data(thermo):
 
 while True:
     try:
-        hub.select_port(1)
+        # hub.select_port(1)
+        print("Reading from Thermo A (Port 1):")
         print_sensor_data(thermo_a)
-        hub.select_port(0)
+        # hub.select_port(0)
+        print("Reading from Thermo B (Port 0):")
         print_sensor_data(thermo_b)    
     except OSError as e:
         print(f"I2C Communication error: {e}")
