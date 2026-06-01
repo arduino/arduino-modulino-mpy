@@ -25,16 +25,17 @@ class ModulinoHub(Modulino):
     DEFAULT_ADDRESS = const(0x70)
     has_mcu = False
 
-    def __init__(self, i2c_bus: I2C = None, address: int = DEFAULT_ADDRESS, check_connection: bool = True) -> None:
+    def __init__(self, i2c_bus: I2C = None, address: int = DEFAULT_ADDRESS, hub_port=None, check_connection: bool = True) -> None:
         """
         Initializes the Modulino Hub.
 
         Parameters:
             i2c_bus (I2C): The I2C bus to use. If not provided, the default I2C bus will be used.
             address (int): The I2C address of the module.
+            hub_port (ModulinoHubPort): The Modulino Hub port to which the device is connected.
             check_connection (bool): Whether to check the connection to the module.
         """
-        super().__init__(i2c_bus, address, "Hub", check_connection=check_connection)
+        super().__init__(i2c_bus, address, "Hub", check_connection=check_connection, hub_port=hub_port)
         self._write_buffer = bytearray(1)  # Buffer for writing data to the multiplexer
 
     def select_port(self, port: int) -> None:

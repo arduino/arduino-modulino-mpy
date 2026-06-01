@@ -40,17 +40,18 @@ class ModulinoButtons(Modulino):
   default_addresses = [0x7C]
   default_long_press_duration = const(1000)
 
-  def __init__(self, i2c_bus = None, address = None, check_connection: bool = True):
+  def __init__(self, i2c_bus = None, address = None, hub_port=None, check_connection: bool = True):
     """
     Initializes the Modulino Buttons.
 
     Parameters:
         i2c_bus (I2C): The I2C bus to use. If not provided, the default I2C bus will be used.
         address (int): The I2C address of the module. If not provided, the default address will be used.
+        hub_port (ModulinoHubPort): The Modulino Hub port to which the device is connected.
         check_connection (bool): Whether to check the connection to the module.
     """
 
-    super().__init__(i2c_bus, address, "Buttons", check_connection=check_connection)
+    super().__init__(i2c_bus, address, "Buttons", check_connection=check_connection, hub_port=hub_port)
     self._read_buffer = bytearray(4) # 3 bytes for buttons status + 1 byte for pinstrap address
     self.long_press_duration = self.default_long_press_duration
 
