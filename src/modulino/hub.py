@@ -48,13 +48,6 @@ class ModulinoHub(Modulino):
         self._write_buffer[0] = 1 << port
         self.write(self._write_buffer)
         
-    def select_all_ports(self) -> None:
-        """
-        Selects all ports on the multiplexer.
-        """
-        self._write_buffer[0] = 0xFF
-        self.write(self._write_buffer)
-
     def deselect_ports(self) -> None:
         """
         Deselects all ports on the multiplexer.
