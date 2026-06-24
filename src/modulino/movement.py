@@ -26,7 +26,8 @@ class ModulinoMovement(Modulino):
             check_connection (bool): Whether to check the connection to the module.
         """
         super().__init__(i2c_bus, address, "Movement", check_connection=check_connection, hub_port=hub_port)
-        self.sensor = LSM6DSOX(self.i2c_bus, address=self.address)
+        with self._hub_port:
+            self.sensor = LSM6DSOX(self.i2c_bus, address=self.address)
 
     @property
     def acceleration(self) -> MovementValues:
