@@ -1,3 +1,10 @@
+"""
+This example demonstrates how to control the Modulino motors in DC mode, 
+gradually increasing and decreasing the speed of both motors from 0 to 100 and back to 0. 
+The decay mode is set to slow for more gradual current changes.
+
+Initial author: Sebastian Romero (s.romero@arduino.cc)
+"""
 from modulino import ModulinoMotors, DecayMode
 from time import sleep_ms
 

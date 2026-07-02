@@ -1,3 +1,11 @@
+"""
+This example demonstrates how to control a stepper motor using the ModulinoMotors class. 
+It shows how to switch between full-step and half-step modes, set different RPM targets, 
+and manage the release of the motor after movement.
+
+Initial author: Sebastian Romero (s.romero@arduino.cc)
+"""
+
 from modulino import ModulinoMotors, DecayMode
 from time import sleep_ms
 
@@ -19,6 +27,7 @@ motors.stepper_direction_inverted = False  # Normal direction
 print("Moving stepper with different RPM targets...\n")
 
 def wait_until_idle():
+  """Waits until the stepper motor is no longer busy (i.e., has completed its movement)."""
   while True:
     motors.update()  # Update internal state
     if not motors.busy:
@@ -26,6 +35,9 @@ def wait_until_idle():
     sleep_ms(10)
 
 def run_move(steps, rpm, release_delay_ms, description):
+  """
+  Moves the stepper motor the specified number of steps at the given RPM, with an optional release delay.
+  """
   print(f"{description} | release_delay_ms={release_delay_ms}")
   motors.move_stepper_rpm(steps, rpm, release_delay_ms=release_delay_ms)
   wait_until_idle()
@@ -40,6 +52,7 @@ step_sequences = [
   (-10, 40, 50, "Reverse: 10 steps backward at 40 RPM, release after 50ms"),
 ]
 
+# Run the defined step sequences
 for steps, rpm, release_delay_ms, description in step_sequences:
   run_move(steps, rpm, release_delay_ms, description)
 

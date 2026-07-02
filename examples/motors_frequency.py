@@ -1,7 +1,25 @@
+"""
+This example demonstrates how to play a simple song using the Modulino motors in DC mode, 
+by varying the frequency of the motor's PWM signal to produce different musical notes.
+The decay mode is set to fast for more responsive frequency changes.
+
+Initial author: Sebastian Romero (s.romero@arduino.cc)
+"""
+
 from modulino import ModulinoMotors, DecayMode
 from time import sleep_ms
 
 def play_song(motors: ModulinoMotors, song: list, tempo: int):
+  """
+  Plays a song using the Modulino motors by setting the frequency of the PWM signal.
+  Each note in the song is represented as a tuple of (note, duration), 
+  where 'note' is a string representing the note name and 'duration' is the length of the note in beats.
+
+  Parameters:
+  - motors: An instance of ModulinoMotors.
+  - song: A list of tuples, where each tuple contains a note (as a string representing the note name) and its duration (in beats).
+  - tempo: The duration of a single beat in milliseconds.
+  """
   # Note frequencies in Hz (names based on scientific pitch notation)
   frequencies = {
       'C4': 262, 'D4': 294, 'E4': 330, 'F4': 349, 'G4': 392,
@@ -23,7 +41,7 @@ def play_song(motors: ModulinoMotors, song: list, tempo: int):
         motors.speed_b = base_speed
         motors.frequency = frequencies[note]
       sleep_ms(duration)
-    sleep_ms(tempo // 10)
+    sleep_ms(tempo // 10) # Short pause between notes for audibility
 
 motors = ModulinoMotors()
 motors.stepper_mode_enabled = False  # DC mode
