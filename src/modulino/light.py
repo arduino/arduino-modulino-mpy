@@ -41,7 +41,8 @@ class ModulinoLight(Modulino):
         Returns:
             float: The ambient brightness in lux.
         """
-        return self.sensor.lux
+        with self._hub_port:
+            return self.sensor.lux
 
     @property
     def rgb(self) -> tuple:
@@ -52,7 +53,8 @@ class ModulinoLight(Modulino):
         Returns:
             tuple: A (red, green, blue) tuple.
         """
-        return self.sensor.rgb_color
+        with self._hub_port:
+            return self.sensor.rgb_color
 
     @property
     def color_name(self) -> str:
@@ -63,7 +65,8 @@ class ModulinoLight(Modulino):
         Returns:
             str: The name of the closest matching color.
         """
-        return self.sensor.approximate_color
+        with self._hub_port:
+            return self.sensor.approximate_color
 
     @property
     def color_temperature(self) -> int:
@@ -77,7 +80,8 @@ class ModulinoLight(Modulino):
             int: The color temperature in kelvin, or None if it can't be measured.
         """
         try:
-            return round(self.sensor.color_temperature)
+            with self._hub_port:
+                return round(self.sensor.color_temperature)
         except Exception:
             # Not enough light to estimate a color temperature.
             return None
@@ -92,4 +96,5 @@ class ModulinoLight(Modulino):
         Returns:
             int: The infrared light level.
         """
-        return self.sensor.ir_light
+        with self._hub_port:
+            return self.sensor.ir_light
