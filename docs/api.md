@@ -103,6 +103,13 @@
     * [\_\_init\_\_](#modulino.vibro.ModulinoVibro.__init__)
     * [on](#modulino.vibro.ModulinoVibro.on)
     * [off](#modulino.vibro.ModulinoVibro.off)
+* [hub](#modulino.hub)
+  * [ModulinoHubPort](#modulino.hub.ModulinoHubPort)
+  * [ModulinoHub](#modulino.hub.ModulinoHub)
+    * [\_\_init\_\_](#modulino.hub.ModulinoHub.__init__)
+    * [select\_port](#modulino.hub.ModulinoHub.select_port)
+    * [deselect\_ports](#modulino.hub.ModulinoHub.deselect_ports)
+    * [get\_port](#modulino.hub.ModulinoHub.get_port)
 * [distance](#modulino.distance)
   * [ModulinoDistance](#modulino.distance.ModulinoDistance)
     * [\_\_init\_\_](#modulino.distance.ModulinoDistance.__init__)
@@ -296,7 +303,10 @@ Class to interact with the LEDs of the Modulino Pixels.
 ### `__init__`
 
 ```python
-def __init__(i2c_bus=None, address=None, check_connection: bool = True)
+def __init__(i2c_bus=None,
+             address=None,
+             hub_port=None,
+             check_connection: bool = True)
 ```
 
 Initializes the Modulino Pixels.
@@ -305,6 +315,7 @@ Initializes the Modulino Pixels.
 
 - `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
 - `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
+- `hub_port` _ModulinoHubPort_ - The Modulino Hub port to which the device is connected.
 - `check_connection` _bool_ - Whether to check the connection to the module.
 
 <a id="modulino.pixels.ModulinoPixels.set_range_rgb"></a>
@@ -683,7 +694,10 @@ The supported notes are defined as follows:
 ### `__init__`
 
 ```python
-def __init__(i2c_bus=None, address=None, check_connection: bool = True)
+def __init__(i2c_bus=None,
+             address=None,
+             hub_port=None,
+             check_connection: bool = True)
 ```
 
 Initializes the Modulino Buzzer.
@@ -692,6 +706,7 @@ Initializes the Modulino Buzzer.
 
 - `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
 - `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
+- `hub_port` _ModulinoHubPort_ - The Modulino Hub port to which the device is connected.
 - `check_connection` _bool_ - Whether to check the connection to the module.
 
 <a id="modulino.buzzer.ModulinoBuzzer.tone"></a>
@@ -746,6 +761,7 @@ Class to interact with the temperature and humidity sensor of the Modulino Therm
 ```python
 def __init__(i2c_bus: I2C = None,
              address: int = DEFAULT_ADDRESS,
+             hub_port=None,
              check_connection: bool = True) -> None
 ```
 
@@ -755,6 +771,8 @@ Initializes the Modulino Thermo.
 
 - `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
 - `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
+- `hub_port` - The hub port to which the module is connected. If not provided, the module is assumed to be directly connected.
+- `hub_port` _ModulinoHubPort_ - The Modulino Hub port to which the device is connected.
 - `check_connection` _bool_ - Whether to check the connection to the module.
 
 <a id="modulino.thermo.ModulinoThermo.measurements"></a>
@@ -811,7 +829,10 @@ milliseconds
 ### `__init__`
 
 ```python
-def __init__(i2c_bus=None, address=None, check_connection: bool = True)
+def __init__(i2c_bus=None,
+             address=None,
+             hub_port=None,
+             check_connection: bool = True)
 ```
 
 Initializes the Modulino Joystick module.
@@ -820,6 +841,7 @@ Initializes the Modulino Joystick module.
 
 - `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
 - `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
+- `hub_port` _ModulinoHubPort_ - The Modulino Hub port to which the device is connected.
 - `check_connection` _bool_ - Whether to check the connection to the module.
 
 <a id="modulino.joystick.ModulinoJoystick.update"></a>
@@ -1013,6 +1035,7 @@ Class to control the LED Matrix module of the Modulino.
 def __init__(i2c_bus=None,
              address=None,
              use_grayscale: bool = False,
+             hub_port=None,
              check_connection: bool = True)
 ```
 
@@ -1023,6 +1046,7 @@ Initializes the Modulino LED Matrix.
 - `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
 - `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
 - `use_grayscale` _bool_ - Whether to use grayscale mode.
+- `hub_port` _ModulinoHubPort_ - The Modulino Hub port to which the device is connected.
 - `check_connection` _bool_ - Whether to check the connection to the module.
 
 <a id="modulino.led_matrix.ModulinoLEDMatrix.use_grayscale"></a>
@@ -1459,7 +1483,10 @@ attribute to fine-tune settings such as gain or integration time.
 ### `__init__`
 
 ```python
-def __init__(i2c_bus: I2C = None, address: int = None) -> None
+def __init__(i2c_bus: I2C = None,
+             address: int = DEFAULT_ADDRESS,
+             hub_port=None,
+             check_connection: bool = True) -> None
 ```
 
 Initializes the Modulino Light.
@@ -1569,7 +1596,10 @@ Class to control the relay module of the Modulino.
 ### `__init__`
 
 ```python
-def __init__(i2c_bus=None, address=None, check_connection: bool = True)
+def __init__(i2c_bus=None,
+             address=None,
+             hub_port=None,
+             check_connection: bool = True)
 ```
 
 Initializes the Modulino Buzzer.
@@ -1578,6 +1608,7 @@ Initializes the Modulino Buzzer.
 
 - `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
 - `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
+- `hub_port` _ModulinoHubPort_ - The Modulino Hub port to which the device is connected.
 - `check_connection` _bool_ - Whether to check the connection to the module.
 
 <a id="modulino.latch_relay.ModulinoLatchRelay.on"></a>
@@ -1626,7 +1657,10 @@ Class to operate the vibration motor of the Modulino Vibro.
 ### `__init__`
 
 ```python
-def __init__(i2c_bus=None, address=None, check_connection: bool = True)
+def __init__(i2c_bus=None,
+             address=None,
+             hub_port=None,
+             check_connection: bool = True)
 ```
 
 Initializes the Modulino Vibro.
@@ -1635,6 +1669,7 @@ Initializes the Modulino Vibro.
 
 - `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
 - `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
+- `hub_port` _ModulinoHubPort_ - The Modulino Hub port to which the device is connected.
 - `check_connection` _bool_ - Whether to check the connection to the module.
 
 <a id="modulino.vibro.ModulinoVibro.on"></a>
@@ -1664,6 +1699,76 @@ def off() -> None
 
 Stops the motor from vibrating.
 
+<a id="modulino.hub.ModulinoHubPort"></a>
+
+## class `ModulinoHubPort`
+
+```python
+class ModulinoHubPort()
+```
+
+Represents a port on the Modulino Hub.
+
+<a id="modulino.hub.ModulinoHub"></a>
+
+## class `ModulinoHub`
+
+```python
+class ModulinoHub(Modulino)
+```
+
+Class to interact with the Modulino Hub (TCA9548A I2C multiplexer).
+
+<a id="modulino.hub.ModulinoHub.__init__"></a>
+
+### `__init__`
+
+```python
+def __init__(i2c_bus: I2C = None,
+             address: int = DEFAULT_ADDRESS,
+             hub_port=None,
+             check_connection: bool = True) -> None
+```
+
+Initializes the Modulino Hub.
+
+**Arguments**:
+
+- `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
+- `address` _int_ - The I2C address of the module.
+- `hub_port` _ModulinoHubPort_ - The Modulino Hub port to which the device is connected.
+- `check_connection` _bool_ - Whether to check the connection to the module.
+
+<a id="modulino.hub.ModulinoHub.select_port"></a>
+
+### `select_port`
+
+```python
+def select_port(port: int) -> None
+```
+
+Selects a specific port (0-7) on the multiplexer.
+
+<a id="modulino.hub.ModulinoHub.deselect_ports"></a>
+
+### `deselect_ports`
+
+```python
+def deselect_ports() -> None
+```
+
+Deselects all ports on the multiplexer.
+
+<a id="modulino.hub.ModulinoHub.get_port"></a>
+
+### `get_port`
+
+```python
+def get_port(port_number: int) -> ModulinoHubPort
+```
+
+Creates a context manager for the specified port.
+
 <a id="modulino.distance.ModulinoDistance"></a>
 
 ## class `ModulinoDistance`
@@ -1681,6 +1786,7 @@ Class to interact with the distance sensor of the Modulino Distance.
 ```python
 def __init__(i2c_bus=None,
              address: int | None = None,
+             hub_port=None,
              check_connection: bool = True) -> None
 ```
 
@@ -1690,6 +1796,7 @@ Initializes the Modulino Distance.
 
 - `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
 - `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
+- `hub_port` _ModulinoHubPort_ - The Modulino Hub port to which the device is connected.
 - `check_connection` _bool_ - Whether to check the connection to the module.
 
 <a id="modulino.distance.ModulinoDistance.distance"></a>
@@ -1742,8 +1849,9 @@ This property should be overridden in derived classes.
 
 ```python
 def __init__(i2c_bus: I2C = None,
-             address: int = None,
-             name: str = None,
+             address: int | None = None,
+             name: str | None = None,
+             hub_port=None,
              check_connection: bool = True) -> None
 ```
 
@@ -1758,6 +1866,7 @@ If no bus is provided, the default bus will be used if available.
 - `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
 - `address` _int_ - The address of the device. If not provided, the device will try to auto discover it.
 - `name` _str_ - The name of the device.
+- `hub_port` _ModulinoHubPort_ - The Modulino Hub port to which the device is connected.
 - `check_connection` _bool_ - Whether to check if the device is connected to the bus.
 
 <a id="modulino.modulino.Modulino.discover"></a>
@@ -1919,7 +2028,10 @@ Class to interact with the rotary encoder of the Modulinio Knob.
 ### `__init__`
 
 ```python
-def __init__(i2c_bus=None, address=None, check_connection: bool = True)
+def __init__(i2c_bus=None,
+             address=None,
+             hub_port=None,
+             check_connection: bool = True)
 ```
 
 Initializes the Modulino Knob.
@@ -1928,6 +2040,7 @@ Initializes the Modulino Knob.
 
 - `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
 - `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
+- `hub_port` _ModulinoHubPort_ - The Modulino Hub port to which the device is connected.
 - `check_connection` _bool_ - Whether to check the connection to the module.
 
 <a id="modulino.knob.ModulinoKnob.reset"></a>
@@ -2213,7 +2326,10 @@ Class to interact with the buttons of the Modulino Buttons.
 ### `__init__`
 
 ```python
-def __init__(i2c_bus=None, address=None, check_connection: bool = True)
+def __init__(i2c_bus=None,
+             address=None,
+             hub_port=None,
+             check_connection: bool = True)
 ```
 
 Initializes the Modulino Buttons.
@@ -2222,6 +2338,7 @@ Initializes the Modulino Buttons.
 
 - `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
 - `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
+- `hub_port` _ModulinoHubPort_ - The Modulino Hub port to which the device is connected.
 - `check_connection` _bool_ - Whether to check the connection to the module.
 
 <a id="modulino.buttons.ModulinoButtons.led_a"></a>
@@ -2580,6 +2697,7 @@ Class to interact with the movement sensor (IMU) of the Modulino Movement.
 ```python
 def __init__(i2c_bus=None,
              address: int | None = None,
+             hub_port=None,
              check_connection: bool = True) -> None
 ```
 
@@ -2589,6 +2707,7 @@ Initializes the Modulino Movement.
 
 - `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
 - `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
+- `hub_port` _ModulinoHubPort_ - The Modulino Hub port to which the device is connected.
 - `check_connection` _bool_ - Whether to check the connection to the module.
 
 <a id="modulino.movement.ModulinoMovement.acceleration"></a>
@@ -2758,7 +2877,8 @@ MAX22211 KISEN when HFS is high
 def __init__(i2c_bus=None,
              address=None,
              check_connection: bool = True,
-             steps_per_revolution=None)
+             steps_per_revolution=None,
+             hub_port=None)
 ```
 
 Initializes the Modulino Motors.
@@ -2770,6 +2890,7 @@ Initializes the Modulino Motors.
 - `check_connection` _bool_ - Whether to check the connection to the module.
 - `steps_per_revolution` _int | None_ - Full-step motor steps per shaft
   revolution. Required for RPM-based stepper control.
+- `hub_port` _int | None_ - The hub port to which the motor is connected.
 
 <a id="modulino.motors.ModulinoMotors.stop"></a>
 
