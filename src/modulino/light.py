@@ -1,3 +1,4 @@
+from micropython import const
 from .modulino import Modulino
 from ltr381rgb import LTR381RGB
 
@@ -14,10 +15,10 @@ class ModulinoLight(Modulino):
     attribute to fine-tune settings such as gain or integration time.
     """
 
-    default_addresses = [0x53]
+    DEFAULT_ADDRESS = const(0x53)
     has_mcu = False
 
-    def __init__(self, i2c_bus: I2C = None, address: int = None) -> None:
+    def __init__(self, i2c_bus: I2C = None, address: int = DEFAULT_ADDRESS, hub_port=None, check_connection: bool = True) -> None:
         """
         Initializes the Modulino Light.
 
@@ -25,8 +26,9 @@ class ModulinoLight(Modulino):
             i2c_bus (I2C): The I2C bus to use. If not provided, the default I2C bus will be used.
             address (int): The I2C address of the module. If not provided, the default address will be used.
         """
-        super().__init__(i2c_bus, address, "Light")
-        self.sensor = LTR381RGB(self.i2c_bus, self.address)
+        super().__init__(i2c_bus, address, "Light", hub_port, check_connection)
+        with self._hub_port:
+            self.sensor = LTR381RGB(self.i2c_bus, self.address)
 
     @property
     def lux(self) -> float:
