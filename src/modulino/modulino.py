@@ -149,13 +149,13 @@ class Modulino:
   This is used to determine if the device should be expected to support features such as address change or entering bootloader mode.
   """
 
-  name: str = None
+  name: str|None = None
   """
   The name of the modulino.
   This property should be overridden in derived classes.
   """
 
-  def __init__(self, i2c_bus: I2C = None, address: int = None, name: str = None, hub_port = None, check_connection: bool = True) -> None:
+  def __init__(self, i2c_bus: I2C = None, address: int|None = None, name: str|None = None, hub_port = None, check_connection: bool = True) -> None:
     """
     Initializes the Modulino object with the given i2c bus and address.
     If the address is not provided, the device will try to auto discover it.
