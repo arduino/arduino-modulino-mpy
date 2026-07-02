@@ -350,6 +350,9 @@ class Modulino:
     # General call address (0x00) is skipped in default range
     candidates = target_addresses if target_addresses is not None else range(1,128)
 
+    if hub_port is None:
+      hub_port = _NullHubPort()
+
     with hub_port:
       for address in candidates:
           try:
