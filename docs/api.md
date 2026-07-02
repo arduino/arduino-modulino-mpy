@@ -189,6 +189,50 @@
     * [acceleration\_magnitude](#modulino.movement.ModulinoMovement.acceleration_magnitude)
     * [angular\_velocity](#modulino.movement.ModulinoMovement.angular_velocity)
     * [gyro](#modulino.movement.ModulinoMovement.gyro)
+* [motors](#modulino.motors)
+  * [DecayMode](#modulino.motors.DecayMode)
+  * [ModulinoMotors](#modulino.motors.ModulinoMotors)
+    * [CMD\_MODE](#modulino.motors.ModulinoMotors.CMD_MODE)
+    * [CMD\_SPEED\_DC](#modulino.motors.ModulinoMotors.CMD_SPEED_DC)
+    * [CMD\_STEPPER](#modulino.motors.ModulinoMotors.CMD_STEPPER)
+    * [CMD\_DECAY](#modulino.motors.ModulinoMotors.CMD_DECAY)
+    * [CMD\_STEP\_MODE](#modulino.motors.ModulinoMotors.CMD_STEP_MODE)
+    * [CMD\_FREQ\_DC](#modulino.motors.ModulinoMotors.CMD_FREQ_DC)
+    * [CMD\_HFS](#modulino.motors.ModulinoMotors.CMD_HFS)
+    * [MAX\_SPEED](#modulino.motors.ModulinoMotors.MAX_SPEED)
+    * [ADC\_FULL\_SCALE](#modulino.motors.ModulinoMotors.ADC_FULL_SCALE)
+    * [ADC\_REF\_MV](#modulino.motors.ModulinoMotors.ADC_REF_MV)
+    * [ISEN\_RESISTOR\_OHMS](#modulino.motors.ModulinoMotors.ISEN_RESISTOR_OHMS)
+    * [KISEN\_FULL\_SCALE](#modulino.motors.ModulinoMotors.KISEN_FULL_SCALE)
+    * [KISEN\_HALF\_SCALE](#modulino.motors.ModulinoMotors.KISEN_HALF_SCALE)
+    * [\_\_init\_\_](#modulino.motors.ModulinoMotors.__init__)
+    * [stop](#modulino.motors.ModulinoMotors.stop)
+    * [release](#modulino.motors.ModulinoMotors.release)
+    * [hold](#modulino.motors.ModulinoMotors.hold)
+    * [move\_stepper](#modulino.motors.ModulinoMotors.move_stepper)
+    * [move\_stepper\_rpm](#modulino.motors.ModulinoMotors.move_stepper_rpm)
+    * [stepper\_direction\_inverted](#modulino.motors.ModulinoMotors.stepper_direction_inverted)
+    * [speed\_a](#modulino.motors.ModulinoMotors.speed_a)
+    * [invert\_a](#modulino.motors.ModulinoMotors.invert_a)
+    * [speed\_b](#modulino.motors.ModulinoMotors.speed_b)
+    * [invert\_b](#modulino.motors.ModulinoMotors.invert_b)
+    * [set\_decay](#modulino.motors.ModulinoMotors.set_decay)
+    * [frequency](#modulino.motors.ModulinoMotors.frequency)
+    * [frequency](#modulino.motors.ModulinoMotors.frequency)
+    * [update](#modulino.motors.ModulinoMotors.update)
+    * [busy](#modulino.motors.ModulinoMotors.busy)
+    * [half\_full\_scale\_enabled](#modulino.motors.ModulinoMotors.half_full_scale_enabled)
+    * [release\_on\_complete](#modulino.motors.ModulinoMotors.release_on_complete)
+    * [half\_full\_scale\_enabled](#modulino.motors.ModulinoMotors.half_full_scale_enabled)
+    * [sensed\_current\_a](#modulino.motors.ModulinoMotors.sensed_current_a)
+    * [sensed\_current\_b](#modulino.motors.ModulinoMotors.sensed_current_b)
+    * [sensed\_current](#modulino.motors.ModulinoMotors.sensed_current)
+    * [stepper\_mode\_enabled](#modulino.motors.ModulinoMotors.stepper_mode_enabled)
+    * [stepper\_mode\_enabled](#modulino.motors.ModulinoMotors.stepper_mode_enabled)
+    * [half\_step\_enabled](#modulino.motors.ModulinoMotors.half_step_enabled)
+    * [half\_step\_enabled](#modulino.motors.ModulinoMotors.half_step_enabled)
+    * [steps\_per\_revolution](#modulino.motors.ModulinoMotors.steps_per_revolution)
+    * [decay\_mode](#modulino.motors.ModulinoMotors.decay_mode)
 
 <a id="modulino.pixels.ModulinoColor"></a>
 
@@ -2607,4 +2651,441 @@ Alias for angular_velocity property.
 - `MovementValues` - The gyroscope values in the x, y, and z axes.
   These values can be accessed as .x, .y, and .z properties
   or by using the index operator for tuple unpacking.
+
+<a id="modulino.motors.DecayMode"></a>
+
+## class `DecayMode`
+
+```python
+class DecayMode()
+```
+
+Enum-like decay mode constants for `ModulinoMotors.set_decay`.
+
+<a id="modulino.motors.ModulinoMotors"></a>
+
+## class `ModulinoMotors`
+
+```python
+class ModulinoMotors(Modulino)
+```
+
+Class to operate the motors of the Modulino.
+
+<a id="modulino.motors.ModulinoMotors.CMD_MODE"></a>
+
+### `CMD_MODE`
+
+'M'
+
+<a id="modulino.motors.ModulinoMotors.CMD_SPEED_DC"></a>
+
+### `CMD_SPEED_DC`
+
+'S'
+
+<a id="modulino.motors.ModulinoMotors.CMD_STEPPER"></a>
+
+### `CMD_STEPPER`
+
+'G'
+
+<a id="modulino.motors.ModulinoMotors.CMD_DECAY"></a>
+
+### `CMD_DECAY`
+
+'T'
+
+<a id="modulino.motors.ModulinoMotors.CMD_STEP_MODE"></a>
+
+### `CMD_STEP_MODE`
+
+'H'
+
+<a id="modulino.motors.ModulinoMotors.CMD_FREQ_DC"></a>
+
+### `CMD_FREQ_DC`
+
+'F'
+
+<a id="modulino.motors.ModulinoMotors.CMD_HFS"></a>
+
+### `CMD_HFS`
+
+'X'
+
+<a id="modulino.motors.ModulinoMotors.MAX_SPEED"></a>
+
+### `MAX_SPEED`
+
+Max speed value for 16-bit signed integer
+
+<a id="modulino.motors.ModulinoMotors.ADC_FULL_SCALE"></a>
+
+### `ADC_FULL_SCALE`
+
+12-bit ADC full scale
+
+<a id="modulino.motors.ModulinoMotors.ADC_REF_MV"></a>
+
+### `ADC_REF_MV`
+
+ADC reference in millivolts
+
+<a id="modulino.motors.ModulinoMotors.ISEN_RESISTOR_OHMS"></a>
+
+### `ISEN_RESISTOR_OHMS`
+
+ISEN pull-down resistor on the host board
+
+<a id="modulino.motors.ModulinoMotors.KISEN_FULL_SCALE"></a>
+
+### `KISEN_FULL_SCALE`
+
+MAX22211 KISEN when HFS is low
+
+<a id="modulino.motors.ModulinoMotors.KISEN_HALF_SCALE"></a>
+
+### `KISEN_HALF_SCALE`
+
+MAX22211 KISEN when HFS is high
+
+<a id="modulino.motors.ModulinoMotors.__init__"></a>
+
+### `__init__`
+
+```python
+def __init__(i2c_bus=None,
+             address=None,
+             check_connection: bool = True,
+             steps_per_revolution=None)
+```
+
+Initializes the Modulino Motors.
+
+**Arguments**:
+
+- `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
+- `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
+- `check_connection` _bool_ - Whether to check the connection to the module.
+- `steps_per_revolution` _int | None_ - Full-step motor steps per shaft
+  revolution. Required for RPM-based stepper control.
+
+<a id="modulino.motors.ModulinoMotors.stop"></a>
+
+### `stop`
+
+```python
+def stop() -> None
+```
+
+Stop both motors.
+
+<a id="modulino.motors.ModulinoMotors.release"></a>
+
+### `release`
+
+```python
+def release() -> None
+```
+
+Release stepper coils with minimal delay without changing default move behavior.
+
+<a id="modulino.motors.ModulinoMotors.hold"></a>
+
+### `hold`
+
+```python
+def hold() -> None
+```
+
+Enable and energize stepper coils immediately without changing defaults.
+
+<a id="modulino.motors.ModulinoMotors.move_stepper"></a>
+
+### `move_stepper`
+
+```python
+def move_stepper(steps: int,
+                 speed_period: int,
+                 release_delay_ms: int = 0) -> None
+```
+
+Command a stepper move.
+
+**Arguments**:
+
+- `steps` - Signed number of steps.
+- `speed_period` - Step period in 0.1 ms timer ticks (1..65535).
+- `release_delay_ms` - Delay before releasing coils after move completion.
+  0 keeps holding torque, 1..255 releases after that many milliseconds.
+  
+
+**Notes**:
+
+  - The first step is applied immediately at move start.
+  - Remaining steps follow `speed_period`.
+
+<a id="modulino.motors.ModulinoMotors.move_stepper_rpm"></a>
+
+### `move_stepper_rpm`
+
+```python
+def move_stepper_rpm(steps: int,
+                     rpm: float,
+                     release_delay_ms: int = 0) -> None
+```
+
+Command a stepper move using target speed in RPM.
+
+Converts RPM to the underlying period value used by `move_stepper`.
+
+<a id="modulino.motors.ModulinoMotors.stepper_direction_inverted"></a>
+
+### `stepper_direction_inverted`
+
+```python
+@property
+def stepper_direction_inverted() -> bool
+```
+
+Gets or sets whether the stepper direction is inverted.
+
+<a id="modulino.motors.ModulinoMotors.speed_a"></a>
+
+### `speed_a`
+
+```python
+@property
+def speed_a() -> int
+```
+
+Gets or sets the speed of motor A in percentage (0-100).
+
+<a id="modulino.motors.ModulinoMotors.invert_a"></a>
+
+### `invert_a`
+
+```python
+@property
+def invert_a() -> bool
+```
+
+Gets or sets if the direction of motor A is inverted.
+
+<a id="modulino.motors.ModulinoMotors.speed_b"></a>
+
+### `speed_b`
+
+```python
+@property
+def speed_b() -> int
+```
+
+Gets or sets the speed of motor B in percentage (0-100).
+
+<a id="modulino.motors.ModulinoMotors.invert_b"></a>
+
+### `invert_b`
+
+```python
+@property
+def invert_b() -> bool
+```
+
+Gets or sets if the direction of motor B is inverted.
+
+<a id="modulino.motors.ModulinoMotors.set_decay"></a>
+
+### `set_decay`
+
+```python
+def set_decay(decay_mode: int) -> None
+```
+
+Sets the decay mode of the motors.
+
+**Arguments**:
+
+- `decay_mode` _int_ - One of `ModulinoMotors.DecayMode.*` or a raw int in range 0..3.
+
+<a id="modulino.motors.ModulinoMotors.frequency"></a>
+
+### `frequency`
+
+```python
+@property
+def frequency() -> int
+```
+
+Gets or sets the frequency of the motors.
+
+<a id="modulino.motors.ModulinoMotors.frequency"></a>
+
+### `frequency`
+
+```python
+@frequency.setter
+def frequency(value: int)
+```
+
+Set DC Motor PWM Frequency in Hz (200 - 60000)
+
+<a id="modulino.motors.ModulinoMotors.update"></a>
+
+### `update`
+
+```python
+def update() -> tuple[int, int, bool, bool, int, bool, int]
+```
+
+Refresh telemetry from the module.
+
+**Returns**:
+
+  tuple[int, int, bool, bool, int, bool, int]:
+  (sense_a, sense_b, busy, hfs_enabled, mode, half_step, decay_mode)
+
+<a id="modulino.motors.ModulinoMotors.busy"></a>
+
+### `busy`
+
+```python
+@property
+def busy() -> bool
+```
+
+Returns True when the module reports an active move.
+
+<a id="modulino.motors.ModulinoMotors.half_full_scale_enabled"></a>
+
+### `half_full_scale_enabled`
+
+```python
+@property
+def half_full_scale_enabled() -> bool
+```
+
+Gets or sets the half-full-scale (HFS) mode.
+
+<a id="modulino.motors.ModulinoMotors.release_on_complete"></a>
+
+### `release_on_complete`
+
+```python
+@property
+def release_on_complete() -> bool
+```
+
+Gets the release-on-complete state reported by the module.
+
+<a id="modulino.motors.ModulinoMotors.half_full_scale_enabled"></a>
+
+### `half_full_scale_enabled`
+
+```python
+@half_full_scale_enabled.setter
+def half_full_scale_enabled(value: bool) -> None
+```
+
+Set HFS pin: False=full range, True=half range.
+
+<a id="modulino.motors.ModulinoMotors.sensed_current_a"></a>
+
+### `sensed_current_a`
+
+```python
+@property
+def sensed_current_a() -> float
+```
+
+Gets sensed current of motor A in milliamps (mA).
+
+<a id="modulino.motors.ModulinoMotors.sensed_current_b"></a>
+
+### `sensed_current_b`
+
+```python
+@property
+def sensed_current_b() -> float
+```
+
+Gets sensed current of motor B in milliamps (mA).
+
+<a id="modulino.motors.ModulinoMotors.sensed_current"></a>
+
+### `sensed_current`
+
+```python
+@property
+def sensed_current() -> tuple[float, float]
+```
+
+Gets sensed currents of both motors in milliamps (mA).
+
+<a id="modulino.motors.ModulinoMotors.stepper_mode_enabled"></a>
+
+### `stepper_mode_enabled`
+
+```python
+@property
+def stepper_mode_enabled() -> bool
+```
+
+Returns True if stepper mode is active, False if DC mode.
+
+<a id="modulino.motors.ModulinoMotors.stepper_mode_enabled"></a>
+
+### `stepper_mode_enabled`
+
+```python
+@stepper_mode_enabled.setter
+def stepper_mode_enabled(value: bool) -> None
+```
+
+Set stepper mode: True=stepper, False=DC.
+
+<a id="modulino.motors.ModulinoMotors.half_step_enabled"></a>
+
+### `half_step_enabled`
+
+```python
+@property
+def half_step_enabled() -> bool
+```
+
+Gets or sets the half-step mode.
+
+<a id="modulino.motors.ModulinoMotors.half_step_enabled"></a>
+
+### `half_step_enabled`
+
+```python
+@half_step_enabled.setter
+def half_step_enabled(value: bool) -> None
+```
+
+Set step mode: False=full step, True=half step.
+
+<a id="modulino.motors.ModulinoMotors.steps_per_revolution"></a>
+
+### `steps_per_revolution`
+
+```python
+@property
+def steps_per_revolution() -> int | None
+```
+
+Gets or sets full-step motor steps per shaft revolution.
+
+<a id="modulino.motors.ModulinoMotors.decay_mode"></a>
+
+### `decay_mode`
+
+```python
+@property
+def decay_mode() -> int
+```
+
+Returns decay mode reported by the latest telemetry update.
 
