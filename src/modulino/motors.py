@@ -130,7 +130,7 @@ class ModulinoMotors(Modulino):
   def move_stepper(self, steps: int, speed_period: int, release_delay_ms: int = 0) -> None:
     """Command a stepper move.
 
-    Args:
+    Parameters:
       steps: Signed number of steps.
       speed_period: Step period in 0.1 ms timer ticks (1..65535).
       release_delay_ms: Delay before releasing coils after move completion.
