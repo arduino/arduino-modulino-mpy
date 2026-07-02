@@ -9,17 +9,18 @@ class ModulinoKnob(Modulino):
   # This is for a use case where two encoders are bundled together in a package
   default_addresses = [0x74, 0x76]
   
-  def __init__(self, i2c_bus = None, address = None, check_connection: bool = True):
+  def __init__(self, i2c_bus = None, address = None, hub_port=None, check_connection: bool = True):
     """
     Initializes the Modulino Knob.
 
     Parameters:
         i2c_bus (I2C): The I2C bus to use. If not provided, the default I2C bus will be used.
         address (int): The I2C address of the module. If not provided, the default address will be used.
+        hub_port (ModulinoHubPort): The Modulino Hub port to which the device is connected.
         check_connection (bool): Whether to check the connection to the module.
     """
 
-    super().__init__(i2c_bus, address, "Knob", check_connection=check_connection)
+    super().__init__(i2c_bus, address, "Knob", check_connection=check_connection, hub_port=hub_port)
     self._read_buffer = bytearray(4) # 3 bytes for encoder value + pressed status + 1 byte for pinstrap address
     self._pressed: bool = None
     self._encoder_value: int = None

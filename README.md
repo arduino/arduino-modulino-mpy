@@ -19,6 +19,9 @@ Supports the following Modulinos:
 - 🕹️ **Modulino Joystick**: Read X/Y axis and button state from a joystick Modulino.
 - 📳 **Modulino Vibro**: Control a vibration motor.
 - 🟦 **Modulino LED Matrix**: Control an 12x8 LED matrix.
+- 💡 **Modulino Light**: Read ambient light intensity (lux), color (RGB), color temperature, and infrared light.
+- ⚙️ **Modulino Motors**: Control DC and stepper motors.
+- 🔀 **Modulino Hub**: Connect multiple Modulinos of the same type on separate hub ports using an I2C multiplexer.
 
 ## 📖 Documentation
 For more information on the features of this library and how to use them please read the documentation [here](./docs/).

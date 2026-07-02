@@ -55,3 +55,10 @@ and gyroscope values from the Modulino.
 - [pixels_thermo.py](../examples/pixels_thermo.py): This example shows how to use the ModulinoPixels and ModulinoThermo classes to display the temperature on a pixel strip.
 temperature and altitude from the Modulino.
 - [thermo.py](../examples/thermo.py): This example shows how to use the ModulinoThermo class to read the temperature and humidity from the Modulino.
+- [light.py](../examples/light.py): This example shows how to use the ModulinoLight class to read ambient light intensity (in lux), color as RGB values, color temperature and infrared light.
+- [light_advanced.py](../examples/light_advanced.py): This example shows how to fine-tune the light sensor by accessing the underlying LTR-381RGB-01 sensor directly to adjust gain and integration time.
+- [motors_basic.py](../examples/motors_basic.py): This example demonstrates how to control the Modulino motors in DC mode, gradually increasing and decreasing the speed of both motors.
+- [motors_frequency.py](../examples/motors_frequency.py): This example demonstrates how to vary the PWM frequency of the motors to produce different effects.
+- [motors_stepper.py](../examples/motors_stepper.py): This example demonstrates how to control a stepper motor, switching between full-step and half-step modes and setting different RPM targets.
+- [motors_telemetry.py](../examples/motors_telemetry.py): This example demonstrates how to monitor DC motor telemetry by reading current sense values and testing direction inversion.
+- [hub.py](../examples/hub.py): This example demonstrates how to use the ModulinoHub class to connect multiple Modulinos of the same type on different hub ports.

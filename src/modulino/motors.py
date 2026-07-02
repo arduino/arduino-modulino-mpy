@@ -41,7 +41,7 @@ class ModulinoMotors(Modulino):
   KISEN_HALF_SCALE = const(3750)  # MAX22211 KISEN when HFS is high
 
   def __init__(self, i2c_bus=None, address=None, check_connection: bool = True,
-               steps_per_revolution=None):
+               steps_per_revolution=None, hub_port=None):
     """
     Initializes the Modulino Motors.
     
@@ -51,8 +51,9 @@ class ModulinoMotors(Modulino):
         check_connection (bool): Whether to check the connection to the module.
         steps_per_revolution (int | None): Full-step motor steps per shaft
           revolution. Required for RPM-based stepper control.
+        hub_port (int | None): The hub port to which the motor is connected.
     """
-    super().__init__(i2c_bus, address, "Motors", check_connection=check_connection)
+    super().__init__(i2c_bus, address, "Motors", check_connection=check_connection, hub_port=hub_port)
     self._send_buffer = bytearray(8)  # Buffer for sending commands
     self._receive_buffer = bytearray(6)  # Buffer for receiving sense data
     self._speed_a = 0

@@ -15,17 +15,19 @@ class ModulinoMovement(Modulino):
     default_addresses = [0x6A, 0x6B]
     has_mcu = False
 
-    def __init__(self, i2c_bus = None, address: int | None = None, check_connection: bool = True) -> None:
+    def __init__(self, i2c_bus = None, address: int | None = None, hub_port=None, check_connection: bool = True) -> None:
         """
         Initializes the Modulino Movement.
 
         Parameters:
             i2c_bus (I2C): The I2C bus to use. If not provided, the default I2C bus will be used.
             address (int): The I2C address of the module. If not provided, the default address will be used.
+            hub_port (ModulinoHubPort): The Modulino Hub port to which the device is connected.
             check_connection (bool): Whether to check the connection to the module.
         """
-        super().__init__(i2c_bus, address, "Movement", check_connection=check_connection)
-        self.sensor = LSM6DSOX(self.i2c_bus, address=self.address)
+        super().__init__(i2c_bus, address, "Movement", check_connection=check_connection, hub_port=hub_port)
+        with self._hub_port:
+            self.sensor = LSM6DSOX(self.i2c_bus, address=self.address)
 
     @property
     def acceleration(self) -> MovementValues:
@@ -35,7 +37,8 @@ class ModulinoMovement(Modulino):
                             These values can be accessed as .x, .y, and .z properties
                             or by using the index operator for tuple unpacking.
         """
-        sensor_values = self.sensor.accel()
+        with self._hub_port:
+            sensor_values = self.sensor.accel()
         return MovementValues(sensor_values[0], sensor_values[1], sensor_values[2])
     
     @property
@@ -56,7 +59,8 @@ class ModulinoMovement(Modulino):
                             These values can be accessed as .x, .y, and .z properties
                             or by using the index operator for tuple unpacking.
         """
-        sensor_values = self.sensor.gyro()
+        with self._hub_port:
+            sensor_values = self.sensor.gyro()
         return MovementValues(sensor_values[0], sensor_values[1], sensor_values[2])
     
     @property
