@@ -1,5 +1,3 @@
-import asyncio
-
 from micropython import const
 from modulino import Modulino
 from framebuf import FrameBuffer, GS4_HMSB, MONO_VLSB
