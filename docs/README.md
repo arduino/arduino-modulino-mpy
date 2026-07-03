@@ -32,11 +32,24 @@ When using multiple Modulinos of the same type, you can create separate instance
 ```python
 from modulino import ModulinoButtons
 
-buttons1 = ModulinoButtons(address=0x10)
-buttons2 = ModulinoButtons(address=0x11)
+buttons1 = ModulinoButtons(address=0x10) # Address was changed to 0x10 using the change_address.py script
+buttons2 = ModulinoButtons(address=0x11) # Address was changed to 0x11 using the change_address.py script
 
 print("Button A on Modulino 1 is pressed:", buttons1.button_a_pressed)
 print("Button A on Modulino 2 is pressed:", buttons2.button_a_pressed)
+```
+
+Alternatively, a **Modulino Hub** can be used to connect multiple Modulinos of the same type without changing their I2C addresses. Each Modulino is connected to a separate port on the hub, which acts as an I2C multiplexer. Pass the desired port to the Modulino constructor using the `hub_port` parameter:
+
+```python
+from modulino import ModulinoHub, ModulinoButtons
+
+hub = ModulinoHub()
+buttons_a = ModulinoButtons(hub_port=hub.get_port(0))
+buttons_b = ModulinoButtons(hub_port=hub.get_port(1))
+
+print("Button A on Modulino 1 is pressed:", buttons_a.button_a_pressed)
+print("Button A on Modulino 2 is pressed:", buttons_b.button_a_pressed)
 ```
 
 ## 👀 Examples
