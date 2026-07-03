@@ -16,6 +16,8 @@
       ["modulino/latch_relay.py", "github:arduino/modulino-mpy/src/modulino/latch_relay.py"],
       ["modulino/vibro.py", "github:arduino/modulino-mpy/src/modulino/vibro.py"],
       ["modulino/led_matrix.py", "github:arduino/modulino-mpy/src/modulino/led_matrix.py"],
+      ["modulino/motors.py", "github:arduino/modulino-mpy/src/modulino/motors.py"],
+      ["modulino/hub.py", "github:arduino/modulino-mpy/src/modulino/hub.py"],
       ["modulino/device_manager.py", "github:arduino/modulino-mpy/src/modulino/device_manager.py"]
     ],
     "deps": [
@@ -23,5 +25,5 @@
       ["github:arduino/micropython-ltr-381rgb-01", "main"],
       ["github:jposada202020/MicroPython_HS3003", "master"]
   ],
-    "version": "1.1.0"
+    "version": "1.2.0"
   }
