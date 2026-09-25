@@ -1,8 +1,9 @@
 from .modulino import Modulino
+import struct
 
 class ModulinoKnob(Modulino):
   """
-  Class to interact with the rotary encoder of the Modulinio Knob.
+  Class to interact with the rotary encoder of the Modulino Knob.
   """
   
   # This module can have one of two default addresses
@@ -21,7 +22,8 @@ class ModulinoKnob(Modulino):
     """
 
     super().__init__(i2c_bus, address, "Knob", check_connection=check_connection, hub_port=hub_port)
-    self._read_buffer = bytearray(4) # 3 bytes for encoder value + pressed status + 1 byte for pinstrap address
+    self._read_buffer = bytearray(4) # 1 byte for pinstrap address + 2 bytes for encoder value + 1 byte for pressed status
+    self._write_buffer = bytearray(4) # 2 bytes for encoder value, remaining bytes stay zero
     self._pressed: bool = None
     self._encoder_value: int = None
     self._value_range: tuple[int, int] = None
@@ -38,90 +40,48 @@ class ModulinoKnob(Modulino):
     self._read_data()
     original_value: int = self._encoder_value
     self.value = 100
-    self._read_data()    
+    self._read_data()
     
-    # If the value is not 100, then the set command has a bug
-    if (self._encoder_value != 100):
-      self._set_bug_detected = True
-    
+    # If the value became negative, then the set command has the bug.
+    # Checking for the sign rather than != 100 tolerates the knob being turned meanwhile.
+    self._set_bug_detected = self._encoder_value < 0
     self.value = original_value
-
-    # Reset state to make sure the first update doesn't trigger the callbacks
-    self._encoder_value = None
-    self._pressed_status: bool = None
 
   @property
   def send_buffer_size(self) -> int:
     return 4
 
-  def _has_rotated_clockwise(self, previous_value: int, current_value: int) -> bool:
-    """
-    Determines if the encoder has rotated clockwise.
-
-    Parameters:
-        previous_value (int): The previous value of the encoder.
-        current_value (int): The current value of the encoder.
-
-    Returns:
-        bool: True if the encoder has rotated clockwise.
-    """
-    # Calculate difference considering wraparound
-    diff: int = (current_value - previous_value + 65536) % 65536
-    # Clockwise rotation is indicated by a positive difference less than half the range
-    return 0 < diff < 32768
-
-  def _has_rotated_counter_clockwise(self, previous_value: int, current_value: int) -> bool:
-      """
-      Determines if the encoder has rotated counter clockwise.
-
-      Parameters:
-          previous_value (int): The previous value of the encoder.
-          current_value (int): The current value of the encoder.
-
-      Returns:
-          bool: True if the encoder has rotated counter clockwise.
-      """
-      # Calculate difference considering wraparound
-      diff: int = (previous_value - current_value + 65536) % 65536
-      # Counter-clockwise rotation is indicated by a positive difference less than half the range
-      return 0 < diff < 32768
-
-  def _get_steps(self, previous_value: int, current_value: int) -> int:
+  @staticmethod
+  def _get_steps(previous_value: int, current_value: int) -> int:
     """
     Calculates the number of steps the encoder has moved since the last update.
+    Positive values indicate clockwise rotation, negative values counter clockwise rotation.
+    Takes into account the wraparound of the signed 16-bit counter.
     """
-    # Calculate difference considering wraparound
-    diff: int = (current_value - previous_value + 65536) % 65536
-    # Clockwise rotation is indicated by a positive difference less than half the range
-    if 0 < diff < 32768:
-      return diff
-    # Counter-clockwise rotation is indicated by a negative difference less than half the range
-    elif 32768 < diff < 65536:
-      return diff - 65536
-    else:
-      return 0
+    return ((current_value - previous_value + 32768) & 0xFFFF) - 32768
 
   def _read_data(self) -> None:
     """
     Reads the encoder value and pressed status from the Modulino.
     Adjusts the value to the range if it is set.
-    Converts the encoder value to a signed 16-bit integer.
     """
     self.read(self._read_buffer)
-    data: bytes = self._read_buffer[1:] # Skip pinstrap address
-    self._pressed = data[2] != 0
-    self._encoder_value = int.from_bytes(data[0:2], 'little', True)
+    # Skip pinstrap address, then read a signed 16-bit value and the pressed status
+    self._encoder_value, pressed = struct.unpack_from('<hB', self._read_buffer, 1)
+    self._pressed = pressed != 0
+    self._constrain_value()
 
-    # Convert to signed int (16 bits), range -32768 to 32767
-    if self._encoder_value >= 32768:
-      self._encoder_value = self._encoder_value - 65536
+  def _constrain_value(self) -> None:
+    """
+    Constrains the encoder value to the range if it is set
+    and writes the constrained value back to the Modulino.
+    """
+    if self._value_range is None:
+      return
 
-    if self._value_range is not None:
-      # Constrain the value to the range self._value_range[0] to self._value_range[1]
-      constrained_value: int = max(self._value_range[0], min(self._value_range[1], self._encoder_value))
-      
-      if constrained_value != self._encoder_value:
-        self.value = constrained_value
+    constrained_value: int = max(self._value_range[0], min(self._value_range[1], self._encoder_value))
+    if constrained_value != self._encoder_value:
+      self.value = constrained_value
 
   def reset(self) -> None:
     """
@@ -142,21 +102,13 @@ class ModulinoKnob(Modulino):
 
     self._read_data()
 
-    # No need to execut the callbacks after the first update
-    if previous_value is None or previous_pressed_status is None:
-      return False
-
-    has_rotated_clockwise: bool = self._has_rotated_clockwise(previous_value, self._encoder_value)
-    has_rotated_counter_clockwise: bool = self._has_rotated_counter_clockwise(previous_value, self._encoder_value)
-
     # Figure out how many steps the encoder has moved since the last update
     steps: int = self._get_steps(previous_value, self._encoder_value)
 
-    if self._on_rotate_clockwise and has_rotated_clockwise:
+    if steps > 0 and self._on_rotate_clockwise:
       self._on_rotate_clockwise(steps, self._encoder_value)
-
-    if self._on_rotate_counter_clockwise and has_rotated_counter_clockwise:
-      self._on_rotate_counter_clockwise(steps, self._encoder_value)
+    elif steps < 0 and self._on_rotate_counter_clockwise:
+      self._on_rotate_counter_clockwise(-steps, self._encoder_value)
 
     if self._on_press and self._pressed and not previous_pressed_status:
       self._on_press()
@@ -164,7 +116,7 @@ class ModulinoKnob(Modulino):
     if self._on_release and not self._pressed and previous_pressed_status:
       self._on_release()
 
-    return (self._encoder_value != previous_value) or (self._pressed != previous_pressed_status)
+    return steps != 0 or self._pressed != previous_pressed_status
 
   @property
   def range(self) -> tuple[int, int]:
@@ -184,16 +136,12 @@ class ModulinoKnob(Modulino):
     if value[0] < -32768 or value[1] > 32767:
       raise ValueError("Range must be between -32768 and 32767")
 
+    if value[0] > value[1]:
+      raise ValueError(f"Range minimum {value[0]} must not be greater than maximum {value[1]}")
+
     self._value_range = value
-
-    if self.value is None:
-      return
-
     # Adjust existing value to the new range
-    if self.value < self._value_range[0]:
-      self.value = self._value_range[0]
-    elif self.value > self._value_range[1]:
-      self.value = self._value_range[1]
+    self._constrain_value()
 
   @property
   def on_rotate_clockwise(self):
@@ -209,6 +157,7 @@ class ModulinoKnob(Modulino):
 
     Parameters:
         value (function): The function to be called when the encoder is rotated clockwise.
+            It receives the number of steps and the new value as arguments.
     """
     self._on_rotate_clockwise = value
 
@@ -226,6 +175,7 @@ class ModulinoKnob(Modulino):
 
     Parameters:
         value (function): The function to be called when the encoder is rotated counter clockwise.
+            It receives the number of steps and the new value as arguments.
     """
     self._on_rotate_counter_clockwise = value
 
@@ -287,10 +237,11 @@ class ModulinoKnob(Modulino):
     else:
       target_value: int = new_value
 
-    buf: bytearray = bytearray(4)
-    buf[0:2] = target_value.to_bytes(2, 'little')
+    # Avoid int.to_bytes() because its signature
+    # differs between MicroPython versions.
+    struct.pack_into('<h', self._write_buffer, 0, target_value)
 
-    if self.write(buf):
+    if self.write(self._write_buffer):
       self._encoder_value = new_value
 
   @property
