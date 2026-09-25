@@ -23,9 +23,8 @@ class ModulinoKnob(Modulino):
 
     super().__init__(i2c_bus, address, "Knob", check_connection=check_connection, hub_port=hub_port)
     self._read_buffer = bytearray(4) # 1 byte for pinstrap address + 2 bytes for encoder value + 1 byte for pressed status
-    self._write_buffer = bytearray(4) # 2 bytes for encoder value, remaining bytes stay zero
     self._pressed: bool = None
-    self._encoder_value: int = None
+    self._raw_value: int = None # Hardware counter, only used to compute the steps between reads
     self._value_range: tuple[int, int] = None
 
     # Encoder callbacks
@@ -34,54 +33,47 @@ class ModulinoKnob(Modulino):
     self._on_press = None
     self._on_release = None
 
-    # Detect bug in the set command that would make
-    # the encoder value become negative after setting it to x with x != 0 
-    self._set_bug_detected: bool = False
+    # The value is tracked here rather than on the Modulino. This way it never needs to be
+    # written to the device, which avoids glitches caused by the firmware's set command.
+    self._encoder_value: int = 0
     self._read_data()
-    original_value: int = self._encoder_value
-    self.value = 100
-    self._read_data()
-    
-    # If the value became negative, then the set command has the bug.
-    # Checking for the sign rather than != 100 tolerates the knob being turned meanwhile.
-    self._set_bug_detected = self._encoder_value < 0
-    self.value = original_value
 
   @property
   def send_buffer_size(self) -> int:
     return 4
 
   @staticmethod
-  def _get_steps(previous_value: int, current_value: int) -> int:
+  def _get_steps(previous_raw_value: int, current_raw_value: int) -> int:
     """
-    Calculates the number of steps the encoder has moved since the last update.
+    Calculates the number of steps between two readings of the hardware counter.
     Positive values indicate clockwise rotation, negative values counter clockwise rotation.
     Takes into account the wraparound of the signed 16-bit counter.
     """
-    return ((current_value - previous_value + 32768) & 0xFFFF) - 32768
+    return ((current_raw_value - previous_raw_value + 32768) & 0xFFFF) - 32768
 
-  def _read_data(self) -> None:
+  def _read_data(self) -> int:
     """
-    Reads the encoder value and pressed status from the Modulino.
-    Adjusts the value to the range if it is set.
+    Reads the encoder counter and pressed status from the Modulino.
+
+    Returns:
+        int: The number of steps the encoder has moved since the last read.
     """
     self.read(self._read_buffer)
-    # Skip pinstrap address, then read a signed 16-bit value and the pressed status
-    self._encoder_value, pressed = struct.unpack_from('<hB', self._read_buffer, 1)
+    # Skip pinstrap address, then read a signed 16-bit counter and the pressed status
+    raw_value, pressed = struct.unpack_from('<hB', self._read_buffer, 1)
     self._pressed = pressed != 0
-    self._constrain_value()
 
-  def _constrain_value(self) -> None:
+    steps: int = 0 if self._raw_value is None else self._get_steps(self._raw_value, raw_value)
+    self._raw_value = raw_value
+    return steps
+
+  def _constrain(self, value: int) -> int:
     """
-    Constrains the encoder value to the range if it is set
-    and writes the constrained value back to the Modulino.
+    Constrains the given value to the range if it is set.
     """
     if self._value_range is None:
-      return
-
-    constrained_value: int = max(self._value_range[0], min(self._value_range[1], self._encoder_value))
-    if constrained_value != self._encoder_value:
-      self.value = constrained_value
+      return value
+    return max(self._value_range[0], min(self._value_range[1], value))
 
   def reset(self) -> None:
     """
@@ -100,10 +92,10 @@ class ModulinoKnob(Modulino):
     previous_value: int = self._encoder_value
     previous_pressed_status: bool = self._pressed
 
-    self._read_data()
+    self._encoder_value = self._constrain(previous_value + self._read_data())
 
-    # Figure out how many steps the encoder has moved since the last update
-    steps: int = self._get_steps(previous_value, self._encoder_value)
+    # Steps after applying the range, so that turning past a limit doesn't trigger the callbacks
+    steps: int = self._encoder_value - previous_value
 
     if steps > 0 and self._on_rotate_clockwise:
       self._on_rotate_clockwise(steps, self._encoder_value)
@@ -133,15 +125,12 @@ class ModulinoKnob(Modulino):
     Parameters:
         value (tuple): A tuple with two integers representing the minimum and maximum values of the range.
     """
-    if value[0] < -32768 or value[1] > 32767:
-      raise ValueError("Range must be between -32768 and 32767")
-
     if value[0] > value[1]:
       raise ValueError(f"Range minimum {value[0]} must not be greater than maximum {value[1]}")
 
     self._value_range = value
     # Adjust existing value to the new range
-    self._constrain_value()
+    self._encoder_value = self._constrain(self._encoder_value)
 
   @property
   def on_rotate_clockwise(self):
@@ -224,6 +213,7 @@ class ModulinoKnob(Modulino):
   def value(self, new_value: int) -> None:
     """
     Sets the value of the encoder. This overrides the previous value.
+    The value is only stored in this object, not on the Modulino.
 
     Parameters:
         new_value (int): The new value of the encoder.
@@ -232,17 +222,7 @@ class ModulinoKnob(Modulino):
       if new_value < self._value_range[0] or new_value > self._value_range[1]:
         raise ValueError(f"Value {new_value} is out of range ({self._value_range[0]} to {self._value_range[1]})")
 
-    if self._set_bug_detected:
-      target_value: int = -new_value
-    else:
-      target_value: int = new_value
-
-    # Avoid int.to_bytes() because its signature
-    # differs between MicroPython versions.
-    struct.pack_into('<h', self._write_buffer, 0, target_value)
-
-    if self.write(self._write_buffer):
-      self._encoder_value = new_value
+    self._encoder_value = new_value
 
   @property
   def pressed(self) -> bool:
