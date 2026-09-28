@@ -82,6 +82,7 @@ The following scripts are examples of how to use the Modulinos with Python:
 - [motors_stepper.py](../examples/motors_stepper.py): This example demonstrates how to control a stepper motor, switching between full-step and half-step modes and setting different RPM targets.
 - [motors_telemetry.py](../examples/motors_telemetry.py): This example demonstrates how to monitor DC motor telemetry by reading current sense values and testing direction inversion.
 - [movement.py](../examples/movement.py): This example shows how to use the ModulinoMovement class to read the accelerometer and gyroscope values from the Modulino.
+- [movement_pedometer.py](../examples/movement_pedometer.py): This example shows how to use the built-in pedometer of the Modulino Movement to count steps.
 - [pixels.py](../examples/pixels.py): This example shows how to use the ModulinoPixels class to control a set of pixels.
 - [pixels_thermo.py](../examples/pixels_thermo.py): This example shows how to use the ModulinoPixels and ModulinoThermo classes to display the temperature on a pixel strip.
 - [thermo.py](../examples/thermo.py): This example shows how to use the ModulinoThermo class to read the temperature and humidity from the Modulino.
