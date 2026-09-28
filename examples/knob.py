@@ -20,6 +20,7 @@ from time import sleep
 knob = ModulinoKnob()
 knob.value = 5 # (Optional) Set an initial value
 knob.range = (-10, 10) # (Optional) Set a value range
+knob.increment = 2.5
 
 def on_release():
     knob.reset()
