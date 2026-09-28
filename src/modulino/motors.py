@@ -1,4 +1,5 @@
 from .modulino import Modulino
+import struct
 from micropython import const
 
 class DecayMode:
@@ -97,8 +98,9 @@ class ModulinoMotors(Modulino):
 
     self._send_buffer[:] = b'\x00' * len(self._send_buffer)
     self._send_buffer[0] = self.CMD_SPEED_DC
-    self._send_buffer[1:3] = speed_a.to_bytes(2, 'little', True)
-    self._send_buffer[3:5] = speed_b.to_bytes(2, 'little', True)
+    # struct is used instead of int.to_bytes() because the latter's
+    # handling of signed values differs between MicroPython versions.
+    struct.pack_into('<hh', self._send_buffer, 1, speed_a, speed_b)
     self._send_command(self._send_buffer)
 
   def _sense_raw_to_ma(self, raw: int, hfs_enabled: bool) -> float:
@@ -152,7 +154,7 @@ class ModulinoMotors(Modulino):
 
     self._send_buffer[:] = b'\x00' * len(self._send_buffer)
     self._send_buffer[0] = self.CMD_STEPPER
-    self._send_buffer[1:5] = int(steps).to_bytes(4, 'little', True)
+    struct.pack_into('<i', self._send_buffer, 1, int(steps)) # Signed, see _set_dc_speed_raw()
     self._send_buffer[5:7] = speed_period.to_bytes(2, 'little')
     self._send_buffer[7] = release_delay_ms
     self._send_command(self._send_buffer)
