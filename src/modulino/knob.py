@@ -1,5 +1,6 @@
 from .modulino import Modulino
 import struct
+from math import ceil
 
 class ModulinoKnob(Modulino):
   """
@@ -26,6 +27,7 @@ class ModulinoKnob(Modulino):
     self._pressed: bool = None
     self._raw_value: int = None # Hardware counter, only used to compute the steps between reads
     self._value_range: tuple[int, int] = None
+    self._increment: int | float = 1
 
     # Encoder callbacks
     self._on_rotate_clockwise = None
@@ -89,18 +91,26 @@ class ModulinoKnob(Modulino):
     Returns:
         bool: True if the encoder value or pressed status has changed.
     """
-    previous_value: int = self._encoder_value
+    previous_value: int | float = self._encoder_value
     previous_pressed_status: bool = self._pressed
 
-    self._encoder_value = self._constrain(previous_value + self._read_data())
+    steps: int = self._read_data()
+    unconstrained_value: int | float = previous_value + steps * self._increment
+    self._encoder_value = self._constrain(unconstrained_value)
+    change: int | float = self._encoder_value - previous_value
 
-    # Steps after applying the range, so that turning past a limit doesn't trigger the callbacks
-    steps: int = self._encoder_value - previous_value
+    if self._encoder_value == unconstrained_value:
+      steps = abs(steps)
+    else:
+      # Only count the steps that fit into the range, so that turning past a limit doesn't trigger
+      # the callbacks. Rounded up, so that a step that only partially fits still counts as one.
+      # Rounding to 6 decimals first avoids float inaccuracies, e.g. 0.3 / 0.1 = 2.9999999999999996
+      steps = ceil(round(abs(change) / self._increment, 6))
 
-    if steps > 0 and self._on_rotate_clockwise:
+    if change > 0 and self._on_rotate_clockwise:
       self._on_rotate_clockwise(steps, self._encoder_value)
-    elif steps < 0 and self._on_rotate_counter_clockwise:
-      self._on_rotate_counter_clockwise(-steps, self._encoder_value)
+    elif change < 0 and self._on_rotate_counter_clockwise:
+      self._on_rotate_counter_clockwise(steps, self._encoder_value)
 
     if self._on_press and self._pressed and not previous_pressed_status:
       self._on_press()
@@ -108,7 +118,30 @@ class ModulinoKnob(Modulino):
     if self._on_release and not self._pressed and previous_pressed_status:
       self._on_release()
 
-    return steps != 0 or self._pressed != previous_pressed_status
+    return change != 0 or self._pressed != previous_pressed_status
+
+  @property
+  def increment(self) -> int | float:
+    """
+    Returns the amount by which the value changes per step of the encoder.
+    """
+    return self._increment
+
+  @increment.setter
+  def increment(self, value: int | float) -> None:
+    """
+    Sets the amount by which the value changes per step of the encoder.
+    If a range is set, the value still stops exactly at its limits.
+    Fractional increments make the value a float, which can accumulate small
+    inaccuracies for increments that floats can't represent exactly, such as 0.1.
+
+    Parameters:
+        value (int | float): A positive number. Defaults to 1.
+    """
+    if value <= 0:
+      raise ValueError(f"Increment must be greater than 0, got {value}")
+
+    self._increment = value
 
   @property
   def range(self) -> tuple[int, int]:
@@ -146,7 +179,7 @@ class ModulinoKnob(Modulino):
 
     Parameters:
         value (function): The function to be called when the encoder is rotated clockwise.
-            It receives the number of steps and the new value as arguments.
+            It receives the number of steps turned (regardless of the increment) and the new value as arguments.
     """
     self._on_rotate_clockwise = value
 
@@ -164,7 +197,7 @@ class ModulinoKnob(Modulino):
 
     Parameters:
         value (function): The function to be called when the encoder is rotated counter clockwise.
-            It receives the number of steps and the new value as arguments.
+            It receives the number of steps turned (regardless of the increment) and the new value as arguments.
     """
     self._on_rotate_counter_clockwise = value
 
