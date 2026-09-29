@@ -28,6 +28,9 @@ class ModulinoMovement(Modulino):
         super().__init__(i2c_bus, address, "Movement", check_connection=check_connection, hub_port=hub_port)
         with self._hub_port:
             self.sensor = LSM6DSOX(self.i2c_bus, address=self.address)
+        # The pedometer state can't be read back through the driver,
+        # so it's put into a known state that the properties can rely on.
+        self._configure_pedometer(False, 10)
 
     @property
     def acceleration(self) -> MovementValues:
@@ -74,3 +77,69 @@ class ModulinoMovement(Modulino):
                             or by using the index operator for tuple unpacking.
         """
         return self.angular_velocity
+
+    def _configure_pedometer(self, enabled: bool, debounce_steps: int) -> None:
+        with self._hub_port:
+            self.sensor.pedometer_config(enable=enabled, debounce=debounce_steps)
+        self._pedometer_enabled = enabled
+        self._pedometer_debounce_steps = debounce_steps
+
+    @property
+    def pedometer_enabled(self) -> bool:
+        """
+        Returns:
+            bool: True if the built-in pedometer of the IMU is enabled.
+        """
+        return self._pedometer_enabled
+
+    @pedometer_enabled.setter
+    def pedometer_enabled(self, value: bool) -> None:
+        """
+        Enables or disables the built-in pedometer of the IMU.
+        Once enabled, steps are counted in the background by the sensor itself
+        and can be read at any time using the step_count property.
+        When disabled, the step count is kept until it gets reset using reset_step_count().
+
+        Parameters:
+            value (bool): True to enable the pedometer, False to disable it.
+        """
+        self._configure_pedometer(value, self._pedometer_debounce_steps)
+
+    @property
+    def pedometer_debounce_steps(self) -> int:
+        """
+        Returns:
+            int: The number of steps that need to be detected in a row before they are counted.
+        """
+        return self._pedometer_debounce_steps
+
+    @pedometer_debounce_steps.setter
+    def pedometer_debounce_steps(self, value: int) -> None:
+        """
+        Sets the number of steps that need to be detected in a row before they are counted.
+        This helps to filter out false positives e.g. from shaking the device.
+
+        Parameters:
+            value (int): The number of debounce steps. Range: 0-255. Default: 10.
+        """
+        if not 0 <= value <= 255:
+            raise ValueError("pedometer_debounce_steps must be between 0 and 255")
+        self._configure_pedometer(self._pedometer_enabled, value)
+
+    @property
+    def step_count(self) -> int:
+        """
+        Returns:
+            int: The number of steps counted by the pedometer since it was enabled
+                 or since the last call to reset_step_count().
+                 The pedometer needs to be enabled first using pedometer_enabled.
+        """
+        with self._hub_port:
+            return self.sensor.steps()
+
+    def reset_step_count(self) -> None:
+        """
+        Resets the step count of the pedometer to 0.
+        """
+        with self._hub_port:
+            self.sensor.pedometer_reset()
