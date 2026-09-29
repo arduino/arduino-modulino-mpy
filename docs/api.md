@@ -242,6 +242,12 @@
     * [acceleration\_magnitude](#modulino.movement.ModulinoMovement.acceleration_magnitude)
     * [angular\_velocity](#modulino.movement.ModulinoMovement.angular_velocity)
     * [gyro](#modulino.movement.ModulinoMovement.gyro)
+    * [pedometer\_enabled](#modulino.movement.ModulinoMovement.pedometer_enabled)
+    * [pedometer\_enabled](#modulino.movement.ModulinoMovement.pedometer_enabled)
+    * [pedometer\_debounce\_steps](#modulino.movement.ModulinoMovement.pedometer_debounce_steps)
+    * [pedometer\_debounce\_steps](#modulino.movement.ModulinoMovement.pedometer_debounce_steps)
+    * [step\_count](#modulino.movement.ModulinoMovement.step_count)
+    * [reset\_step\_count](#modulino.movement.ModulinoMovement.reset_step_count)
 
 <a id="modulino.motors.DecayMode"></a>
 
@@ -3243,4 +3249,89 @@ Alias for angular_velocity property.
 - `MovementValues` - The gyroscope values in the x, y, and z axes.
   These values can be accessed as .x, .y, and .z properties
   or by using the index operator for tuple unpacking.
+
+<a id="modulino.movement.ModulinoMovement.pedometer_enabled"></a>
+
+### `pedometer_enabled`
+
+```python
+@property
+def pedometer_enabled() -> bool
+```
+
+**Returns**:
+
+- `bool` - True if the built-in pedometer of the IMU is enabled.
+
+<a id="modulino.movement.ModulinoMovement.pedometer_enabled"></a>
+
+### `pedometer_enabled`
+
+```python
+@pedometer_enabled.setter
+def pedometer_enabled(value: bool) -> None
+```
+
+Enables or disables the built-in pedometer of the IMU.
+Once enabled, steps are counted in the background by the sensor itself
+and can be read at any time using the step_count property.
+When disabled, the step count is kept until it gets reset using reset_step_count().
+
+**Arguments**:
+
+- `value` _bool_ - True to enable the pedometer, False to disable it.
+
+<a id="modulino.movement.ModulinoMovement.pedometer_debounce_steps"></a>
+
+### `pedometer_debounce_steps`
+
+```python
+@property
+def pedometer_debounce_steps() -> int
+```
+
+**Returns**:
+
+- `int` - The number of steps that need to be detected in a row before they are counted.
+
+<a id="modulino.movement.ModulinoMovement.pedometer_debounce_steps"></a>
+
+### `pedometer_debounce_steps`
+
+```python
+@pedometer_debounce_steps.setter
+def pedometer_debounce_steps(value: int) -> None
+```
+
+Sets the number of steps that need to be detected in a row before they are counted.
+This helps to filter out false positives e.g. from shaking the device.
+
+**Arguments**:
+
+- `value` _int_ - The number of debounce steps. Range: 0-255. Default: 10.
+
+<a id="modulino.movement.ModulinoMovement.step_count"></a>
+
+### `step_count`
+
+```python
+@property
+def step_count() -> int
+```
+
+**Returns**:
+
+- `int` - The number of steps counted by the pedometer since it was enabled
+  or since the last call to reset_step_count().
+  The pedometer needs to be enabled first using pedometer_enabled.
+
+<a id="modulino.movement.ModulinoMovement.reset_step_count"></a>
+
+### `reset_step_count`
+
+```python
+def reset_step_count() -> None
+```
+
+Resets the step count of the pedometer to 0.
 
