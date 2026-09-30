@@ -125,14 +125,14 @@
   --arduino-code-border: #434f54;
 }
 
-/* 1 + 2: bold headings, Arduino sizes (1rem = 20px) */
+/* 1 + 2: bold headings, 32 / 25 / 20 / 16px (1rem = 20px) */
 .md-typeset h1, .md-typeset h2, .md-typeset h3, .md-typeset h4 {
   color: var(--arduino-heading-color);
   font-weight: 700;
   letter-spacing: .01em;
 }
-.md-typeset h1 { font-size: 1.4rem; line-height: 1.5; margin-bottom: .8em; }
-.md-typeset h2 { font-size: 1.4rem; line-height: 1.5; }
+.md-typeset h1 { font-size: 1.6rem; line-height: 1.4; margin-bottom: .8em; }
+.md-typeset h2 { font-size: 1.25rem; line-height: 1.5; }
 .md-typeset h3 { font-size: 1rem; line-height: 1.5; }
 .md-typeset h4 { font-size: .8rem; line-height: 1.7; }
 
