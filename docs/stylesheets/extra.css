@@ -1,0 +1,218 @@
+:root {
+  --md-primary-fg-color: #008184;
+  --md-primary-fg-color--light: #00979d;
+  --md-primary-fg-color--dark: #005c5f;
+  /* Hover/action colour as on docs.arduino.cc: a stronger teal */
+  --md-accent-fg-color: #005c5f;
+  --md-accent-fg-color--transparent: rgba(0, 129, 132, .08);
+}
+[data-md-color-scheme="slate"] {
+  --md-hue: 200;
+  --md-primary-fg-color: #25c2c7;
+  --md-accent-fg-color: #7fcbcd;
+  --md-accent-fg-color--transparent: rgba(37, 194, 199, .08);
+  /* Background */
+  --md-default-bg-color: rgb(37, 43, 46);
+  --md-default-bg-color--light: rgba(37, 43, 46, .54);
+  --md-default-bg-color--lighter: rgba(37, 43, 46, .26);
+  --md-default-bg-color--lightest: rgba(37, 43, 46, .07);
+  /* Text: white for main text, #c9d2d2 for secondary text */
+  --md-default-fg-color: #ffffff;
+  --md-default-fg-color--light: #c9d2d2;
+  --md-default-fg-color--lighter: rgba(201, 210, 210, .6);
+  --md-default-fg-color--lightest: rgba(201, 210, 210, .12);
+  --md-typeset-color: #ffffff;
+  /* Brighter teal for links and accents */
+  --md-typeset-a-color: #25c2c7;
+}
+/* Dark mode title bar keeps the dark teal */
+[data-md-color-scheme="slate"] .md-header {
+  background-color: #00585b;
+  color: #ffffff;
+}
+[data-md-color-scheme="slate"] .md-nav__link--active,
+[data-md-color-scheme="slate"] .md-nav__item .md-nav__link--active { color: #25c2c7; }
+/* Tidy up the API reference */
+.doc-heading code { font-weight: 600; }
+.doc-symbol-heading { margin-right: .3em; }
+.md-typeset .doc-contents > .doc-section-title { margin-top: 1em; }
+.md-typeset .grid.cards > ul > li { border-radius: .4rem; }
+.banner { width: 100%; border-radius: .6rem; margin-bottom: 1rem; }
+/* Keep long examples from pushing the API reference too far down */
+.md-typeset .tabbed-set .highlight pre > code { max-height: 30em; overflow-y: auto; }
+/* Modulino illustrations */
+.md-typeset img.modulino-illustration {
+  float: right; width: 240px; max-width: 40%;
+  margin: 0 0 1rem 1.5rem;
+}
+.md-typeset .grid.cards img.card-illustration {
+  display: block; height: 110px; margin: 0 auto .6rem; object-fit: contain;
+}
+@media screen and (max-width: 44.9375em) {
+  .md-typeset img.modulino-illustration { float: none; display: block; margin: 0 auto 1rem; max-width: 60%; }
+}
+/* Light header so the Arduino logo (#387F83) stays visible */
+[data-md-color-scheme="default"] .md-header {
+  background-color: #ffffff;
+  color: #387F83;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, .08);
+}
+[data-md-color-scheme="default"] .md-header .md-search__input {
+  background-color: #f1f4f4;
+  color: #1a1a1a;
+}
+[data-md-color-scheme="default"] .md-header .md-search__input::placeholder,
+[data-md-color-scheme="default"] .md-header .md-search__icon { color: #5f6b6c; }
+.md-header__button.md-logo img { height: 1.3rem; }
+/* Rounded search field */
+.md-search__form { border-radius: 1rem; overflow: hidden; }
+.md-search__input { border-radius: 1rem; }
+[data-md-toggle="search"]:checked ~ .md-header .md-search__form { border-radius: 1rem 1rem 0 0; }
+@media screen and (min-width: 60em) {
+  [dir] .md-search__output { border-radius: 0 0 1rem 1rem; overflow: hidden; }
+  .md-search__scrollwrap { border-radius: 0 0 1rem 1rem; }
+}
+
+/* Tables in the style of docs.arduino.cc: tinted header, borders, alternating rows */
+:root {
+  --table-border-color: #c9d2d2;
+  --table-header-bg: rgba(173, 184, 184, .15);
+  --table-stripe-bg: #ecf1f1;
+}
+[data-md-color-scheme="slate"] {
+  --table-border-color: #434f54;
+  --table-header-bg: #2f383c;
+  --table-stripe-bg: #171e21;
+}
+.md-typeset table:not([class]) {
+  border: 1px solid var(--table-border-color);
+  border-radius: 0;
+  font-size: .7rem;
+}
+.md-typeset table:not([class]) th {
+  background-color: var(--table-header-bg);
+}
+.md-typeset table:not([class]) td {
+  border-top: 1px solid var(--table-border-color);
+}
+.md-typeset table:not([class]) tbody tr:nth-child(even) {
+  background-color: var(--table-stripe-bg);
+}
+/* No hover highlight; the alternating rows are enough */
+.md-typeset table:not([class]) tbody tr:hover {
+  background-color: transparent;
+  box-shadow: none;
+}
+.md-typeset table:not([class]) tbody tr:nth-child(even):hover {
+  background-color: var(--table-stripe-bg);
+}
+
+/* Indent second-level entries in the left navigation */
+.md-nav--primary .md-nav__item--section > .md-nav > .md-nav__list > .md-nav__item {
+  padding-left: .6rem;
+}
+
+/* ---------- Typography in the style of docs.arduino.cc ---------- */
+:root {
+  --arduino-heading-color: #374146;
+  --arduino-text-color: #374146;
+  --arduino-code-bg: rgba(173, 184, 184, .15);
+  --arduino-code-border: #c9d2d2;
+}
+[data-md-color-scheme="default"] { --md-typeset-color: var(--arduino-text-color); }
+[data-md-color-scheme="slate"] {
+  --arduino-heading-color: #ffffff;
+  --arduino-code-border: #434f54;
+}
+
+/* 1 + 2: bold headings, Arduino sizes (1rem = 20px) */
+.md-typeset h1, .md-typeset h2, .md-typeset h3, .md-typeset h4 {
+  color: var(--arduino-heading-color);
+  font-weight: 700;
+  letter-spacing: .01em;
+}
+.md-typeset h1 { font-size: 1.4rem; line-height: 1.5; margin-bottom: .8em; }
+.md-typeset h2 { font-size: 1.4rem; line-height: 1.5; }
+.md-typeset h3 { font-size: 1rem; line-height: 1.5; }
+.md-typeset h4 { font-size: .8rem; line-height: 1.7; }
+
+
+/* 4: semibold links (not inside code) */
+.md-typeset a { font-weight: 600; }
+.md-typeset code a, .md-typeset pre a, .md-typeset .headerlink { font-weight: inherit; }
+
+/* 5: inline code as small chips */
+.md-typeset :not(pre) > code:not(.doc-symbol) {
+  background-color: var(--arduino-code-bg);
+  border: 1px solid var(--arduino-code-border);
+  border-radius: .16rem;
+  padding: 0 .3em;
+}
+
+/* 6: rounded code blocks */
+.md-typeset pre, .md-typeset pre > code, .md-typeset .highlight { border-radius: .3rem; }
+.md-typeset .tabbed-set .highlight, .md-typeset .tabbed-set pre > code { border-radius: 0 0 .3rem .3rem; }
+
+/* Sidebar: bold active page, uppercase section titles */
+.md-nav--primary .md-nav__link--active { font-weight: 700; }
+.md-nav--primary .md-nav__item--section > .md-nav__link {
+  text-transform: uppercase;
+  font-size: .6rem;
+  letter-spacing: .06em;
+}
+
+/* Label methods as "func" in the API reference */
+code.doc-symbol.doc-symbol-method::after { content: "func"; }
+
+/* Subtle background for the Modulino cards on the home page */
+:root { --card-bg: #f5f8f8; }
+[data-md-color-scheme="slate"] { --card-bg: #2c3437; }
+.md-typeset .grid.cards > ul > li { background-color: var(--card-bg); }
+
+
+/* ---------- Code highlighting: VS Code default colours ----------
+   Light+ in light mode, Dark+ in dark mode. Backgrounds stay as they are. */
+[data-md-color-scheme="default"] {
+  --md-code-fg-color: #001080;
+  --md-code-hl-keyword-color: #af00db;
+  --md-code-hl-constant-color: #795e26;      /* built-ins like print, range */
+  --md-code-hl-function-color: #267f99;      /* class and module names */
+  --md-code-hl-string-color: #a31515;
+  --md-code-hl-number-color: #098658;
+  --md-code-hl-comment-color: #6e7781;
+  --md-code-hl-name-color: #001080;          /* variables and parameters */
+  --md-code-hl-operator-color: #000000;
+  --md-code-hl-punctuation-color: #000000;
+  --md-code-hl-special-color: #ee0000;
+  --md-code-hl-generic-color: #6e7781;
+  --md-code-hl-variable-color: #001080;
+  --vscode-function-def-color: #795e26;
+  --vscode-constant-color: #0000ff;
+}
+[data-md-color-scheme="slate"] {
+  --md-code-fg-color: #9cdcfe;
+  --md-code-hl-keyword-color: #c586c0;
+  --md-code-hl-constant-color: #dcdcaa;
+  --md-code-hl-function-color: #4ec9b0;
+  --md-code-hl-string-color: #ce9178;
+  --md-code-hl-number-color: #b5cea8;
+  --md-code-hl-comment-color: #939ca6;
+  --md-code-hl-name-color: #9cdcfe;
+  --md-code-hl-operator-color: #d4d4d4;
+  --md-code-hl-punctuation-color: #d4d4d4;
+  --md-code-hl-special-color: #d7ba7d;
+  --md-code-hl-generic-color: #939ca6;
+  --md-code-hl-variable-color: #9cdcfe;
+  --vscode-function-def-color: #dcdcaa;
+  --vscode-constant-color: #569cd6;
+}
+/* Function definitions (the highlighter groups them with class names) */
+.md-typeset .highlight .nf, .md-typeset .highlight .fm { color: var(--vscode-function-def-color); }
+/* True, False, None and self in blue */
+.md-typeset .highlight .kc, .md-typeset .highlight .bp { color: var(--vscode-constant-color); }
+/* and, or, not, in as keywords */
+.md-typeset .highlight .ow { color: var(--md-code-hl-keyword-color); }
+/* Types in API signatures (int, bool, ...) coloured like classes */
+.md-typeset .doc-signature .nb { color: var(--md-code-hl-function-color); }
+/* Inline code in text keeps the normal text colour */
+.md-typeset :not(pre) > code:not(.doc-symbol):not(.highlight) { color: var(--md-typeset-color); }

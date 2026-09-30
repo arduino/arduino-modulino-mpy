@@ -33,7 +33,13 @@ On boards that don't have a Qwiic connector you will need to buy a Qwiic to Dupo
 
 ## ⚙️ Installation
 
-The easiest way is to use [mpremote and mip](https://docs.micropython.org/en/latest/reference/packages.html#packages): 
+The easiest way to install the library is the [Arduino MicroPython Package Installer](https://labs.arduino.cc/en/labs/micropython-package-installer), available for macOS, Windows and Linux:
+
+1. [Download the installer](https://github.com/arduino/lab-micropython-package-installer/releases/latest) for your operating system and launch it.
+2. Connect your board and select it in the installer.
+3. Search for **Modulino** and click *Install*.
+
+Alternatively, you can use [mpremote and mip](https://docs.micropython.org/en/latest/reference/packages.html#packages): 
 
 ```bash
 mpremote mip install github:arduino/arduino-modulino-mpy

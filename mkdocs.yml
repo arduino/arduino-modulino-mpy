@@ -1,0 +1,120 @@
+site_name: Modulino MicroPython
+site_description: MicroPython API for Arduino Modulinos
+site_url: https://arduino.github.io/modulino-mpy/
+repo_url: https://github.com/arduino/modulino-mpy
+repo_name: arduino/modulino-mpy
+edit_uri: edit/main/docs/
+copyright: Copyright &copy; Arduino. Licensed under MPL 2.0.
+
+docs_dir: docs
+exclude_docs: |
+  api.md
+  README.md
+  requirements.txt
+
+theme:
+  name: material
+  logo: assets/logo.svg
+  favicon: assets/logo.svg
+  language: en
+  font:
+    text: Open Sans
+    code: Roboto Mono
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - navigation.indexes
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.tabs.link
+
+extra_css:
+  - stylesheets/extra.css
+
+nav:
+  - Home: index.md
+  - Getting started: getting-started.md
+  - Modulinos:
+      - Buttons: modulinos/buttons.md
+      - Buzzer: modulinos/buzzer.md
+      - Distance: modulinos/distance.md
+      - Hub: modulinos/hub.md
+      - Joystick: modulinos/joystick.md
+      - Knob: modulinos/knob.md
+      - Latch Relay: modulinos/latch-relay.md
+      - LED Matrix: modulinos/led-matrix.md
+      - Light: modulinos/light.md
+      - Motors: modulinos/motors.md
+      - Movement: modulinos/movement.md
+      - Pixels: modulinos/pixels.md
+      - Thermo: modulinos/thermo.md
+      - Vibro: modulinos/vibro.md
+  - Core:
+      - Modulino base class: reference/modulino.md
+      - Device Manager: reference/device-manager.md
+      - Helpers: reference/helpers.md
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.snippets:
+      base_path: ["."]
+      check_paths: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            docstring_style: google
+            docstring_section_style: table
+            docstring_options:
+              returns_named_value: false
+            heading_level: 3
+            show_root_heading: true
+            show_root_full_path: false
+            show_source: false
+            show_bases: true
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            show_signature_annotations: true
+            separate_signature: true
+            signature_crossrefs: true
+            merge_init_into_class: true
+            members_order: source
+            filters: ["!^_[^_]"]
