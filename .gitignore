@@ -3,3 +3,4 @@ __pycache__
 .mpy_codesupport
 .vscode
 copilot-instructions.md
+site/
