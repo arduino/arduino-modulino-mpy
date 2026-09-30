@@ -81,7 +81,7 @@
 }
 [data-md-color-scheme="slate"] {
   --table-border-color: #434f54;
-  --table-header-bg: #2a2a2a;
+  --table-header-bg: #2f383c;
   --table-stripe-bg: #171e21;
 }
 .md-typeset table:not([class]) {
@@ -116,14 +116,12 @@
 :root {
   --arduino-heading-color: #374146;
   --arduino-text-color: #374146;
-  --arduino-lead-color: #5d6a6b;
   --arduino-code-bg: rgba(173, 184, 184, .15);
   --arduino-code-border: #c9d2d2;
 }
 [data-md-color-scheme="default"] { --md-typeset-color: var(--arduino-text-color); }
 [data-md-color-scheme="slate"] {
   --arduino-heading-color: #ffffff;
-  --arduino-lead-color: #c9d2d2;
   --arduino-code-border: #434f54;
 }
 
@@ -138,8 +136,6 @@
 .md-typeset h3 { font-size: 1rem; line-height: 1.5; }
 .md-typeset h4 { font-size: .8rem; line-height: 1.7; }
 
-/* 3: intro paragraphs in secondary grey */
-.md-typeset .lead { color: var(--arduino-lead-color); }
 
 /* 4: semibold links (not inside code) */
 .md-typeset a { font-weight: 600; }
@@ -173,3 +169,50 @@ code.doc-symbol.doc-symbol-method::after { content: "func"; }
 [data-md-color-scheme="slate"] { --card-bg: #2c3437; }
 .md-typeset .grid.cards > ul > li { background-color: var(--card-bg); }
 
+
+/* ---------- Code highlighting: VS Code default colours ----------
+   Light+ in light mode, Dark+ in dark mode. Backgrounds stay as they are. */
+[data-md-color-scheme="default"] {
+  --md-code-fg-color: #001080;
+  --md-code-hl-keyword-color: #af00db;
+  --md-code-hl-constant-color: #795e26;      /* built-ins like print, range */
+  --md-code-hl-function-color: #267f99;      /* class and module names */
+  --md-code-hl-string-color: #a31515;
+  --md-code-hl-number-color: #098658;
+  --md-code-hl-comment-color: #6e7781;
+  --md-code-hl-name-color: #001080;          /* variables and parameters */
+  --md-code-hl-operator-color: #000000;
+  --md-code-hl-punctuation-color: #000000;
+  --md-code-hl-special-color: #ee0000;
+  --md-code-hl-generic-color: #6e7781;
+  --md-code-hl-variable-color: #001080;
+  --vscode-function-def-color: #795e26;
+  --vscode-constant-color: #0000ff;
+}
+[data-md-color-scheme="slate"] {
+  --md-code-fg-color: #9cdcfe;
+  --md-code-hl-keyword-color: #c586c0;
+  --md-code-hl-constant-color: #dcdcaa;
+  --md-code-hl-function-color: #4ec9b0;
+  --md-code-hl-string-color: #ce9178;
+  --md-code-hl-number-color: #b5cea8;
+  --md-code-hl-comment-color: #939ca6;
+  --md-code-hl-name-color: #9cdcfe;
+  --md-code-hl-operator-color: #d4d4d4;
+  --md-code-hl-punctuation-color: #d4d4d4;
+  --md-code-hl-special-color: #d7ba7d;
+  --md-code-hl-generic-color: #939ca6;
+  --md-code-hl-variable-color: #9cdcfe;
+  --vscode-function-def-color: #dcdcaa;
+  --vscode-constant-color: #569cd6;
+}
+/* Function definitions (the highlighter groups them with class names) */
+.md-typeset .highlight .nf, .md-typeset .highlight .fm { color: var(--vscode-function-def-color); }
+/* True, False, None and self in blue */
+.md-typeset .highlight .kc, .md-typeset .highlight .bp { color: var(--vscode-constant-color); }
+/* and, or, not, in as keywords */
+.md-typeset .highlight .ow { color: var(--md-code-hl-keyword-color); }
+/* Types in API signatures (int, bool, ...) coloured like classes */
+.md-typeset .doc-signature .nb { color: var(--md-code-hl-function-color); }
+/* Inline code in text keeps the normal text colour */
+.md-typeset :not(pre) > code:not(.doc-symbol):not(.highlight) { color: var(--md-typeset-color); }
