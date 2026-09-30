@@ -3,9 +3,9 @@ hide:
   - navigation
 ---
 
-![Modulino MicroPython](assets/library-banner.svg){ .banner }
+![Modulino for MicroPython](assets/library-banner.svg){ .banner }
 
-# Modulino MicroPython
+# Modulino for MicroPython
 
 This package lets you connect to Arduino Modulinos from MicroPython, read their data and control them.
 
