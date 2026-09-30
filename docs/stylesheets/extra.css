@@ -1,0 +1,71 @@
+:root {
+  --md-primary-fg-color: #008184;
+  --md-primary-fg-color--light: #00979d;
+  --md-primary-fg-color--dark: #005c5f;
+  --md-accent-fg-color: #e47128;
+}
+[data-md-color-scheme="slate"] {
+  --md-hue: 200;
+  --md-primary-fg-color: #25c2c7;
+  --md-accent-fg-color: #f39c5a;
+  /* Background */
+  --md-default-bg-color: rgb(37, 43, 46);
+  --md-default-bg-color--light: rgba(37, 43, 46, .54);
+  --md-default-bg-color--lighter: rgba(37, 43, 46, .26);
+  --md-default-bg-color--lightest: rgba(37, 43, 46, .07);
+  /* Text: white for main text, #c9d2d2 for secondary text */
+  --md-default-fg-color: #ffffff;
+  --md-default-fg-color--light: #c9d2d2;
+  --md-default-fg-color--lighter: rgba(201, 210, 210, .6);
+  --md-default-fg-color--lightest: rgba(201, 210, 210, .12);
+  --md-typeset-color: #ffffff;
+  /* Brighter teal for links and accents */
+  --md-typeset-a-color: #25c2c7;
+}
+/* Dark mode title bar keeps the dark teal */
+[data-md-color-scheme="slate"] .md-header {
+  background-color: #00585b;
+  color: #ffffff;
+}
+[data-md-color-scheme="slate"] .md-nav__link--active,
+[data-md-color-scheme="slate"] .md-nav__item .md-nav__link--active { color: #25c2c7; }
+/* Tidy up the API reference */
+.doc-heading code { font-weight: 600; }
+.doc-symbol-heading { margin-right: .3em; }
+.md-typeset .doc-contents > .doc-section-title { margin-top: 1em; }
+.md-typeset .grid.cards > ul > li { border-radius: .4rem; }
+.banner { width: 100%; border-radius: .6rem; margin-bottom: 1rem; }
+/* Keep long examples from pushing the API reference too far down */
+.md-typeset .tabbed-set .highlight pre > code { max-height: 30em; overflow-y: auto; }
+/* Modulino illustrations */
+.md-typeset img.modulino-illustration {
+  float: right; width: 240px; max-width: 40%;
+  margin: 0 0 1rem 1.5rem;
+}
+.md-typeset .grid.cards img.card-illustration {
+  display: block; height: 110px; margin: 0 auto .6rem; object-fit: contain;
+}
+@media screen and (max-width: 44.9375em) {
+  .md-typeset img.modulino-illustration { float: none; display: block; margin: 0 auto 1rem; max-width: 60%; }
+}
+/* Light header so the Arduino logo (#387F83) stays visible */
+[data-md-color-scheme="default"] .md-header {
+  background-color: #ffffff;
+  color: #387F83;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, .08);
+}
+[data-md-color-scheme="default"] .md-header .md-search__input {
+  background-color: #f1f4f4;
+  color: #1a1a1a;
+}
+[data-md-color-scheme="default"] .md-header .md-search__input::placeholder,
+[data-md-color-scheme="default"] .md-header .md-search__icon { color: #5f6b6c; }
+.md-header__button.md-logo img { height: 1.3rem; }
+/* Rounded search field */
+.md-search__form { border-radius: 1rem; overflow: hidden; }
+.md-search__input { border-radius: 1rem; }
+[data-md-toggle="search"]:checked ~ .md-header .md-search__form { border-radius: 1rem 1rem 0 0; }
+@media screen and (min-width: 60em) {
+  [dir] .md-search__output { border-radius: 0 0 1rem 1rem; overflow: hidden; }
+  .md-search__scrollwrap { border-radius: 0 0 1rem 1rem; }
+}
