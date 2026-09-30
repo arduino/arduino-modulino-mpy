@@ -2,12 +2,15 @@
   --md-primary-fg-color: #008184;
   --md-primary-fg-color--light: #00979d;
   --md-primary-fg-color--dark: #005c5f;
-  --md-accent-fg-color: #e47128;
+  /* Hover/action colour as on docs.arduino.cc: a stronger teal */
+  --md-accent-fg-color: #005c5f;
+  --md-accent-fg-color--transparent: rgba(0, 129, 132, .08);
 }
 [data-md-color-scheme="slate"] {
   --md-hue: 200;
   --md-primary-fg-color: #25c2c7;
-  --md-accent-fg-color: #f39c5a;
+  --md-accent-fg-color: #7fcbcd;
+  --md-accent-fg-color--transparent: rgba(37, 194, 199, .08);
   /* Background */
   --md-default-bg-color: rgb(37, 43, 46);
   --md-default-bg-color--light: rgba(37, 43, 46, .54);
@@ -69,3 +72,104 @@
   [dir] .md-search__output { border-radius: 0 0 1rem 1rem; overflow: hidden; }
   .md-search__scrollwrap { border-radius: 0 0 1rem 1rem; }
 }
+
+/* Tables in the style of docs.arduino.cc: tinted header, borders, alternating rows */
+:root {
+  --table-border-color: #c9d2d2;
+  --table-header-bg: rgba(173, 184, 184, .15);
+  --table-stripe-bg: #ecf1f1;
+}
+[data-md-color-scheme="slate"] {
+  --table-border-color: #434f54;
+  --table-header-bg: #2a2a2a;
+  --table-stripe-bg: #171e21;
+}
+.md-typeset table:not([class]) {
+  border: 1px solid var(--table-border-color);
+  border-radius: 0;
+  font-size: .7rem;
+}
+.md-typeset table:not([class]) th {
+  background-color: var(--table-header-bg);
+}
+.md-typeset table:not([class]) td {
+  border-top: 1px solid var(--table-border-color);
+}
+.md-typeset table:not([class]) tbody tr:nth-child(even) {
+  background-color: var(--table-stripe-bg);
+}
+/* No hover highlight; the alternating rows are enough */
+.md-typeset table:not([class]) tbody tr:hover {
+  background-color: transparent;
+  box-shadow: none;
+}
+.md-typeset table:not([class]) tbody tr:nth-child(even):hover {
+  background-color: var(--table-stripe-bg);
+}
+
+/* Indent second-level entries in the left navigation */
+.md-nav--primary .md-nav__item--section > .md-nav > .md-nav__list > .md-nav__item {
+  padding-left: .6rem;
+}
+
+/* ---------- Typography in the style of docs.arduino.cc ---------- */
+:root {
+  --arduino-heading-color: #374146;
+  --arduino-text-color: #374146;
+  --arduino-lead-color: #5d6a6b;
+  --arduino-code-bg: rgba(173, 184, 184, .15);
+  --arduino-code-border: #c9d2d2;
+}
+[data-md-color-scheme="default"] { --md-typeset-color: var(--arduino-text-color); }
+[data-md-color-scheme="slate"] {
+  --arduino-heading-color: #ffffff;
+  --arduino-lead-color: #c9d2d2;
+  --arduino-code-border: #434f54;
+}
+
+/* 1 + 2: bold headings, Arduino sizes (1rem = 20px) */
+.md-typeset h1, .md-typeset h2, .md-typeset h3, .md-typeset h4 {
+  color: var(--arduino-heading-color);
+  font-weight: 700;
+  letter-spacing: .01em;
+}
+.md-typeset h1 { font-size: 1.4rem; line-height: 1.5; margin-bottom: .8em; }
+.md-typeset h2 { font-size: 1.4rem; line-height: 1.5; }
+.md-typeset h3 { font-size: 1rem; line-height: 1.5; }
+.md-typeset h4 { font-size: .8rem; line-height: 1.7; }
+
+/* 3: intro paragraphs in secondary grey */
+.md-typeset .lead { color: var(--arduino-lead-color); }
+
+/* 4: semibold links (not inside code) */
+.md-typeset a { font-weight: 600; }
+.md-typeset code a, .md-typeset pre a, .md-typeset .headerlink { font-weight: inherit; }
+
+/* 5: inline code as small chips */
+.md-typeset :not(pre) > code:not(.doc-symbol) {
+  background-color: var(--arduino-code-bg);
+  border: 1px solid var(--arduino-code-border);
+  border-radius: .16rem;
+  padding: 0 .3em;
+}
+
+/* 6: rounded code blocks */
+.md-typeset pre, .md-typeset pre > code, .md-typeset .highlight { border-radius: .3rem; }
+.md-typeset .tabbed-set .highlight, .md-typeset .tabbed-set pre > code { border-radius: 0 0 .3rem .3rem; }
+
+/* Sidebar: bold active page, uppercase section titles */
+.md-nav--primary .md-nav__link--active { font-weight: 700; }
+.md-nav--primary .md-nav__item--section > .md-nav__link {
+  text-transform: uppercase;
+  font-size: .6rem;
+  letter-spacing: .06em;
+}
+
+/* Label methods as "func" in the API reference */
+code.doc-symbol.doc-symbol-method::after { content: "func"; }
+
+/* Subtle background for the Modulino cards on the home page */
+:root { --card-bg: #f5f8f8; }
+[data-md-color-scheme="slate"] { --card-bg: #2c3437; }
+.md-typeset .grid.cards > ul > li { background-color: var(--card-bg); }
+
