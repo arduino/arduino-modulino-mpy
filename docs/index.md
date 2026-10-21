@@ -23,14 +23,40 @@ mpremote mip install github:arduino/modulino-mpy
 
 ## Quick start
 
-```python
-from modulino import ModulinoPixels, ModulinoColor
+### 1. Connect the Modulino
 
-pixels = ModulinoPixels()
-pixels.set_all_color(ModulinoColor.GREEN).show()
+Plug the Modulino into your board's Qwiic connector. Boards without a Qwiic connector
+need a Qwiic to Dupont cable; see [Using 3rd party boards](getting-started.md#using-3rd-party-boards).
+
+### 2. Install the library
+
+Install the package as described in [Installation](#installation) above.
+
+### 3. Write your first script
+
+Every Modulino works the same way: import its class, create an object, then read from it
+or control it. This script makes a Modulino Pixels blink green:
+
+```python
+from modulino import ModulinoPixels, ModulinoColor  # (1) Import the class
+from time import sleep
+
+pixels = ModulinoPixels()  # (2) Create the object. It finds the Modulino on the I2C bus.
+
+while True:  # (3) Control it
+    pixels.set_all_color(ModulinoColor.GREEN).show()
+    sleep(0.5)
+    pixels.clear_all().show()
+    sleep(0.5)
 ```
 
-New here? Start with [Getting started](getting-started.md).
+Run the script on your board using the tool or IDE of your choice, e.g.
+[Arduino Lab for MicroPython](https://labs.arduino.cc/en/labs/micropython) or `mpremote`.
+
+### 4. Next steps
+
+Pick your Modulino below to see all its functions and more examples.
+For more details, e.g. on using several Modulinos of the same type, see [Getting started](getting-started.md).
 
 ## Modulinos
 
