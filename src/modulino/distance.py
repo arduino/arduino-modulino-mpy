@@ -49,16 +49,16 @@ class ModulinoDistance(Modulino):
             return None
 
     @property
-    def distance(self) -> int:
+    def distance(self) -> int | None:
         """
         Returns:
-            int: The distance in centimeters.
+            int | None: The distance in centimeters, or None if the reading is invalid.
         """
         raw_distance = self._distance_raw()
 
         # Retry once if the reading is invalid
-        if raw_distance <= 0:
+        if raw_distance is None or raw_distance <= 0:
             raw_distance = self._distance_raw()
         
         # Filter out invalid readings
-        return raw_distance if raw_distance > 0 else None
+        return raw_distance if raw_distance is not None and raw_distance > 0 else None
