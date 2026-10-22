@@ -43,7 +43,7 @@ class ModulinoDistance(Modulino):
                         raise OSError("Timeout waiting for sensor data")
                     sleep_ms(1)
                 self.sensor.clear_interrupt()
-                return self.sensor.distance
+                return int(self.sensor.distance)
         except OSError:
             # Catch timeout errors
             return None
