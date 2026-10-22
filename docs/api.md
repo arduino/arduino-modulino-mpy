@@ -1,5 +1,44 @@
 # Summary
 
+* [latch\_relay](#modulino.latch_relay)
+  * [ModulinoLatchRelay](#modulino.latch_relay.ModulinoLatchRelay)
+    * [\_\_init\_\_](#modulino.latch_relay.ModulinoLatchRelay.__init__)
+    * [on](#modulino.latch_relay.ModulinoLatchRelay.on)
+    * [off](#modulino.latch_relay.ModulinoLatchRelay.off)
+    * [is\_on](#modulino.latch_relay.ModulinoLatchRelay.is_on)
+* [thermo](#modulino.thermo)
+  * [Measurement](#modulino.thermo.Measurement)
+  * [ModulinoThermo](#modulino.thermo.ModulinoThermo)
+    * [\_\_init\_\_](#modulino.thermo.ModulinoThermo.__init__)
+    * [measurements](#modulino.thermo.ModulinoThermo.measurements)
+    * [relative\_humidity](#modulino.thermo.ModulinoThermo.relative_humidity)
+    * [temperature](#modulino.thermo.ModulinoThermo.temperature)
+* [buzzer](#modulino.buzzer)
+  * [ModulinoBuzzer](#modulino.buzzer.ModulinoBuzzer)
+    * [NOTES](#modulino.buzzer.ModulinoBuzzer.NOTES)
+    * [\_\_init\_\_](#modulino.buzzer.ModulinoBuzzer.__init__)
+    * [tone](#modulino.buzzer.ModulinoBuzzer.tone)
+    * [no\_tone](#modulino.buzzer.ModulinoBuzzer.no_tone)
+* [light](#modulino.light)
+  * [ModulinoLight](#modulino.light.ModulinoLight)
+    * [\_\_init\_\_](#modulino.light.ModulinoLight.__init__)
+    * [lux](#modulino.light.ModulinoLight.lux)
+    * [rgb](#modulino.light.ModulinoLight.rgb)
+    * [color\_name](#modulino.light.ModulinoLight.color_name)
+    * [color\_temperature](#modulino.light.ModulinoLight.color_temperature)
+    * [infrared](#modulino.light.ModulinoLight.infrared)
+* [distance](#modulino.distance)
+  * [ModulinoDistance](#modulino.distance.ModulinoDistance)
+    * [\_\_init\_\_](#modulino.distance.ModulinoDistance.__init__)
+    * [distance](#modulino.distance.ModulinoDistance.distance)
+* [device\_manager](#modulino.device_manager)
+  * [DeviceManager](#modulino.device_manager.DeviceManager)
+    * [available\_devices](#modulino.device_manager.DeviceManager.available_devices)
+* [vibro](#modulino.vibro)
+  * [ModulinoVibro](#modulino.vibro.ModulinoVibro)
+    * [\_\_init\_\_](#modulino.vibro.ModulinoVibro.__init__)
+    * [on](#modulino.vibro.ModulinoVibro.on)
+    * [off](#modulino.vibro.ModulinoVibro.off)
 * [motors](#modulino.motors)
   * [DecayMode](#modulino.motors.DecayMode)
   * [ModulinoMotors](#modulino.motors.ModulinoMotors)
@@ -44,93 +83,20 @@
     * [half\_step\_enabled](#modulino.motors.ModulinoMotors.half_step_enabled)
     * [steps\_per\_revolution](#modulino.motors.ModulinoMotors.steps_per_revolution)
     * [decay\_mode](#modulino.motors.ModulinoMotors.decay_mode)
-* [distance](#modulino.distance)
-  * [ModulinoDistance](#modulino.distance.ModulinoDistance)
-    * [\_\_init\_\_](#modulino.distance.ModulinoDistance.__init__)
-    * [distance](#modulino.distance.ModulinoDistance.distance)
-* [joystick](#modulino.joystick)
-  * [ModulinoJoystick](#modulino.joystick.ModulinoJoystick)
-    * [default\_long\_press\_duration](#modulino.joystick.ModulinoJoystick.default_long_press_duration)
-    * [\_\_init\_\_](#modulino.joystick.ModulinoJoystick.__init__)
-    * [update](#modulino.joystick.ModulinoJoystick.update)
-    * [button\_pressed](#modulino.joystick.ModulinoJoystick.button_pressed)
-    * [x](#modulino.joystick.ModulinoJoystick.x)
-    * [y](#modulino.joystick.ModulinoJoystick.y)
-    * [deadzone\_threshold](#modulino.joystick.ModulinoJoystick.deadzone_threshold)
-    * [deadzone\_threshold](#modulino.joystick.ModulinoJoystick.deadzone_threshold)
-    * [on\_button\_press](#modulino.joystick.ModulinoJoystick.on_button_press)
-    * [on\_button\_press](#modulino.joystick.ModulinoJoystick.on_button_press)
-    * [on\_button\_release](#modulino.joystick.ModulinoJoystick.on_button_release)
-    * [on\_button\_release](#modulino.joystick.ModulinoJoystick.on_button_release)
-    * [on\_button\_long\_press](#modulino.joystick.ModulinoJoystick.on_button_long_press)
-    * [on\_button\_long\_press](#modulino.joystick.ModulinoJoystick.on_button_long_press)
-    * [long\_press\_duration](#modulino.joystick.ModulinoJoystick.long_press_duration)
-    * [long\_press\_duration](#modulino.joystick.ModulinoJoystick.long_press_duration)
-* [light](#modulino.light)
-  * [ModulinoLight](#modulino.light.ModulinoLight)
-    * [\_\_init\_\_](#modulino.light.ModulinoLight.__init__)
-    * [lux](#modulino.light.ModulinoLight.lux)
-    * [rgb](#modulino.light.ModulinoLight.rgb)
-    * [color\_name](#modulino.light.ModulinoLight.color_name)
-    * [color\_temperature](#modulino.light.ModulinoLight.color_temperature)
-    * [infrared](#modulino.light.ModulinoLight.infrared)
-* [hub](#modulino.hub)
-  * [ModulinoHubPort](#modulino.hub.ModulinoHubPort)
-  * [ModulinoHub](#modulino.hub.ModulinoHub)
-    * [\_\_init\_\_](#modulino.hub.ModulinoHub.__init__)
-    * [select\_port](#modulino.hub.ModulinoHub.select_port)
-    * [deselect\_ports](#modulino.hub.ModulinoHub.deselect_ports)
-    * [get\_port](#modulino.hub.ModulinoHub.get_port)
-* [helpers](#modulino.helpers)
-  * [map\_value](#modulino.helpers.map_value)
-  * [map\_value\_int](#modulino.helpers.map_value_int)
-  * [constrain](#modulino.helpers.constrain)
-* [device\_manager](#modulino.device_manager)
-  * [DeviceManager](#modulino.device_manager.DeviceManager)
-    * [available\_devices](#modulino.device_manager.DeviceManager.available_devices)
-* [knob](#modulino.knob)
-  * [ModulinoKnob](#modulino.knob.ModulinoKnob)
-    * [\_\_init\_\_](#modulino.knob.ModulinoKnob.__init__)
-    * [reset](#modulino.knob.ModulinoKnob.reset)
-    * [update](#modulino.knob.ModulinoKnob.update)
-    * [increment](#modulino.knob.ModulinoKnob.increment)
-    * [increment](#modulino.knob.ModulinoKnob.increment)
-    * [range](#modulino.knob.ModulinoKnob.range)
-    * [range](#modulino.knob.ModulinoKnob.range)
-    * [on\_rotate\_clockwise](#modulino.knob.ModulinoKnob.on_rotate_clockwise)
-    * [on\_rotate\_clockwise](#modulino.knob.ModulinoKnob.on_rotate_clockwise)
-    * [on\_rotate\_counter\_clockwise](#modulino.knob.ModulinoKnob.on_rotate_counter_clockwise)
-    * [on\_rotate\_counter\_clockwise](#modulino.knob.ModulinoKnob.on_rotate_counter_clockwise)
-    * [on\_press](#modulino.knob.ModulinoKnob.on_press)
-    * [on\_press](#modulino.knob.ModulinoKnob.on_press)
-    * [on\_release](#modulino.knob.ModulinoKnob.on_release)
-    * [on\_release](#modulino.knob.ModulinoKnob.on_release)
-    * [value](#modulino.knob.ModulinoKnob.value)
-    * [value](#modulino.knob.ModulinoKnob.value)
-    * [pressed](#modulino.knob.ModulinoKnob.pressed)
-* [thermo](#modulino.thermo)
-  * [Measurement](#modulino.thermo.Measurement)
-  * [ModulinoThermo](#modulino.thermo.ModulinoThermo)
-    * [\_\_init\_\_](#modulino.thermo.ModulinoThermo.__init__)
-    * [measurements](#modulino.thermo.ModulinoThermo.measurements)
-    * [relative\_humidity](#modulino.thermo.ModulinoThermo.relative_humidity)
-    * [temperature](#modulino.thermo.ModulinoThermo.temperature)
-* [modulino](#modulino.modulino)
-  * [Modulino](#modulino.modulino.Modulino)
-    * [default\_addresses](#modulino.modulino.Modulino.default_addresses)
-    * [has\_mcu](#modulino.modulino.Modulino.has_mcu)
-    * [name](#modulino.modulino.Modulino.name)
-    * [\_\_init\_\_](#modulino.modulino.Modulino.__init__)
-    * [discover](#modulino.modulino.Modulino.discover)
-    * [connected](#modulino.modulino.Modulino.connected)
-    * [pin\_strap\_address](#modulino.modulino.Modulino.pin_strap_address)
-    * [change\_address](#modulino.modulino.Modulino.change_address)
-    * [enter\_bootloader](#modulino.modulino.Modulino.enter_bootloader)
-    * [read](#modulino.modulino.Modulino.read)
-    * [write](#modulino.modulino.Modulino.write)
-    * [has\_default\_address](#modulino.modulino.Modulino.has_default_address)
-    * [send\_buffer\_size](#modulino.modulino.Modulino.send_buffer_size)
-    * [reset\_bus](#modulino.modulino.Modulino.reset_bus)
+* [movement](#modulino.movement)
+  * [MovementValues](#modulino.movement.MovementValues)
+  * [ModulinoMovement](#modulino.movement.ModulinoMovement)
+    * [\_\_init\_\_](#modulino.movement.ModulinoMovement.__init__)
+    * [acceleration](#modulino.movement.ModulinoMovement.acceleration)
+    * [acceleration\_magnitude](#modulino.movement.ModulinoMovement.acceleration_magnitude)
+    * [angular\_velocity](#modulino.movement.ModulinoMovement.angular_velocity)
+    * [gyro](#modulino.movement.ModulinoMovement.gyro)
+    * [pedometer\_enabled](#modulino.movement.ModulinoMovement.pedometer_enabled)
+    * [pedometer\_enabled](#modulino.movement.ModulinoMovement.pedometer_enabled)
+    * [pedometer\_debounce\_steps](#modulino.movement.ModulinoMovement.pedometer_debounce_steps)
+    * [pedometer\_debounce\_steps](#modulino.movement.ModulinoMovement.pedometer_debounce_steps)
+    * [step\_count](#modulino.movement.ModulinoMovement.step_count)
+    * [reset\_step\_count](#modulino.movement.ModulinoMovement.reset_step_count)
 * [led\_matrix](#modulino.led_matrix)
   * [ModulinoLEDMatrix](#modulino.led_matrix.ModulinoLEDMatrix)
     * [\_\_init\_\_](#modulino.led_matrix.ModulinoLEDMatrix.__init__)
@@ -161,6 +127,22 @@
     * [\_\_init\_\_](#modulino.led_matrix.FPSAnimation.__init__)
   * [MPJAnimation](#modulino.led_matrix.MPJAnimation)
     * [\_\_init\_\_](#modulino.led_matrix.MPJAnimation.__init__)
+* [modulino](#modulino.modulino)
+  * [Modulino](#modulino.modulino.Modulino)
+    * [default\_addresses](#modulino.modulino.Modulino.default_addresses)
+    * [has\_mcu](#modulino.modulino.Modulino.has_mcu)
+    * [name](#modulino.modulino.Modulino.name)
+    * [\_\_init\_\_](#modulino.modulino.Modulino.__init__)
+    * [discover](#modulino.modulino.Modulino.discover)
+    * [connected](#modulino.modulino.Modulino.connected)
+    * [pin\_strap\_address](#modulino.modulino.Modulino.pin_strap_address)
+    * [change\_address](#modulino.modulino.Modulino.change_address)
+    * [enter\_bootloader](#modulino.modulino.Modulino.enter_bootloader)
+    * [read](#modulino.modulino.Modulino.read)
+    * [write](#modulino.modulino.Modulino.write)
+    * [has\_default\_address](#modulino.modulino.Modulino.has_default_address)
+    * [send\_buffer\_size](#modulino.modulino.Modulino.send_buffer_size)
+    * [reset\_bus](#modulino.modulino.Modulino.reset_bus)
 * [buttons](#modulino.buttons)
   * [ModulinoButtonsLED](#modulino.buttons.ModulinoButtonsLED)
     * [on](#modulino.buttons.ModulinoButtonsLED.on)
@@ -198,12 +180,37 @@
     * [button\_a\_pressed](#modulino.buttons.ModulinoButtons.button_a_pressed)
     * [button\_b\_pressed](#modulino.buttons.ModulinoButtons.button_b_pressed)
     * [button\_c\_pressed](#modulino.buttons.ModulinoButtons.button_c_pressed)
-* [buzzer](#modulino.buzzer)
-  * [ModulinoBuzzer](#modulino.buzzer.ModulinoBuzzer)
-    * [NOTES](#modulino.buzzer.ModulinoBuzzer.NOTES)
-    * [\_\_init\_\_](#modulino.buzzer.ModulinoBuzzer.__init__)
-    * [tone](#modulino.buzzer.ModulinoBuzzer.tone)
-    * [no\_tone](#modulino.buzzer.ModulinoBuzzer.no_tone)
+* [hub](#modulino.hub)
+  * [ModulinoHubPort](#modulino.hub.ModulinoHubPort)
+  * [ModulinoHub](#modulino.hub.ModulinoHub)
+    * [\_\_init\_\_](#modulino.hub.ModulinoHub.__init__)
+    * [select\_port](#modulino.hub.ModulinoHub.select_port)
+    * [deselect\_ports](#modulino.hub.ModulinoHub.deselect_ports)
+    * [get\_port](#modulino.hub.ModulinoHub.get_port)
+* [helpers](#modulino.helpers)
+  * [map\_value](#modulino.helpers.map_value)
+  * [map\_value\_int](#modulino.helpers.map_value_int)
+  * [constrain](#modulino.helpers.constrain)
+* [knob](#modulino.knob)
+  * [ModulinoKnob](#modulino.knob.ModulinoKnob)
+    * [\_\_init\_\_](#modulino.knob.ModulinoKnob.__init__)
+    * [reset](#modulino.knob.ModulinoKnob.reset)
+    * [update](#modulino.knob.ModulinoKnob.update)
+    * [increment](#modulino.knob.ModulinoKnob.increment)
+    * [increment](#modulino.knob.ModulinoKnob.increment)
+    * [range](#modulino.knob.ModulinoKnob.range)
+    * [range](#modulino.knob.ModulinoKnob.range)
+    * [on\_rotate\_clockwise](#modulino.knob.ModulinoKnob.on_rotate_clockwise)
+    * [on\_rotate\_clockwise](#modulino.knob.ModulinoKnob.on_rotate_clockwise)
+    * [on\_rotate\_counter\_clockwise](#modulino.knob.ModulinoKnob.on_rotate_counter_clockwise)
+    * [on\_rotate\_counter\_clockwise](#modulino.knob.ModulinoKnob.on_rotate_counter_clockwise)
+    * [on\_press](#modulino.knob.ModulinoKnob.on_press)
+    * [on\_press](#modulino.knob.ModulinoKnob.on_press)
+    * [on\_release](#modulino.knob.ModulinoKnob.on_release)
+    * [on\_release](#modulino.knob.ModulinoKnob.on_release)
+    * [value](#modulino.knob.ModulinoKnob.value)
+    * [value](#modulino.knob.ModulinoKnob.value)
+    * [pressed](#modulino.knob.ModulinoKnob.pressed)
 * [pixels](#modulino.pixels)
   * [ModulinoColor](#modulino.pixels.ModulinoColor)
     * [\_\_init\_\_](#modulino.pixels.ModulinoColor.__init__)
@@ -223,31 +230,473 @@
     * [clear\_all](#modulino.pixels.ModulinoPixels.clear_all)
     * [\_\_setitem\_\_](#modulino.pixels.ModulinoPixels.__setitem__)
     * [show](#modulino.pixels.ModulinoPixels.show)
-* [vibro](#modulino.vibro)
-  * [ModulinoVibro](#modulino.vibro.ModulinoVibro)
-    * [\_\_init\_\_](#modulino.vibro.ModulinoVibro.__init__)
-    * [on](#modulino.vibro.ModulinoVibro.on)
-    * [off](#modulino.vibro.ModulinoVibro.off)
-* [latch\_relay](#modulino.latch_relay)
-  * [ModulinoLatchRelay](#modulino.latch_relay.ModulinoLatchRelay)
-    * [\_\_init\_\_](#modulino.latch_relay.ModulinoLatchRelay.__init__)
-    * [on](#modulino.latch_relay.ModulinoLatchRelay.on)
-    * [off](#modulino.latch_relay.ModulinoLatchRelay.off)
-    * [is\_on](#modulino.latch_relay.ModulinoLatchRelay.is_on)
-* [movement](#modulino.movement)
-  * [MovementValues](#modulino.movement.MovementValues)
-  * [ModulinoMovement](#modulino.movement.ModulinoMovement)
-    * [\_\_init\_\_](#modulino.movement.ModulinoMovement.__init__)
-    * [acceleration](#modulino.movement.ModulinoMovement.acceleration)
-    * [acceleration\_magnitude](#modulino.movement.ModulinoMovement.acceleration_magnitude)
-    * [angular\_velocity](#modulino.movement.ModulinoMovement.angular_velocity)
-    * [gyro](#modulino.movement.ModulinoMovement.gyro)
-    * [pedometer\_enabled](#modulino.movement.ModulinoMovement.pedometer_enabled)
-    * [pedometer\_enabled](#modulino.movement.ModulinoMovement.pedometer_enabled)
-    * [pedometer\_debounce\_steps](#modulino.movement.ModulinoMovement.pedometer_debounce_steps)
-    * [pedometer\_debounce\_steps](#modulino.movement.ModulinoMovement.pedometer_debounce_steps)
-    * [step\_count](#modulino.movement.ModulinoMovement.step_count)
-    * [reset\_step\_count](#modulino.movement.ModulinoMovement.reset_step_count)
+* [joystick](#modulino.joystick)
+  * [ModulinoJoystick](#modulino.joystick.ModulinoJoystick)
+    * [default\_long\_press\_duration](#modulino.joystick.ModulinoJoystick.default_long_press_duration)
+    * [\_\_init\_\_](#modulino.joystick.ModulinoJoystick.__init__)
+    * [update](#modulino.joystick.ModulinoJoystick.update)
+    * [button\_pressed](#modulino.joystick.ModulinoJoystick.button_pressed)
+    * [x](#modulino.joystick.ModulinoJoystick.x)
+    * [y](#modulino.joystick.ModulinoJoystick.y)
+    * [deadzone\_threshold](#modulino.joystick.ModulinoJoystick.deadzone_threshold)
+    * [deadzone\_threshold](#modulino.joystick.ModulinoJoystick.deadzone_threshold)
+    * [on\_button\_press](#modulino.joystick.ModulinoJoystick.on_button_press)
+    * [on\_button\_press](#modulino.joystick.ModulinoJoystick.on_button_press)
+    * [on\_button\_release](#modulino.joystick.ModulinoJoystick.on_button_release)
+    * [on\_button\_release](#modulino.joystick.ModulinoJoystick.on_button_release)
+    * [on\_button\_long\_press](#modulino.joystick.ModulinoJoystick.on_button_long_press)
+    * [on\_button\_long\_press](#modulino.joystick.ModulinoJoystick.on_button_long_press)
+    * [long\_press\_duration](#modulino.joystick.ModulinoJoystick.long_press_duration)
+    * [long\_press\_duration](#modulino.joystick.ModulinoJoystick.long_press_duration)
+
+<a id="modulino.latch_relay.ModulinoLatchRelay"></a>
+
+## class `ModulinoLatchRelay`
+
+```python
+class ModulinoLatchRelay(Modulino)
+```
+
+Class to control the relay module of the Modulino.
+
+<a id="modulino.latch_relay.ModulinoLatchRelay.__init__"></a>
+
+### `__init__`
+
+```python
+def __init__(i2c_bus=None,
+             address=None,
+             hub_port=None,
+             check_connection: bool = True)
+```
+
+Initializes the Modulino Buzzer.
+
+**Arguments**:
+
+- `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
+- `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
+- `hub_port` _ModulinoHubPort_ - The Modulino Hub port to which the device is connected.
+- `check_connection` _bool_ - Whether to check the connection to the module.
+
+<a id="modulino.latch_relay.ModulinoLatchRelay.on"></a>
+
+### `on`
+
+```python
+def on() -> None
+```
+
+Turns on the relay.
+
+<a id="modulino.latch_relay.ModulinoLatchRelay.off"></a>
+
+### `off`
+
+```python
+def off() -> None
+```
+
+Turns off the relay.
+
+<a id="modulino.latch_relay.ModulinoLatchRelay.is_on"></a>
+
+### `is_on`
+
+```python
+@property
+def is_on() -> bool
+```
+
+Checks if the relay is currently on.
+
+<a id="modulino.thermo.Measurement"></a>
+
+### `Measurement`
+
+A named tuple to store the temperature and relative humidity measurements.
+
+<a id="modulino.thermo.ModulinoThermo"></a>
+
+## class `ModulinoThermo`
+
+```python
+class ModulinoThermo(Modulino)
+```
+
+Class to interact with the temperature and humidity sensor of the Modulino Thermo.
+
+<a id="modulino.thermo.ModulinoThermo.__init__"></a>
+
+### `__init__`
+
+```python
+def __init__(i2c_bus: I2C = None,
+             address: int = DEFAULT_ADDRESS,
+             hub_port=None,
+             check_connection: bool = True) -> None
+```
+
+Initializes the Modulino Thermo.
+
+**Arguments**:
+
+- `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
+- `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
+- `hub_port` - The hub port to which the module is connected. If not provided, the module is assumed to be directly connected.
+- `hub_port` _ModulinoHubPort_ - The Modulino Hub port to which the device is connected.
+- `check_connection` _bool_ - Whether to check the connection to the module.
+
+<a id="modulino.thermo.ModulinoThermo.measurements"></a>
+
+### `measurements`
+
+```python
+@property
+def measurements() -> Measurement
+```
+
+Return Temperature and Relative Humidity or None if the data is stalled
+
+<a id="modulino.thermo.ModulinoThermo.relative_humidity"></a>
+
+### `relative_humidity`
+
+```python
+@property
+def relative_humidity() -> float
+```
+
+The current relative humidity in % rH
+
+<a id="modulino.thermo.ModulinoThermo.temperature"></a>
+
+### `temperature`
+
+```python
+@property
+def temperature() -> float
+```
+
+The current temperature in Celsius
+
+<a id="modulino.buzzer.ModulinoBuzzer"></a>
+
+## class `ModulinoBuzzer`
+
+```python
+class ModulinoBuzzer(Modulino)
+```
+
+Class to play tones on the piezo element of the Modulino Buzzer.
+Predefined notes are available in the NOTES dictionary e.g. ModulinoBuzzer.NOTES["C4"]
+
+<a id="modulino.buzzer.ModulinoBuzzer.NOTES"></a>
+
+### `NOTES`
+
+Dictionary with the notes and their corresponding frequencies.
+The supported notes are defined as follows:
+- FS3, G3, GS3, A3, AS3, B3
+- C4, CS4, D4, DS4, E4, F4, FS4, G4, GS4, A4, AS4, B4
+- C5, CS5, D5, DS5, E5, F5, FS5, G5, GS5, A5, AS5, B5
+- C6, CS6, D6, DS6, E6, F6, FS6, G6, GS6, A6, AS6, B6
+- C7, CS7, D7, DS7, E7, F7, FS7, G7, GS7, A7, AS7, B7
+- C8, CS8, D8, DS8
+- REST (Silence)
+
+<a id="modulino.buzzer.ModulinoBuzzer.__init__"></a>
+
+### `__init__`
+
+```python
+def __init__(i2c_bus=None,
+             address=None,
+             hub_port=None,
+             check_connection: bool = True)
+```
+
+Initializes the Modulino Buzzer.
+
+**Arguments**:
+
+- `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
+- `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
+- `hub_port` _ModulinoHubPort_ - The Modulino Hub port to which the device is connected.
+- `check_connection` _bool_ - Whether to check the connection to the module.
+
+<a id="modulino.buzzer.ModulinoBuzzer.tone"></a>
+
+### `tone`
+
+```python
+def tone(frequency: int,
+         lenght_ms: int = 0xFFFF,
+         blocking: bool = False) -> None
+```
+
+Plays a tone with the given frequency and duration.
+If blocking is set to True, the function will wait until the tone is finished.
+
+**Arguments**:
+
+- `frequency` - The frequency of the tone in Hz (freuqencies below 180 Hz are not supported)
+- `lenght_ms` - The duration of the tone in milliseconds. If omitted, the tone will play indefinitely
+- `blocking` - If set to True, the function will wait until the tone is finished
+
+<a id="modulino.buzzer.ModulinoBuzzer.no_tone"></a>
+
+### `no_tone`
+
+```python
+def no_tone() -> None
+```
+
+Stops the current tone from playing.
+
+<a id="modulino.light.ModulinoLight"></a>
+
+## class `ModulinoLight`
+
+```python
+class ModulinoLight(Modulino)
+```
+
+Class to interact with the light sensor of the Modulino Light.
+
+It offers an easy way to read how bright the surroundings are (in lux),
+the color of the light as red, green and blue values, the color
+temperature in kelvin and the amount of invisible infrared light.
+
+The readings come from an LTR-381RGB-01 ambient light and color sensor.
+Advanced users can access the underlying sensor through the `sensor`
+attribute to fine-tune settings such as gain or integration time.
+
+<a id="modulino.light.ModulinoLight.__init__"></a>
+
+### `__init__`
+
+```python
+def __init__(i2c_bus: I2C = None,
+             address: int = DEFAULT_ADDRESS,
+             hub_port=None,
+             check_connection: bool = True) -> None
+```
+
+Initializes the Modulino Light.
+
+**Arguments**:
+
+- `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
+- `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
+
+<a id="modulino.light.ModulinoLight.lux"></a>
+
+### `lux`
+
+```python
+@property
+def lux() -> float
+```
+
+How bright the surroundings are, measured in lux.
+Higher numbers mean more light. For reference, a dim room is around
+50 lux, a well-lit office around 500 lux and direct sunlight can be
+tens of thousands of lux.
+
+**Returns**:
+
+- `float` - The ambient brightness in lux.
+
+<a id="modulino.light.ModulinoLight.rgb"></a>
+
+### `rgb`
+
+```python
+@property
+def rgb() -> tuple
+```
+
+The color of the light as red, green and blue values.
+Each value goes from 0 (none) to 255 (most).
+
+**Returns**:
+
+- `tuple` - A (red, green, blue) tuple.
+
+<a id="modulino.light.ModulinoLight.color_name"></a>
+
+### `color_name`
+
+```python
+@property
+def color_name() -> str
+```
+
+A simple name for the color the sensor is seeing,
+for example "red", "green", "blue" or "yellow".
+
+**Returns**:
+
+- `str` - The name of the closest matching color.
+
+<a id="modulino.light.ModulinoLight.color_temperature"></a>
+
+### `color_temperature`
+
+```python
+@property
+def color_temperature() -> int
+```
+
+The color temperature of the light in kelvin (K).
+Warm light (like a candle) has a low value, while cool light
+(like a cloudy sky) has a high value.
+Returns None when there is not enough light to measure it.
+
+**Returns**:
+
+- `int` - The color temperature in kelvin, or None if it can't be measured.
+
+<a id="modulino.light.ModulinoLight.infrared"></a>
+
+### `infrared`
+
+```python
+@property
+def infrared() -> int
+```
+
+The amount of infrared light, which is invisible to the human eye.
+Sunlight and incandescent bulbs are rich in infrared, while most
+screens and LED lights emit very little.
+
+**Returns**:
+
+- `int` - The infrared light level.
+
+<a id="modulino.distance.ModulinoDistance"></a>
+
+## class `ModulinoDistance`
+
+```python
+class ModulinoDistance(Modulino)
+```
+
+Class to interact with the distance sensor of the Modulino Distance.
+
+<a id="modulino.distance.ModulinoDistance.__init__"></a>
+
+### `__init__`
+
+```python
+def __init__(i2c_bus=None,
+             address: int | None = None,
+             hub_port=None,
+             check_connection: bool = True) -> None
+```
+
+Initializes the Modulino Distance.
+
+**Arguments**:
+
+- `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
+- `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
+- `hub_port` _ModulinoHubPort_ - The Modulino Hub port to which the device is connected.
+- `check_connection` _bool_ - Whether to check the connection to the module.
+
+<a id="modulino.distance.ModulinoDistance.distance"></a>
+
+### `distance`
+
+```python
+@property
+def distance() -> int | None
+```
+
+**Returns**:
+
+  int | None: The distance in centimeters, or None if the reading is invalid.
+
+<a id="modulino.device_manager.DeviceManager"></a>
+
+## class `DeviceManager`
+
+```python
+class DeviceManager()
+```
+
+<a id="modulino.device_manager.DeviceManager.available_devices"></a>
+
+### `available_devices`
+
+```python
+def available_devices() -> list[Modulino]
+```
+
+Finds all devices on the i2c bus and returns them as
+a list of Modulino subclass objects.
+
+**Returns**:
+
+- `list` - A list of Modulino subclass objects or empty list if no devices are found.
+
+<a id="modulino.vibro.ModulinoVibro"></a>
+
+## class `ModulinoVibro`
+
+```python
+class ModulinoVibro(Modulino)
+```
+
+Class to operate the vibration motor of the Modulino Vibro.
+
+<a id="modulino.vibro.ModulinoVibro.__init__"></a>
+
+### `__init__`
+
+```python
+def __init__(i2c_bus=None,
+             address=None,
+             hub_port=None,
+             check_connection: bool = True)
+```
+
+Initializes the Modulino Vibro.
+
+**Arguments**:
+
+- `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
+- `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
+- `hub_port` _ModulinoHubPort_ - The Modulino Hub port to which the device is connected.
+- `check_connection` _bool_ - Whether to check the connection to the module.
+
+<a id="modulino.vibro.ModulinoVibro.on"></a>
+
+### `on`
+
+```python
+def on(lenght_ms: int = 0xFFFF,
+       power=PowerLevel.MEDIUM,
+       blocking: bool = False) -> None
+```
+
+Vibrates the motor for the specified duration and power level.
+
+**Arguments**:
+
+- `lenght_ms` - The duration of the vibration in milliseconds. If omitted, it defaults to 65535 ms (maximum duration).
+- `blocking` - If set to True, the function will wait until the vibration is finished.
+
+<a id="modulino.vibro.ModulinoVibro.off"></a>
+
+### `off`
+
+```python
+def off() -> None
+```
+
+Stops the motor from vibrating.
 
 <a id="modulino.motors.DecayMode"></a>
 
@@ -688,17 +1137,23 @@ def decay_mode() -> int
 
 Returns decay mode reported by the latest telemetry update.
 
-<a id="modulino.distance.ModulinoDistance"></a>
+<a id="modulino.movement.MovementValues"></a>
 
-## class `ModulinoDistance`
+### `MovementValues`
+
+A named tuple to store the x, y, and z values of the movement sensors.
+
+<a id="modulino.movement.ModulinoMovement"></a>
+
+## class `ModulinoMovement`
 
 ```python
-class ModulinoDistance(Modulino)
+class ModulinoMovement(Modulino)
 ```
 
-Class to interact with the distance sensor of the Modulino Distance.
+Class to interact with the movement sensor (IMU) of the Modulino Movement.
 
-<a id="modulino.distance.ModulinoDistance.__init__"></a>
+<a id="modulino.movement.ModulinoMovement.__init__"></a>
 
 ### `__init__`
 
@@ -709,7 +1164,7 @@ def __init__(i2c_bus=None,
              check_connection: bool = True) -> None
 ```
 
-Initializes the Modulino Distance.
+Initializes the Modulino Movement.
 
 **Arguments**:
 
@@ -718,1041 +1173,151 @@ Initializes the Modulino Distance.
 - `hub_port` _ModulinoHubPort_ - The Modulino Hub port to which the device is connected.
 - `check_connection` _bool_ - Whether to check the connection to the module.
 
-<a id="modulino.distance.ModulinoDistance.distance"></a>
+<a id="modulino.movement.ModulinoMovement.acceleration"></a>
 
-### `distance`
+### `acceleration`
 
 ```python
 @property
-def distance() -> int
+def acceleration() -> MovementValues
 ```
 
 **Returns**:
 
-- `int` - The distance in centimeters.
+- `MovementValues` - The acceleration values in the x, y, and z axes.
+  These values can be accessed as .x, .y, and .z properties
+  or by using the index operator for tuple unpacking.
 
-<a id="modulino.joystick.ModulinoJoystick"></a>
+<a id="modulino.movement.ModulinoMovement.acceleration_magnitude"></a>
 
-## class `ModulinoJoystick`
-
-```python
-class ModulinoJoystick(Modulino)
-```
-
-Class to operate the Modulino Joystick module.
-
-<a id="modulino.joystick.ModulinoJoystick.default_long_press_duration"></a>
-
-### `default_long_press_duration`
-
-milliseconds
-
-<a id="modulino.joystick.ModulinoJoystick.__init__"></a>
-
-### `__init__`
-
-```python
-def __init__(i2c_bus=None,
-             address=None,
-             hub_port=None,
-             check_connection: bool = True)
-```
-
-Initializes the Modulino Joystick module.
-
-**Arguments**:
-
-- `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
-- `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
-- `hub_port` _ModulinoHubPort_ - The Modulino Hub port to which the device is connected.
-- `check_connection` _bool_ - Whether to check the connection to the module.
-
-<a id="modulino.joystick.ModulinoJoystick.update"></a>
-
-### `update`
-
-```python
-def update()
-```
-
-Updates the joystick state by reading the current position and button state.
-
-<a id="modulino.joystick.ModulinoJoystick.button_pressed"></a>
-
-### `button_pressed`
+### `acceleration_magnitude`
 
 ```python
 @property
-def button_pressed()
+def acceleration_magnitude() -> float
 ```
-
-Returns True if the joystick button is pressed, False otherwise.
-
-<a id="modulino.joystick.ModulinoJoystick.x"></a>
-
-### `x`
-
-```python
-@property
-def x() -> int
-```
-
-Returns the x-coordinate of the joystick position.
-
-<a id="modulino.joystick.ModulinoJoystick.y"></a>
-
-### `y`
-
-```python
-@property
-def y() -> int
-```
-
-Returns the y-coordinate of the joystick position.
-
-<a id="modulino.joystick.ModulinoJoystick.deadzone_threshold"></a>
-
-### `deadzone_threshold`
-
-```python
-@property
-def deadzone_threshold() -> int
-```
-
-Returns the deadzone threshold for joystick movement.
-
-<a id="modulino.joystick.ModulinoJoystick.deadzone_threshold"></a>
-
-### `deadzone_threshold`
-
-```python
-@deadzone_threshold.setter
-def deadzone_threshold(value: int)
-```
-
-Sets the deadzone threshold for joystick movement.
-
-**Arguments**:
-
-- `value` _int_ - The new deadzone threshold.
-
-<a id="modulino.joystick.ModulinoJoystick.on_button_press"></a>
-
-### `on_button_press`
-
-```python
-@property
-def on_button_press()
-```
-
-Callback function to be called when the joystick button is pressed.
-
-<a id="modulino.joystick.ModulinoJoystick.on_button_press"></a>
-
-### `on_button_press`
-
-```python
-@on_button_press.setter
-def on_button_press(callback)
-```
-
-Sets the callback function to be called when the joystick button is pressed.
-
-**Arguments**:
-
-- `callback` _callable_ - The function to call when the button is pressed.
-
-<a id="modulino.joystick.ModulinoJoystick.on_button_release"></a>
-
-### `on_button_release`
-
-```python
-@property
-def on_button_release()
-```
-
-Callback function to be called when the joystick button is released.
-
-<a id="modulino.joystick.ModulinoJoystick.on_button_release"></a>
-
-### `on_button_release`
-
-```python
-@on_button_release.setter
-def on_button_release(callback)
-```
-
-Sets the callback function to be called when the joystick button is released.
-
-**Arguments**:
-
-- `callback` _callable_ - The function to call when the button is released.
-
-<a id="modulino.joystick.ModulinoJoystick.on_button_long_press"></a>
-
-### `on_button_long_press`
-
-```python
-@property
-def on_button_long_press()
-```
-
-Callback function to be called when the joystick button is long-pressed.
-
-<a id="modulino.joystick.ModulinoJoystick.on_button_long_press"></a>
-
-### `on_button_long_press`
-
-```python
-@on_button_long_press.setter
-def on_button_long_press(callback)
-```
-
-Sets the callback function to be called when the joystick button is long-pressed.
-
-**Arguments**:
-
-- `callback` _callable_ - The function to call when the button is long-pressed.
-
-<a id="modulino.joystick.ModulinoJoystick.long_press_duration"></a>
-
-### `long_press_duration`
-
-```python
-@property
-def long_press_duration() -> int
-```
-
-Returns the duration in milliseconds for a long press.
-
-<a id="modulino.joystick.ModulinoJoystick.long_press_duration"></a>
-
-### `long_press_duration`
-
-```python
-@long_press_duration.setter
-def long_press_duration(duration: int)
-```
-
-Sets the duration in milliseconds for a long press.
-
-**Arguments**:
-
-- `duration` _int_ - The new long press duration in milliseconds.
-
-<a id="modulino.light.ModulinoLight"></a>
-
-## class `ModulinoLight`
-
-```python
-class ModulinoLight(Modulino)
-```
-
-Class to interact with the light sensor of the Modulino Light.
-
-It offers an easy way to read how bright the surroundings are (in lux),
-the color of the light as red, green and blue values, the color
-temperature in kelvin and the amount of invisible infrared light.
-
-The readings come from an LTR-381RGB-01 ambient light and color sensor.
-Advanced users can access the underlying sensor through the `sensor`
-attribute to fine-tune settings such as gain or integration time.
-
-<a id="modulino.light.ModulinoLight.__init__"></a>
-
-### `__init__`
-
-```python
-def __init__(i2c_bus: I2C = None,
-             address: int = DEFAULT_ADDRESS,
-             hub_port=None,
-             check_connection: bool = True) -> None
-```
-
-Initializes the Modulino Light.
-
-**Arguments**:
-
-- `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
-- `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
-
-<a id="modulino.light.ModulinoLight.lux"></a>
-
-### `lux`
-
-```python
-@property
-def lux() -> float
-```
-
-How bright the surroundings are, measured in lux.
-Higher numbers mean more light. For reference, a dim room is around
-50 lux, a well-lit office around 500 lux and direct sunlight can be
-tens of thousands of lux.
 
 **Returns**:
 
-- `float` - The ambient brightness in lux.
+- `float` - The magnitude of the acceleration vector in g.
+  When the Modulino is at rest (on planet earth), this value should be approximately 1.0g due to gravity.
 
-<a id="modulino.light.ModulinoLight.rgb"></a>
+<a id="modulino.movement.ModulinoMovement.angular_velocity"></a>
 
-### `rgb`
+### `angular_velocity`
 
 ```python
 @property
-def rgb() -> tuple
+def angular_velocity() -> MovementValues
 ```
-
-The color of the light as red, green and blue values.
-Each value goes from 0 (none) to 255 (most).
 
 **Returns**:
 
-- `tuple` - A (red, green, blue) tuple.
+- `MovementValues` - The gyroscope values in the x, y, and z axes.
+  These values can be accessed as .x, .y, and .z properties
+  or by using the index operator for tuple unpacking.
 
-<a id="modulino.light.ModulinoLight.color_name"></a>
+<a id="modulino.movement.ModulinoMovement.gyro"></a>
 
-### `color_name`
+### `gyro`
 
 ```python
 @property
-def color_name() -> str
+def gyro() -> MovementValues
 ```
 
-A simple name for the color the sensor is seeing,
-for example "red", "green", "blue" or "yellow".
+Alias for angular_velocity property.
 
 **Returns**:
 
-- `str` - The name of the closest matching color.
+- `MovementValues` - The gyroscope values in the x, y, and z axes.
+  These values can be accessed as .x, .y, and .z properties
+  or by using the index operator for tuple unpacking.
 
-<a id="modulino.light.ModulinoLight.color_temperature"></a>
+<a id="modulino.movement.ModulinoMovement.pedometer_enabled"></a>
 
-### `color_temperature`
+### `pedometer_enabled`
 
 ```python
 @property
-def color_temperature() -> int
+def pedometer_enabled() -> bool
 ```
-
-The color temperature of the light in kelvin (K).
-Warm light (like a candle) has a low value, while cool light
-(like a cloudy sky) has a high value.
-Returns None when there is not enough light to measure it.
 
 **Returns**:
 
-- `int` - The color temperature in kelvin, or None if it can't be measured.
+- `bool` - True if the built-in pedometer of the IMU is enabled.
 
-<a id="modulino.light.ModulinoLight.infrared"></a>
+<a id="modulino.movement.ModulinoMovement.pedometer_enabled"></a>
 
-### `infrared`
+### `pedometer_enabled`
+
+```python
+@pedometer_enabled.setter
+def pedometer_enabled(value: bool) -> None
+```
+
+Enables or disables the built-in pedometer of the IMU.
+Once enabled, steps are counted in the background by the sensor itself
+and can be read at any time using the step_count property.
+When disabled, the step count is kept until it gets reset using reset_step_count().
+
+**Arguments**:
+
+- `value` _bool_ - True to enable the pedometer, False to disable it.
+
+<a id="modulino.movement.ModulinoMovement.pedometer_debounce_steps"></a>
+
+### `pedometer_debounce_steps`
 
 ```python
 @property
-def infrared() -> int
+def pedometer_debounce_steps() -> int
 ```
-
-The amount of infrared light, which is invisible to the human eye.
-Sunlight and incandescent bulbs are rich in infrared, while most
-screens and LED lights emit very little.
 
 **Returns**:
 
-- `int` - The infrared light level.
+- `int` - The number of steps that need to be detected in a row before they are counted.
 
-<a id="modulino.hub.ModulinoHubPort"></a>
+<a id="modulino.movement.ModulinoMovement.pedometer_debounce_steps"></a>
 
-## class `ModulinoHubPort`
-
-```python
-class ModulinoHubPort()
-```
-
-Represents a port on the Modulino Hub.
-
-<a id="modulino.hub.ModulinoHub"></a>
-
-## class `ModulinoHub`
+### `pedometer_debounce_steps`
 
 ```python
-class ModulinoHub(Modulino)
+@pedometer_debounce_steps.setter
+def pedometer_debounce_steps(value: int) -> None
 ```
 
-Class to interact with the Modulino Hub (TCA9548A I2C multiplexer).
-
-<a id="modulino.hub.ModulinoHub.__init__"></a>
-
-### `__init__`
-
-```python
-def __init__(i2c_bus: I2C = None,
-             address: int = DEFAULT_ADDRESS,
-             hub_port=None,
-             check_connection: bool = True) -> None
-```
-
-Initializes the Modulino Hub.
+Sets the number of steps that need to be detected in a row before they are counted.
+This helps to filter out false positives e.g. from shaking the device.
 
 **Arguments**:
 
-- `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
-- `address` _int_ - The I2C address of the module.
-- `hub_port` _ModulinoHubPort_ - The Modulino Hub port to which the device is connected.
-- `check_connection` _bool_ - Whether to check the connection to the module.
+- `value` _int_ - The number of debounce steps. Range: 0-255. Default: 10.
 
-<a id="modulino.hub.ModulinoHub.select_port"></a>
+<a id="modulino.movement.ModulinoMovement.step_count"></a>
 
-### `select_port`
+### `step_count`
 
 ```python
-def select_port(port: int) -> None
+@property
+def step_count() -> int
 ```
-
-Selects a specific port (0-7) on the multiplexer.
-
-<a id="modulino.hub.ModulinoHub.deselect_ports"></a>
-
-### `deselect_ports`
-
-```python
-def deselect_ports() -> None
-```
-
-Deselects all ports on the multiplexer.
-
-<a id="modulino.hub.ModulinoHub.get_port"></a>
-
-### `get_port`
-
-```python
-def get_port(port_number: int) -> ModulinoHubPort
-```
-
-Creates a context manager for the specified port.
-
-<a id="modulino.helpers.map_value"></a>
-
-### `map_value`
-
-```python
-def map_value(x: float | int, in_min: float | int, in_max: float | int,
-              out_min: float | int, out_max: float | int) -> float | int
-```
-
-Maps a value from one range to another.
-
-**Arguments**:
-
-- `x` - The value to map.
-- `in_min` - The minimum value of the input range.
-- `in_max` - The maximum value of the input range.
-- `out_min` - The minimum value of the output range.
-- `out_max` - The maximum value of the output range.
-  
 
 **Returns**:
 
-  The mapped value as a float or int depending on the input.
+- `int` - The number of steps counted by the pedometer since it was enabled
+  or since the last call to reset_step_count().
+  The pedometer needs to be enabled first using pedometer_enabled.
 
-<a id="modulino.helpers.map_value_int"></a>
+<a id="modulino.movement.ModulinoMovement.reset_step_count"></a>
 
-### `map_value_int`
-
-```python
-def map_value_int(x: int,
-                  in_min: int,
-                  in_max: int,
-                  out_min: int,
-                  out_max: int,
-                  round_result: bool = False) -> int
-```
-
-Maps an integer value from one range to another using integer arithmetic.
-
-**Arguments**:
-
-- `x` - The integer value to map.
-- `in_min` - The minimum value of the input range.
-- `in_max` - The maximum value of the input range.
-- `out_min` - The minimum value of the output range.
-- `out_max` - The maximum value of the output range.
-- `round_result` - If True, the result will be rounded to the nearest integer.
-  
-
-**Returns**:
-
-  The mapped integer value.
-
-<a id="modulino.helpers.constrain"></a>
-
-### `constrain`
+### `reset_step_count`
 
 ```python
-def constrain(value: float | int, min_value: float | int,
-              max_value: float | int) -> float | int
+def reset_step_count() -> None
 ```
 
-Constrains a value to be within a specified range.
-
-**Arguments**:
-
-- `value` - The value to constrain.
-- `min_value` - The minimum allowable value.
-- `max_value` - The maximum allowable value.
-  
-
-**Returns**:
-
-  The constrained value.
-
-<a id="modulino.device_manager.DeviceManager"></a>
-
-## class `DeviceManager`
-
-```python
-class DeviceManager()
-```
-
-<a id="modulino.device_manager.DeviceManager.available_devices"></a>
-
-### `available_devices`
-
-```python
-def available_devices() -> list[Modulino]
-```
-
-Finds all devices on the i2c bus and returns them as
-a list of Modulino subclass objects.
-
-**Returns**:
-
-- `list` - A list of Modulino subclass objects or empty list if no devices are found.
-
-<a id="modulino.knob.ModulinoKnob"></a>
-
-## class `ModulinoKnob`
-
-```python
-class ModulinoKnob(Modulino)
-```
-
-Class to interact with the rotary encoder of the Modulino Knob.
-
-<a id="modulino.knob.ModulinoKnob.__init__"></a>
-
-### `__init__`
-
-```python
-def __init__(i2c_bus=None,
-             address=None,
-             hub_port=None,
-             check_connection: bool = True)
-```
-
-Initializes the Modulino Knob.
-
-**Arguments**:
-
-- `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
-- `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
-- `hub_port` _ModulinoHubPort_ - The Modulino Hub port to which the device is connected.
-- `check_connection` _bool_ - Whether to check the connection to the module.
-
-<a id="modulino.knob.ModulinoKnob.reset"></a>
-
-### `reset`
-
-```python
-def reset() -> None
-```
-
-Resets the encoder value to 0.
-
-<a id="modulino.knob.ModulinoKnob.update"></a>
-
-### `update`
-
-```python
-def update() -> bool
-```
-
-Reads new data from the Modulino and calls the corresponding callbacks
-if the encoder value or pressed status has changed.
-
-**Returns**:
-
-- `bool` - True if the encoder value or pressed status has changed.
-
-<a id="modulino.knob.ModulinoKnob.increment"></a>
-
-### `increment`
-
-```python
-@property
-def increment() -> int | float
-```
-
-Returns the amount by which the value changes per step of the encoder.
-
-<a id="modulino.knob.ModulinoKnob.increment"></a>
-
-### `increment`
-
-```python
-@increment.setter
-def increment(value: int | float) -> None
-```
-
-Sets the amount by which the value changes per step of the encoder.
-If a range is set, the value still stops exactly at its limits.
-Fractional increments make the value a float, which can accumulate small
-inaccuracies for increments that floats can't represent exactly, such as 0.1.
-
-**Arguments**:
-
-- `value` _int | float_ - A positive number. Defaults to 1.
-
-<a id="modulino.knob.ModulinoKnob.range"></a>
-
-### `range`
-
-```python
-@property
-def range() -> tuple[int, int]
-```
-
-Returns the range of the encoder value.
-
-<a id="modulino.knob.ModulinoKnob.range"></a>
-
-### `range`
-
-```python
-@range.setter
-def range(value: tuple[int, int]) -> None
-```
-
-Sets the range of the encoder value.
-
-**Arguments**:
-
-- `value` _tuple_ - A tuple with two integers representing the minimum and maximum values of the range.
-
-<a id="modulino.knob.ModulinoKnob.on_rotate_clockwise"></a>
-
-### `on_rotate_clockwise`
-
-```python
-@property
-def on_rotate_clockwise()
-```
-
-Returns the callback for the rotate clockwise event.
-
-<a id="modulino.knob.ModulinoKnob.on_rotate_clockwise"></a>
-
-### `on_rotate_clockwise`
-
-```python
-@on_rotate_clockwise.setter
-def on_rotate_clockwise(value) -> None
-```
-
-Sets the callback for the rotate clockwise event.
-
-**Arguments**:
-
-- `value` _function_ - The function to be called when the encoder is rotated clockwise.
-  It receives the number of steps turned (regardless of the increment) and the new value as arguments.
-
-<a id="modulino.knob.ModulinoKnob.on_rotate_counter_clockwise"></a>
-
-### `on_rotate_counter_clockwise`
-
-```python
-@property
-def on_rotate_counter_clockwise()
-```
-
-Returns the callback for the rotate counter clockwise event.
-
-<a id="modulino.knob.ModulinoKnob.on_rotate_counter_clockwise"></a>
-
-### `on_rotate_counter_clockwise`
-
-```python
-@on_rotate_counter_clockwise.setter
-def on_rotate_counter_clockwise(value) -> None
-```
-
-Sets the callback for the rotate counter clockwise event.
-
-**Arguments**:
-
-- `value` _function_ - The function to be called when the encoder is rotated counter clockwise.
-  It receives the number of steps turned (regardless of the increment) and the new value as arguments.
-
-<a id="modulino.knob.ModulinoKnob.on_press"></a>
-
-### `on_press`
-
-```python
-@property
-def on_press()
-```
-
-Returns the callback for the press event.
-
-<a id="modulino.knob.ModulinoKnob.on_press"></a>
-
-### `on_press`
-
-```python
-@on_press.setter
-def on_press(value) -> None
-```
-
-Sets the callback for the press event.
-
-**Arguments**:
-
-- `value` _function_ - The function to be called when the encoder is pressed.
-
-<a id="modulino.knob.ModulinoKnob.on_release"></a>
-
-### `on_release`
-
-```python
-@property
-def on_release()
-```
-
-Returns the callback for the release event.
-
-<a id="modulino.knob.ModulinoKnob.on_release"></a>
-
-### `on_release`
-
-```python
-@on_release.setter
-def on_release(value) -> None
-```
-
-Sets the callback for the release event.
-
-**Arguments**:
-
-- `value` _function_ - The function to be called when the encoder is released.
-
-<a id="modulino.knob.ModulinoKnob.value"></a>
-
-### `value`
-
-```python
-@property
-def value() -> int
-```
-
-Returns the current value of the encoder.
-
-<a id="modulino.knob.ModulinoKnob.value"></a>
-
-### `value`
-
-```python
-@value.setter
-def value(new_value: int) -> None
-```
-
-Sets the value of the encoder. This overrides the previous value.
-The value is only stored in this object, not on the Modulino.
-
-**Arguments**:
-
-- `new_value` _int_ - The new value of the encoder.
-
-<a id="modulino.knob.ModulinoKnob.pressed"></a>
-
-### `pressed`
-
-```python
-@property
-def pressed() -> bool
-```
-
-Returns the pressed status of the encoder.
-
-<a id="modulino.thermo.Measurement"></a>
-
-### `Measurement`
-
-A named tuple to store the temperature and relative humidity measurements.
-
-<a id="modulino.thermo.ModulinoThermo"></a>
-
-## class `ModulinoThermo`
-
-```python
-class ModulinoThermo(Modulino)
-```
-
-Class to interact with the temperature and humidity sensor of the Modulino Thermo.
-
-<a id="modulino.thermo.ModulinoThermo.__init__"></a>
-
-### `__init__`
-
-```python
-def __init__(i2c_bus: I2C = None,
-             address: int = DEFAULT_ADDRESS,
-             hub_port=None,
-             check_connection: bool = True) -> None
-```
-
-Initializes the Modulino Thermo.
-
-**Arguments**:
-
-- `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
-- `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
-- `hub_port` - The hub port to which the module is connected. If not provided, the module is assumed to be directly connected.
-- `hub_port` _ModulinoHubPort_ - The Modulino Hub port to which the device is connected.
-- `check_connection` _bool_ - Whether to check the connection to the module.
-
-<a id="modulino.thermo.ModulinoThermo.measurements"></a>
-
-### `measurements`
-
-```python
-@property
-def measurements() -> Measurement
-```
-
-Return Temperature and Relative Humidity or None if the data is stalled
-
-<a id="modulino.thermo.ModulinoThermo.relative_humidity"></a>
-
-### `relative_humidity`
-
-```python
-@property
-def relative_humidity() -> float
-```
-
-The current relative humidity in % rH
-
-<a id="modulino.thermo.ModulinoThermo.temperature"></a>
-
-### `temperature`
-
-```python
-@property
-def temperature() -> float
-```
-
-The current temperature in Celsius
-
-<a id="modulino.modulino.Modulino"></a>
-
-## class `Modulino`
-
-```python
-class Modulino()
-```
-
-Base class for all Modulino devices.
-
-<a id="modulino.modulino.Modulino.default_addresses"></a>
-
-### `default_addresses`
-
-A list of default addresses that the modulino can have.
-This list needs to be overridden derived classes.
-
-<a id="modulino.modulino.Modulino.has_mcu"></a>
-
-### `has_mcu`
-
-Determines if the modulino has a microcontroller on board.
-This is used to determine if the device should be expected to support features such as address change or entering bootloader mode.
-
-<a id="modulino.modulino.Modulino.name"></a>
-
-### `name`
-
-The name of the modulino.
-This property should be overridden in derived classes.
-
-<a id="modulino.modulino.Modulino.__init__"></a>
-
-### `__init__`
-
-```python
-def __init__(i2c_bus: I2C = None,
-             address: int | None = None,
-             name: str | None = None,
-             hub_port=None,
-             check_connection: bool = True) -> None
-```
-
-Initializes the Modulino object with the given i2c bus and address.
-If the address is not provided, the device will try to auto discover it.
-If the address is provided, the device will check if it is connected to the bus.
-If the address is 8-bit, it will be converted to 7-bit.
-If no bus is provided, the default bus will be used if available.
-
-**Arguments**:
-
-- `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
-- `address` _int_ - The address of the device. If not provided, the device will try to auto discover it.
-- `name` _str_ - The name of the device.
-- `hub_port` _ModulinoHubPort_ - The Modulino Hub port to which the device is connected.
-- `check_connection` _bool_ - Whether to check if the device is connected to the bus.
-
-<a id="modulino.modulino.Modulino.discover"></a>
-
-### `discover`
-
-```python
-def discover(default_addresses: list[int]) -> int | None
-```
-
-Tries to find the given modulino device in the device chain
-based on the pre-defined default addresses. The first address found will be returned.
-If the address has been changed to a custom one it won't be found with this function.
-
-**Returns**:
-
-  int | None: The address of the device if found, None otherwise.
-
-<a id="modulino.modulino.Modulino.connected"></a>
-
-### `connected`
-
-```python
-@property
-def connected() -> bool
-```
-
-Determines if the given modulino is connected to the i2c bus.
-
-<a id="modulino.modulino.Modulino.pin_strap_address"></a>
-
-### `pin_strap_address`
-
-```python
-@property
-def pin_strap_address() -> int | None
-```
-
-Returns the pin strap i2c address of the modulino.
-This address is set via resistors on the modulino board.
-Since all modulinos generally use the same firmware, the pinstrap address
-is needed to determine the type of the modulino at boot time, so it know what to do.
-At boot it checks the internal flash in case its address has been overridden by the user
-which would take precedence.
-
-**Returns**:
-
-  int | None: The pin strap address of the modulino.
-
-<a id="modulino.modulino.Modulino.change_address"></a>
-
-### `change_address`
-
-```python
-def change_address(new_address: int)
-```
-
-Sets the address of the i2c device to the given value.
-This is only supported on Modulinos that have a microcontroller.
-
-<a id="modulino.modulino.Modulino.enter_bootloader"></a>
-
-### `enter_bootloader`
-
-```python
-def enter_bootloader()
-```
-
-Enters the I2C bootloader of the device.
-This is only supported on Modulinos that have a microcontroller.
-
-**Returns**:
-
-- `bool` - True if the device entered bootloader mode, False otherwise.
-
-<a id="modulino.modulino.Modulino.read"></a>
-
-### `read`
-
-```python
-def read(read_buffer: bytearray) -> None
-```
-
-Reads the given amount of bytes from the i2c device defined by the length of the read_buffer.
-
-<a id="modulino.modulino.Modulino.write"></a>
-
-### `write`
-
-```python
-def write(data_buffer: bytearray) -> bool
-```
-
-Writes the given buffer to the i2c device.
-
-**Arguments**:
-
-- `data_buffer` _bytearray_ - The data to be written to the device.
-  
-
-**Returns**:
-
-- `bool` - True if the data was written successfully, False otherwise.
-
-<a id="modulino.modulino.Modulino.has_default_address"></a>
-
-### `has_default_address`
-
-```python
-@property
-def has_default_address() -> bool
-```
-
-Determines if the given modulino has a default address
-or if a custom one was set.
-
-<a id="modulino.modulino.Modulino.send_buffer_size"></a>
-
-### `send_buffer_size`
-
-```python
-@property
-def send_buffer_size() -> int
-```
-
-The expected size of the buffer sent to the device.
-Used to calculate the padding for commands such as the DIE command.
-This property needs to be overridden in derived classes.
-
-<a id="modulino.modulino.Modulino.reset_bus"></a>
-
-### `reset_bus`
-
-```python
-@staticmethod
-def reset_bus(i2c_bus: I2C) -> I2C
-```
-
-Resets the i2c bus. This is useful when the bus is in an unknown state.
-The modulinos that are equipped with a micro controller use DMA operations.
-If the host board does a reset during such operation it can make the bus get stuck.
-
-**Returns**:
-
-- `I2C` - A new i2c bus object after resetting the bus.
+Resets the step count of the pedometer to 0.
 
 <a id="modulino.led_matrix.ModulinoLEDMatrix"></a>
 
@@ -2197,6 +1762,207 @@ Initializes the MPJAnimation.
 - `file_path` _str_ - The path to the .mpj JSON file.
 - `async_mode` _bool_ - If True, play() returns a coroutine that can be awaited.
 
+<a id="modulino.modulino.Modulino"></a>
+
+## class `Modulino`
+
+```python
+class Modulino()
+```
+
+Base class for all Modulino devices.
+
+<a id="modulino.modulino.Modulino.default_addresses"></a>
+
+### `default_addresses`
+
+A list of default addresses that the modulino can have.
+This list needs to be overridden derived classes.
+
+<a id="modulino.modulino.Modulino.has_mcu"></a>
+
+### `has_mcu`
+
+Determines if the modulino has a microcontroller on board.
+This is used to determine if the device should be expected to support features such as address change or entering bootloader mode.
+
+<a id="modulino.modulino.Modulino.name"></a>
+
+### `name`
+
+The name of the modulino.
+This property should be overridden in derived classes.
+
+<a id="modulino.modulino.Modulino.__init__"></a>
+
+### `__init__`
+
+```python
+def __init__(i2c_bus: I2C = None,
+             address: int | None = None,
+             name: str | None = None,
+             hub_port=None,
+             check_connection: bool = True) -> None
+```
+
+Initializes the Modulino object with the given i2c bus and address.
+If the address is not provided, the device will try to auto discover it.
+If the address is provided, the device will check if it is connected to the bus.
+If the address is 8-bit, it will be converted to 7-bit.
+If no bus is provided, the default bus will be used if available.
+
+**Arguments**:
+
+- `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
+- `address` _int_ - The address of the device. If not provided, the device will try to auto discover it.
+- `name` _str_ - The name of the device.
+- `hub_port` _ModulinoHubPort_ - The Modulino Hub port to which the device is connected.
+- `check_connection` _bool_ - Whether to check if the device is connected to the bus.
+
+<a id="modulino.modulino.Modulino.discover"></a>
+
+### `discover`
+
+```python
+def discover(default_addresses: list[int]) -> int | None
+```
+
+Tries to find the given modulino device in the device chain
+based on the pre-defined default addresses. The first address found will be returned.
+If the address has been changed to a custom one it won't be found with this function.
+
+**Returns**:
+
+  int | None: The address of the device if found, None otherwise.
+
+<a id="modulino.modulino.Modulino.connected"></a>
+
+### `connected`
+
+```python
+@property
+def connected() -> bool
+```
+
+Determines if the given modulino is connected to the i2c bus.
+
+<a id="modulino.modulino.Modulino.pin_strap_address"></a>
+
+### `pin_strap_address`
+
+```python
+@property
+def pin_strap_address() -> int | None
+```
+
+Returns the pin strap i2c address of the modulino.
+This address is set via resistors on the modulino board.
+Since all modulinos generally use the same firmware, the pinstrap address
+is needed to determine the type of the modulino at boot time, so it know what to do.
+At boot it checks the internal flash in case its address has been overridden by the user
+which would take precedence.
+
+**Returns**:
+
+  int | None: The pin strap address of the modulino.
+
+<a id="modulino.modulino.Modulino.change_address"></a>
+
+### `change_address`
+
+```python
+def change_address(new_address: int)
+```
+
+Sets the address of the i2c device to the given value.
+This is only supported on Modulinos that have a microcontroller.
+
+<a id="modulino.modulino.Modulino.enter_bootloader"></a>
+
+### `enter_bootloader`
+
+```python
+def enter_bootloader()
+```
+
+Enters the I2C bootloader of the device.
+This is only supported on Modulinos that have a microcontroller.
+
+**Returns**:
+
+- `bool` - True if the device entered bootloader mode, False otherwise.
+
+<a id="modulino.modulino.Modulino.read"></a>
+
+### `read`
+
+```python
+def read(read_buffer: bytearray) -> None
+```
+
+Reads the given amount of bytes from the i2c device defined by the length of the read_buffer.
+
+<a id="modulino.modulino.Modulino.write"></a>
+
+### `write`
+
+```python
+def write(data_buffer: bytearray) -> bool
+```
+
+Writes the given buffer to the i2c device.
+
+**Arguments**:
+
+- `data_buffer` _bytearray_ - The data to be written to the device.
+  
+
+**Returns**:
+
+- `bool` - True if the data was written successfully, False otherwise.
+
+<a id="modulino.modulino.Modulino.has_default_address"></a>
+
+### `has_default_address`
+
+```python
+@property
+def has_default_address() -> bool
+```
+
+Determines if the given modulino has a default address
+or if a custom one was set.
+
+<a id="modulino.modulino.Modulino.send_buffer_size"></a>
+
+### `send_buffer_size`
+
+```python
+@property
+def send_buffer_size() -> int
+```
+
+The expected size of the buffer sent to the device.
+Used to calculate the padding for commands such as the DIE command.
+This property needs to be overridden in derived classes.
+
+<a id="modulino.modulino.Modulino.reset_bus"></a>
+
+### `reset_bus`
+
+```python
+@staticmethod
+def reset_bus(i2c_bus: I2C) -> I2C
+```
+
+Resets the i2c bus. This is useful when the bus is in an unknown state.
+The modulinos that are equipped with a micro controller use DMA operations.
+If the host board does a reset during such operation it can make the bus get stuck.
+
+**Returns**:
+
+- `I2C` - A new i2c bus object after resetting the bus.
+
 <a id="modulino.buttons.ModulinoButtonsLED"></a>
 
 ## class `ModulinoButtonsLED`
@@ -2613,32 +2379,162 @@ def button_c_pressed() -> bool
 
 Returns True if button C is currently pressed.
 
-<a id="modulino.buzzer.ModulinoBuzzer"></a>
+<a id="modulino.hub.ModulinoHubPort"></a>
 
-## class `ModulinoBuzzer`
+## class `ModulinoHubPort`
 
 ```python
-class ModulinoBuzzer(Modulino)
+class ModulinoHubPort()
 ```
 
-Class to play tones on the piezo element of the Modulino Buzzer.
-Predefined notes are available in the NOTES dictionary e.g. ModulinoBuzzer.NOTES["C4"]
+Represents a port on the Modulino Hub.
 
-<a id="modulino.buzzer.ModulinoBuzzer.NOTES"></a>
+<a id="modulino.hub.ModulinoHub"></a>
 
-### `NOTES`
+## class `ModulinoHub`
 
-Dictionary with the notes and their corresponding frequencies.
-The supported notes are defined as follows:
-- FS3, G3, GS3, A3, AS3, B3
-- C4, CS4, D4, DS4, E4, F4, FS4, G4, GS4, A4, AS4, B4
-- C5, CS5, D5, DS5, E5, F5, FS5, G5, GS5, A5, AS5, B5
-- C6, CS6, D6, DS6, E6, F6, FS6, G6, GS6, A6, AS6, B6
-- C7, CS7, D7, DS7, E7, F7, FS7, G7, GS7, A7, AS7, B7
-- C8, CS8, D8, DS8
-- REST (Silence)
+```python
+class ModulinoHub(Modulino)
+```
 
-<a id="modulino.buzzer.ModulinoBuzzer.__init__"></a>
+Class to interact with the Modulino Hub (TCA9548A I2C multiplexer).
+
+<a id="modulino.hub.ModulinoHub.__init__"></a>
+
+### `__init__`
+
+```python
+def __init__(i2c_bus: I2C = None,
+             address: int = DEFAULT_ADDRESS,
+             hub_port=None,
+             check_connection: bool = True) -> None
+```
+
+Initializes the Modulino Hub.
+
+**Arguments**:
+
+- `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
+- `address` _int_ - The I2C address of the module.
+- `hub_port` _ModulinoHubPort_ - The Modulino Hub port to which the device is connected.
+- `check_connection` _bool_ - Whether to check the connection to the module.
+
+<a id="modulino.hub.ModulinoHub.select_port"></a>
+
+### `select_port`
+
+```python
+def select_port(port: int) -> None
+```
+
+Selects a specific port (0-7) on the multiplexer.
+
+<a id="modulino.hub.ModulinoHub.deselect_ports"></a>
+
+### `deselect_ports`
+
+```python
+def deselect_ports() -> None
+```
+
+Deselects all ports on the multiplexer.
+
+<a id="modulino.hub.ModulinoHub.get_port"></a>
+
+### `get_port`
+
+```python
+def get_port(port_number: int) -> ModulinoHubPort
+```
+
+Creates a context manager for the specified port.
+
+<a id="modulino.helpers.map_value"></a>
+
+### `map_value`
+
+```python
+def map_value(x: float | int, in_min: float | int, in_max: float | int,
+              out_min: float | int, out_max: float | int) -> float | int
+```
+
+Maps a value from one range to another.
+
+**Arguments**:
+
+- `x` - The value to map.
+- `in_min` - The minimum value of the input range.
+- `in_max` - The maximum value of the input range.
+- `out_min` - The minimum value of the output range.
+- `out_max` - The maximum value of the output range.
+  
+
+**Returns**:
+
+  The mapped value as a float or int depending on the input.
+
+<a id="modulino.helpers.map_value_int"></a>
+
+### `map_value_int`
+
+```python
+def map_value_int(x: int,
+                  in_min: int,
+                  in_max: int,
+                  out_min: int,
+                  out_max: int,
+                  round_result: bool = False) -> int
+```
+
+Maps an integer value from one range to another using integer arithmetic.
+
+**Arguments**:
+
+- `x` - The integer value to map.
+- `in_min` - The minimum value of the input range.
+- `in_max` - The maximum value of the input range.
+- `out_min` - The minimum value of the output range.
+- `out_max` - The maximum value of the output range.
+- `round_result` - If True, the result will be rounded to the nearest integer.
+  
+
+**Returns**:
+
+  The mapped integer value.
+
+<a id="modulino.helpers.constrain"></a>
+
+### `constrain`
+
+```python
+def constrain(value: float | int, min_value: float | int,
+              max_value: float | int) -> float | int
+```
+
+Constrains a value to be within a specified range.
+
+**Arguments**:
+
+- `value` - The value to constrain.
+- `min_value` - The minimum allowable value.
+- `max_value` - The maximum allowable value.
+  
+
+**Returns**:
+
+  The constrained value.
+
+<a id="modulino.knob.ModulinoKnob"></a>
+
+## class `ModulinoKnob`
+
+```python
+class ModulinoKnob(Modulino)
+```
+
+Class to interact with the rotary encoder of the Modulino Knob.
+
+<a id="modulino.knob.ModulinoKnob.__init__"></a>
 
 ### `__init__`
 
@@ -2649,7 +2545,7 @@ def __init__(i2c_bus=None,
              check_connection: bool = True)
 ```
 
-Initializes the Modulino Buzzer.
+Initializes the Modulino Knob.
 
 **Arguments**:
 
@@ -2658,34 +2554,229 @@ Initializes the Modulino Buzzer.
 - `hub_port` _ModulinoHubPort_ - The Modulino Hub port to which the device is connected.
 - `check_connection` _bool_ - Whether to check the connection to the module.
 
-<a id="modulino.buzzer.ModulinoBuzzer.tone"></a>
+<a id="modulino.knob.ModulinoKnob.reset"></a>
 
-### `tone`
+### `reset`
 
 ```python
-def tone(frequency: int,
-         lenght_ms: int = 0xFFFF,
-         blocking: bool = False) -> None
+def reset() -> None
 ```
 
-Plays a tone with the given frequency and duration.
-If blocking is set to True, the function will wait until the tone is finished.
+Resets the encoder value to 0.
+
+<a id="modulino.knob.ModulinoKnob.update"></a>
+
+### `update`
+
+```python
+def update() -> bool
+```
+
+Reads new data from the Modulino and calls the corresponding callbacks
+if the encoder value or pressed status has changed.
+
+**Returns**:
+
+- `bool` - True if the encoder value or pressed status has changed.
+
+<a id="modulino.knob.ModulinoKnob.increment"></a>
+
+### `increment`
+
+```python
+@property
+def increment() -> int | float
+```
+
+Returns the amount by which the value changes per step of the encoder.
+
+<a id="modulino.knob.ModulinoKnob.increment"></a>
+
+### `increment`
+
+```python
+@increment.setter
+def increment(value: int | float) -> None
+```
+
+Sets the amount by which the value changes per step of the encoder.
+If a range is set, the value still stops exactly at its limits.
+Fractional increments make the value a float, which can accumulate small
+inaccuracies for increments that floats can't represent exactly, such as 0.1.
 
 **Arguments**:
 
-- `frequency` - The frequency of the tone in Hz (freuqencies below 180 Hz are not supported)
-- `lenght_ms` - The duration of the tone in milliseconds. If omitted, the tone will play indefinitely
-- `blocking` - If set to True, the function will wait until the tone is finished
+- `value` _int | float_ - A positive number. Defaults to 1.
 
-<a id="modulino.buzzer.ModulinoBuzzer.no_tone"></a>
+<a id="modulino.knob.ModulinoKnob.range"></a>
 
-### `no_tone`
+### `range`
 
 ```python
-def no_tone() -> None
+@property
+def range() -> tuple[int, int]
 ```
 
-Stops the current tone from playing.
+Returns the range of the encoder value.
+
+<a id="modulino.knob.ModulinoKnob.range"></a>
+
+### `range`
+
+```python
+@range.setter
+def range(value: tuple[int, int]) -> None
+```
+
+Sets the range of the encoder value.
+
+**Arguments**:
+
+- `value` _tuple_ - A tuple with two integers representing the minimum and maximum values of the range.
+
+<a id="modulino.knob.ModulinoKnob.on_rotate_clockwise"></a>
+
+### `on_rotate_clockwise`
+
+```python
+@property
+def on_rotate_clockwise()
+```
+
+Returns the callback for the rotate clockwise event.
+
+<a id="modulino.knob.ModulinoKnob.on_rotate_clockwise"></a>
+
+### `on_rotate_clockwise`
+
+```python
+@on_rotate_clockwise.setter
+def on_rotate_clockwise(value) -> None
+```
+
+Sets the callback for the rotate clockwise event.
+
+**Arguments**:
+
+- `value` _function_ - The function to be called when the encoder is rotated clockwise.
+  It receives the number of steps turned (regardless of the increment) and the new value as arguments.
+
+<a id="modulino.knob.ModulinoKnob.on_rotate_counter_clockwise"></a>
+
+### `on_rotate_counter_clockwise`
+
+```python
+@property
+def on_rotate_counter_clockwise()
+```
+
+Returns the callback for the rotate counter clockwise event.
+
+<a id="modulino.knob.ModulinoKnob.on_rotate_counter_clockwise"></a>
+
+### `on_rotate_counter_clockwise`
+
+```python
+@on_rotate_counter_clockwise.setter
+def on_rotate_counter_clockwise(value) -> None
+```
+
+Sets the callback for the rotate counter clockwise event.
+
+**Arguments**:
+
+- `value` _function_ - The function to be called when the encoder is rotated counter clockwise.
+  It receives the number of steps turned (regardless of the increment) and the new value as arguments.
+
+<a id="modulino.knob.ModulinoKnob.on_press"></a>
+
+### `on_press`
+
+```python
+@property
+def on_press()
+```
+
+Returns the callback for the press event.
+
+<a id="modulino.knob.ModulinoKnob.on_press"></a>
+
+### `on_press`
+
+```python
+@on_press.setter
+def on_press(value) -> None
+```
+
+Sets the callback for the press event.
+
+**Arguments**:
+
+- `value` _function_ - The function to be called when the encoder is pressed.
+
+<a id="modulino.knob.ModulinoKnob.on_release"></a>
+
+### `on_release`
+
+```python
+@property
+def on_release()
+```
+
+Returns the callback for the release event.
+
+<a id="modulino.knob.ModulinoKnob.on_release"></a>
+
+### `on_release`
+
+```python
+@on_release.setter
+def on_release(value) -> None
+```
+
+Sets the callback for the release event.
+
+**Arguments**:
+
+- `value` _function_ - The function to be called when the encoder is released.
+
+<a id="modulino.knob.ModulinoKnob.value"></a>
+
+### `value`
+
+```python
+@property
+def value() -> int
+```
+
+Returns the current value of the encoder.
+
+<a id="modulino.knob.ModulinoKnob.value"></a>
+
+### `value`
+
+```python
+@value.setter
+def value(new_value: int) -> None
+```
+
+Sets the value of the encoder. This overrides the previous value.
+The value is only stored in this object, not on the Modulino.
+
+**Arguments**:
+
+- `new_value` _int_ - The new value of the encoder.
+
+<a id="modulino.knob.ModulinoKnob.pressed"></a>
+
+### `pressed`
+
+```python
+@property
+def pressed() -> bool
+```
+
+Returns the pressed status of the encoder.
 
 <a id="modulino.pixels.ModulinoColor"></a>
 
@@ -3035,17 +3126,23 @@ def show() -> None
 Applies the changes to the LEDs. This function needs to be called after any changes to the LEDs.
 Otherwise, the changes will not be visible.
 
-<a id="modulino.vibro.ModulinoVibro"></a>
+<a id="modulino.joystick.ModulinoJoystick"></a>
 
-## class `ModulinoVibro`
+## class `ModulinoJoystick`
 
 ```python
-class ModulinoVibro(Modulino)
+class ModulinoJoystick(Modulino)
 ```
 
-Class to operate the vibration motor of the Modulino Vibro.
+Class to operate the Modulino Joystick module.
 
-<a id="modulino.vibro.ModulinoVibro.__init__"></a>
+<a id="modulino.joystick.ModulinoJoystick.default_long_press_duration"></a>
+
+### `default_long_press_duration`
+
+milliseconds
+
+<a id="modulino.joystick.ModulinoJoystick.__init__"></a>
 
 ### `__init__`
 
@@ -3056,7 +3153,7 @@ def __init__(i2c_bus=None,
              check_connection: bool = True)
 ```
 
-Initializes the Modulino Vibro.
+Initializes the Modulino Joystick module.
 
 **Arguments**:
 
@@ -3065,273 +3162,176 @@ Initializes the Modulino Vibro.
 - `hub_port` _ModulinoHubPort_ - The Modulino Hub port to which the device is connected.
 - `check_connection` _bool_ - Whether to check the connection to the module.
 
-<a id="modulino.vibro.ModulinoVibro.on"></a>
+<a id="modulino.joystick.ModulinoJoystick.update"></a>
 
-### `on`
+### `update`
 
 ```python
-def on(lenght_ms: int = 0xFFFF,
-       power=PowerLevel.MEDIUM,
-       blocking: bool = False) -> None
+def update()
 ```
 
-Vibrates the motor for the specified duration and power level.
+Updates the joystick state by reading the current position and button state.
+
+<a id="modulino.joystick.ModulinoJoystick.button_pressed"></a>
+
+### `button_pressed`
+
+```python
+@property
+def button_pressed()
+```
+
+Returns True if the joystick button is pressed, False otherwise.
+
+<a id="modulino.joystick.ModulinoJoystick.x"></a>
+
+### `x`
+
+```python
+@property
+def x() -> int
+```
+
+Returns the x-coordinate of the joystick position.
+
+<a id="modulino.joystick.ModulinoJoystick.y"></a>
+
+### `y`
+
+```python
+@property
+def y() -> int
+```
+
+Returns the y-coordinate of the joystick position.
+
+<a id="modulino.joystick.ModulinoJoystick.deadzone_threshold"></a>
+
+### `deadzone_threshold`
+
+```python
+@property
+def deadzone_threshold() -> int
+```
+
+Returns the deadzone threshold for joystick movement.
+
+<a id="modulino.joystick.ModulinoJoystick.deadzone_threshold"></a>
+
+### `deadzone_threshold`
+
+```python
+@deadzone_threshold.setter
+def deadzone_threshold(value: int)
+```
+
+Sets the deadzone threshold for joystick movement.
 
 **Arguments**:
 
-- `lenght_ms` - The duration of the vibration in milliseconds. If omitted, it defaults to 65535 ms (maximum duration).
-- `blocking` - If set to True, the function will wait until the vibration is finished.
+- `value` _int_ - The new deadzone threshold.
 
-<a id="modulino.vibro.ModulinoVibro.off"></a>
+<a id="modulino.joystick.ModulinoJoystick.on_button_press"></a>
 
-### `off`
-
-```python
-def off() -> None
-```
-
-Stops the motor from vibrating.
-
-<a id="modulino.latch_relay.ModulinoLatchRelay"></a>
-
-## class `ModulinoLatchRelay`
+### `on_button_press`
 
 ```python
-class ModulinoLatchRelay(Modulino)
+@property
+def on_button_press()
 ```
 
-Class to control the relay module of the Modulino.
+Callback function to be called when the joystick button is pressed.
 
-<a id="modulino.latch_relay.ModulinoLatchRelay.__init__"></a>
+<a id="modulino.joystick.ModulinoJoystick.on_button_press"></a>
 
-### `__init__`
+### `on_button_press`
 
 ```python
-def __init__(i2c_bus=None,
-             address=None,
-             hub_port=None,
-             check_connection: bool = True)
+@on_button_press.setter
+def on_button_press(callback)
 ```
 
-Initializes the Modulino Buzzer.
+Sets the callback function to be called when the joystick button is pressed.
 
 **Arguments**:
 
-- `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
-- `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
-- `hub_port` _ModulinoHubPort_ - The Modulino Hub port to which the device is connected.
-- `check_connection` _bool_ - Whether to check the connection to the module.
+- `callback` _callable_ - The function to call when the button is pressed.
 
-<a id="modulino.latch_relay.ModulinoLatchRelay.on"></a>
+<a id="modulino.joystick.ModulinoJoystick.on_button_release"></a>
 
-### `on`
-
-```python
-def on() -> None
-```
-
-Turns on the relay.
-
-<a id="modulino.latch_relay.ModulinoLatchRelay.off"></a>
-
-### `off`
-
-```python
-def off() -> None
-```
-
-Turns off the relay.
-
-<a id="modulino.latch_relay.ModulinoLatchRelay.is_on"></a>
-
-### `is_on`
+### `on_button_release`
 
 ```python
 @property
-def is_on() -> bool
+def on_button_release()
 ```
 
-Checks if the relay is currently on.
+Callback function to be called when the joystick button is released.
 
-<a id="modulino.movement.MovementValues"></a>
+<a id="modulino.joystick.ModulinoJoystick.on_button_release"></a>
 
-### `MovementValues`
-
-A named tuple to store the x, y, and z values of the movement sensors.
-
-<a id="modulino.movement.ModulinoMovement"></a>
-
-## class `ModulinoMovement`
+### `on_button_release`
 
 ```python
-class ModulinoMovement(Modulino)
+@on_button_release.setter
+def on_button_release(callback)
 ```
 
-Class to interact with the movement sensor (IMU) of the Modulino Movement.
-
-<a id="modulino.movement.ModulinoMovement.__init__"></a>
-
-### `__init__`
-
-```python
-def __init__(i2c_bus=None,
-             address: int | None = None,
-             hub_port=None,
-             check_connection: bool = True) -> None
-```
-
-Initializes the Modulino Movement.
+Sets the callback function to be called when the joystick button is released.
 
 **Arguments**:
 
-- `i2c_bus` _I2C_ - The I2C bus to use. If not provided, the default I2C bus will be used.
-- `address` _int_ - The I2C address of the module. If not provided, the default address will be used.
-- `hub_port` _ModulinoHubPort_ - The Modulino Hub port to which the device is connected.
-- `check_connection` _bool_ - Whether to check the connection to the module.
+- `callback` _callable_ - The function to call when the button is released.
 
-<a id="modulino.movement.ModulinoMovement.acceleration"></a>
+<a id="modulino.joystick.ModulinoJoystick.on_button_long_press"></a>
 
-### `acceleration`
+### `on_button_long_press`
 
 ```python
 @property
-def acceleration() -> MovementValues
+def on_button_long_press()
 ```
 
-**Returns**:
+Callback function to be called when the joystick button is long-pressed.
 
-- `MovementValues` - The acceleration values in the x, y, and z axes.
-  These values can be accessed as .x, .y, and .z properties
-  or by using the index operator for tuple unpacking.
+<a id="modulino.joystick.ModulinoJoystick.on_button_long_press"></a>
 
-<a id="modulino.movement.ModulinoMovement.acceleration_magnitude"></a>
-
-### `acceleration_magnitude`
+### `on_button_long_press`
 
 ```python
-@property
-def acceleration_magnitude() -> float
+@on_button_long_press.setter
+def on_button_long_press(callback)
 ```
 
-**Returns**:
-
-- `float` - The magnitude of the acceleration vector in g.
-  When the Modulino is at rest (on planet earth), this value should be approximately 1.0g due to gravity.
-
-<a id="modulino.movement.ModulinoMovement.angular_velocity"></a>
-
-### `angular_velocity`
-
-```python
-@property
-def angular_velocity() -> MovementValues
-```
-
-**Returns**:
-
-- `MovementValues` - The gyroscope values in the x, y, and z axes.
-  These values can be accessed as .x, .y, and .z properties
-  or by using the index operator for tuple unpacking.
-
-<a id="modulino.movement.ModulinoMovement.gyro"></a>
-
-### `gyro`
-
-```python
-@property
-def gyro() -> MovementValues
-```
-
-Alias for angular_velocity property.
-
-**Returns**:
-
-- `MovementValues` - The gyroscope values in the x, y, and z axes.
-  These values can be accessed as .x, .y, and .z properties
-  or by using the index operator for tuple unpacking.
-
-<a id="modulino.movement.ModulinoMovement.pedometer_enabled"></a>
-
-### `pedometer_enabled`
-
-```python
-@property
-def pedometer_enabled() -> bool
-```
-
-**Returns**:
-
-- `bool` - True if the built-in pedometer of the IMU is enabled.
-
-<a id="modulino.movement.ModulinoMovement.pedometer_enabled"></a>
-
-### `pedometer_enabled`
-
-```python
-@pedometer_enabled.setter
-def pedometer_enabled(value: bool) -> None
-```
-
-Enables or disables the built-in pedometer of the IMU.
-Once enabled, steps are counted in the background by the sensor itself
-and can be read at any time using the step_count property.
-When disabled, the step count is kept until it gets reset using reset_step_count().
+Sets the callback function to be called when the joystick button is long-pressed.
 
 **Arguments**:
 
-- `value` _bool_ - True to enable the pedometer, False to disable it.
+- `callback` _callable_ - The function to call when the button is long-pressed.
 
-<a id="modulino.movement.ModulinoMovement.pedometer_debounce_steps"></a>
+<a id="modulino.joystick.ModulinoJoystick.long_press_duration"></a>
 
-### `pedometer_debounce_steps`
+### `long_press_duration`
 
 ```python
 @property
-def pedometer_debounce_steps() -> int
+def long_press_duration() -> int
 ```
 
-**Returns**:
+Returns the duration in milliseconds for a long press.
 
-- `int` - The number of steps that need to be detected in a row before they are counted.
+<a id="modulino.joystick.ModulinoJoystick.long_press_duration"></a>
 
-<a id="modulino.movement.ModulinoMovement.pedometer_debounce_steps"></a>
-
-### `pedometer_debounce_steps`
+### `long_press_duration`
 
 ```python
-@pedometer_debounce_steps.setter
-def pedometer_debounce_steps(value: int) -> None
+@long_press_duration.setter
+def long_press_duration(duration: int)
 ```
 
-Sets the number of steps that need to be detected in a row before they are counted.
-This helps to filter out false positives e.g. from shaking the device.
+Sets the duration in milliseconds for a long press.
 
 **Arguments**:
 
-- `value` _int_ - The number of debounce steps. Range: 0-255. Default: 10.
-
-<a id="modulino.movement.ModulinoMovement.step_count"></a>
-
-### `step_count`
-
-```python
-@property
-def step_count() -> int
-```
-
-**Returns**:
-
-- `int` - The number of steps counted by the pedometer since it was enabled
-  or since the last call to reset_step_count().
-  The pedometer needs to be enabled first using pedometer_enabled.
-
-<a id="modulino.movement.ModulinoMovement.reset_step_count"></a>
-
-### `reset_step_count`
-
-```python
-def reset_step_count() -> None
-```
-
-Resets the step count of the pedometer to 0.
+- `duration` _int_ - The new long press duration in milliseconds.
 
